@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ground: #0b0d13;
+  --color-ground-deep: #050609;
+  --color-carbon: #10131c;
+  --color-ink: #ffffff;
+  --color-ink-soft: rgba(255, 255, 255, 0.74);
+  --color-ink-faint: rgba(255, 255, 255, 0.48);
+  --color-ink-ghost: rgba(255, 255, 255, 0.2);
+
+  --color-audi-red: #f50537;
+  --color-audi-red-lit: #ff335f;
+  --color-ascari: #2563eb;
+  --color-ascari-lit: #60a5fa;
+  --color-flame: #f50537;
+  --color-flame-lit: #ff3b5c;
+
+  --color-glass: rgba(14, 17, 26, 0.62);
+  --color-glass-strong: rgba(8, 10, 16, 0.84);
+  --color-hair: rgba(255, 255, 255, 0.13);
+  --color-hair-soft: rgba(255, 255, 255, 0.07);
+
+  --font-display: 'Inter Tight', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-italic: 'Instrument Serif', Georgia, serif;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-[100svh] bg-ground-deep text-ink font-body text-base antialiased overflow-x-hidden selection:bg-audi-red selection:text-white;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Prevenir CLS en transiciones de vista */
+  [transition\:name] {
+    will-change: transform;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center gap-[10px] rounded-full font-body font-medium tracking-tight whitespace-nowrap transition-all duration-350 ease-[var(--ease-out)];
+  }
+
+  .btn--light {
+    @apply py-[0.72em] px-[1.35em] bg-white text-[#07080c] shadow-[0_10px_26px_rgba(0,0,0,0.45)] hover:-translate-y-px hover:bg-[#f0f4ff] hover:shadow-[0_14px_34px_rgba(255,255,255,0.22)];
+  }
+
+  .btn--flame {
+    @apply py-[0.5em] pr-[0.5em] pl-[1.5em] bg-gradient-to-r from-audi-red to-audi-red-lit text-white font-semibold shadow-[0_14px_40px_rgba(245,5,55,0.38)] hover:-translate-y-[2px] hover:shadow-[0_20px_52px_rgba(245,5,55,0.58)];
+  }
+
+  .carbon-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+}

@@ -1,0 +1,22 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.svelte';
+import Hero from '../components/Hero.svelte';
+import AudiShowroom from '../components/AudiShowroom.svelte';
+import EngineeringBento from '../components/EngineeringBento.svelte';
+import DriveSelectLab from '../components/DriveSelectLab.svelte';
+import ModelComparator from '../components/ModelComparator.svelte';
+import VipBooking from '../components/VipBooking.svelte';
+---
+
+<Layout title="Audi R8 V10 Performance quattro — Showroom Interactivo 1080p">
+  <Navbar client:idle />
+  <main id="main">
+    <Hero client:load />
+    <AudiShowroom client:load />
+    <EngineeringBento client:visible />
+    <DriveSelectLab client:visible />
+    <ModelComparator client:visible />
+    <VipBooking client:visible />
+  </main>
+</Layout>
