@@ -1,11 +1,6 @@
 <script lang="ts">
   import { store } from '../../lib/store.svelte';
 
-  function scrollToCatalog() {
-    const el = document.getElementById('catalog');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  }
-
   function openFeaturedPDP() {
     const comfort = store.products.find(p => p.id === 'prod-comfort-edit');
     if (comfort) {
@@ -14,60 +9,68 @@
   }
 </script>
 
-<section id="hero" class="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden bg-[#090c13] text-white border-b border-white/10 max-w-full">
-  <!-- Subtle architectural background image -->
-  <div class="absolute inset-0 z-0 opacity-25 overflow-hidden pointer-events-none">
-    <img
-      src="https://www.terrebleu.ca/cdn/shop/files/TerreBleuLavenderSpaCollection.png?v=1792113654&width=1080"
-      alt="Campos de Lavanda Terre Bleu"
-      class="w-full h-full object-cover object-center filter grayscale contrast-125 max-w-full"
-    />
-  </div>
+<section id="hero" class="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden bg-[#faf9f6] text-slate-900 border-b border-slate-200 max-w-full">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <!-- Left Column: Copy & CTAs -->
+      <div class="space-y-6 max-w-xl">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-md border border-slate-300 bg-white text-[11px] font-mono tracking-wider uppercase text-slate-700 shadow-2xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+          <span>Granja Botánica Orgánica • Ontario, Canadá</span>
+        </div>
 
-  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="max-w-2xl space-y-6">
-      <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-md border border-white/15 bg-white/5 text-[11px] font-mono tracking-wider uppercase text-slate-300">
-        <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
-        <span>Cosecha Orgánica 2026 • Terre Bleu Farm</span>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-slate-950 leading-tight">
+          Elixires de Lavanda Pura & Bienestar.
+        </h1>
+
+        <p class="text-base text-slate-600 leading-relaxed font-normal">
+          Inspirada en la serenidad de los campos canadienses. Fórmulas botánicas artesanales cosechadas para tu rutina de sosiego, cuidado personal y rituales de calma diaria.
+        </p>
+
+        <div class="pt-2 flex flex-wrap items-center gap-3">
+          <a
+            href="/tienda"
+            class="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-white bg-slate-900 hover:bg-slate-800 rounded-md transition-colors shadow-2xs inline-block"
+          >
+            Ver Catálogo de Tienda →
+          </a>
+
+          <button
+            onclick={openFeaturedPDP}
+            class="px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-800 bg-white hover:bg-slate-100 rounded-md border border-slate-300 transition-colors cursor-pointer flex items-center space-x-2 shadow-2xs"
+          >
+            <span>The Comfort Edit</span>
+            <span class="text-indigo-600 font-mono font-bold tabular-nums">$45 CAD</span>
+          </button>
+        </div>
+
+        <div class="pt-8 border-t border-slate-200 grid grid-cols-3 gap-6 text-slate-600 text-xs">
+          <div>
+            <span class="font-bold text-slate-900 block tabular-nums">100% Orgánico</span>
+            <span class="text-[11px]">Destilación artesanal</span>
+          </div>
+          <div>
+            <span class="font-bold text-slate-900 block tabular-nums">Sin Químicos</span>
+            <span class="text-[11px]">Libre de parabenos</span>
+          </div>
+          <div>
+            <span class="font-bold text-slate-900 block tabular-nums">Ontario, CA</span>
+            <span class="text-[11px]">Cultivo sustentable</span>
+          </div>
+        </div>
       </div>
 
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white leading-tight">
-        Elixires Botánicos de Lavanda Pura.
-      </h1>
-
-      <p class="text-base sm:text-lg text-slate-300 font-normal leading-relaxed max-w-xl">
-        Inspirada en la calma de los campos canadienses. Fórmulas artesanales para el cuidado corporal, relajación profunda y rituales de sosiego diario.
-      </p>
-
-      <div class="pt-4 flex flex-wrap items-center gap-3">
-        <button
-          onclick={scrollToCatalog}
-          class="px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-900 bg-white hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
-        >
-          Explorar Colección
-        </button>
-
-        <button
-          onclick={openFeaturedPDP}
-          class="px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white bg-slate-900/80 hover:bg-slate-800 rounded-md border border-white/20 transition-colors cursor-pointer flex items-center space-x-2"
-        >
-          <span>The Comfort Edit</span>
-          <span class="text-sky-400 font-mono tabular-nums">$45 CAD</span>
-        </button>
-      </div>
-
-      <div class="pt-8 border-t border-white/10 grid grid-cols-3 gap-6 text-slate-400 text-xs">
-        <div>
-          <span class="font-bold text-white block tabular-nums">100% Orgánico</span>
-          <span class="text-[11px]">Destilación artesanal</span>
+      <!-- Right Column: Clean Heritage Visual -->
+      <div class="relative">
+        <div class="aspect-4/3 rounded-lg overflow-hidden border border-slate-200 bg-white shadow-lg">
+          <img
+            src="https://www.terrebleu.ca/cdn/shop/files/TerreBleuLavenderSpaCollection.png?v=1792113654&width=1080"
+            alt="Colección Botánica Terre Bleu"
+            class="w-full h-full object-cover"
+          />
         </div>
-        <div>
-          <span class="font-bold text-white block tabular-nums">Sin Químicos</span>
-          <span class="text-[11px]">Libre de parabenos</span>
-        </div>
-        <div>
-          <span class="font-bold text-white block tabular-nums">Ontario, CA</span>
-          <span class="text-[11px]">Cultivo sustentable</span>
+        <div class="absolute -bottom-3 -left-3 bg-white px-3.5 py-2 rounded-md border border-slate-200 text-xs font-mono text-slate-700 shadow-md">
+          Cosecha de Temporada • 2026
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="bg-[#090a0f]">
+<html lang="es" class="bg-slate-50">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,140 +14,184 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-[#090a0f] text-slate-200 antialiased selection:bg-sky-500/20">
-  <div id="app">
-    <!-- Header -->
-    <header class="border-b border-white/10 bg-[#0d111a]/90 backdrop-blur-md sticky top-0 z-30">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 rounded-md bg-slate-900 border border-sky-500/30 flex items-center justify-center text-sky-400 font-semibold text-sm">
-            TB
-          </div>
-          <div>
-            <span class="text-white font-semibold text-sm tracking-tight">Terre Bleu Backoffice</span>
-            <span class="text-xs text-slate-400 ml-2 hidden sm:inline border-l border-white/10 pl-2">Engine: Go HTTP Native (:8080)</span>
+<body class="min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-slate-200">
+  <div class="min-h-screen flex flex-col md:flex-row">
+    <!-- Left Sidebar -->
+    <aside class="w-full md:w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0">
+      <div>
+        <!-- Brand -->
+        <div class="h-16 px-6 border-b border-slate-200 flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-7 h-7 rounded bg-slate-900 text-white flex items-center justify-center text-xs font-bold font-serif">
+              TB
+            </div>
+            <div>
+              <span class="text-sm font-bold text-slate-900 block leading-tight">Terre Bleu</span>
+              <span class="text-[10px] text-slate-500 font-mono">Gestión Comercial</span>
+            </div>
           </div>
         </div>
 
-        <div class="flex items-center space-x-3">
-          <a href="http://localhost:4321/" class="text-xs text-slate-300 hover:text-white px-3 py-1.5 rounded-md border border-white/10 bg-[#131722] hover:bg-[#171d2b] transition-colors">
-            ← Ir a la Tienda (Astro)
+        <!-- Navigation Menu -->
+        <nav class="p-3 space-y-1">
+          <button
+            id="tab-inventory"
+            class="w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-semibold bg-slate-100 text-slate-900 transition-colors cursor-pointer"
+          >
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              <span>Inventario</span>
+            </div>
+            <span id="nav-badge-products" class="text-[11px] tabular-nums text-slate-500">0</span>
+          </button>
+
+          <button
+            id="tab-sales"
+            class="w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer"
+          >
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span>Ventas</span>
+            </div>
+            <span id="nav-badge-orders" class="text-[11px] tabular-nums text-slate-500">0</span>
+          </button>
+
+          <button
+            id="tab-customers"
+            class="w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer"
+          >
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span>Clientes</span>
+            </div>
+            <span id="nav-badge-customers" class="text-[11px] tabular-nums text-slate-500">0</span>
+          </button>
+        </nav>
+
+        <div class="p-3 border-t border-slate-200 space-y-1">
+          <a
+            href="http://localhost:4321/"
+            class="w-full flex items-center space-x-2.5 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+          >
+            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Ir a la Tienda</span>
           </a>
-          <button id="btn-reset" class="text-xs font-medium text-rose-400 hover:text-rose-300 px-3 py-1.5 rounded-md border border-rose-900/40 bg-rose-950/20 hover:bg-rose-950/40 transition-colors flex items-center space-x-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+          <button
+            id="btn-reset"
+            class="w-full flex items-center space-x-2.5 px-3 py-2 rounded-md text-xs font-medium text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
+          >
+            <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             <span>Reiniciar Demo</span>
           </button>
         </div>
       </div>
-    </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <!-- KPI Row -->
-      <section class="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <div class="bg-[#0d111a] border border-white/10 rounded-lg p-4">
-          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Ingresos Totales</span>
-          <span id="kpi-revenue" class="text-2xl font-bold text-white tabular-nums tracking-tight mt-1 block">$0.00</span>
-        </div>
-        <div class="bg-[#0d111a] border border-white/10 rounded-lg p-4">
-          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Ventas Registradas</span>
-          <span id="kpi-orders" class="text-2xl font-bold text-white tabular-nums tracking-tight mt-1 block">0</span>
-        </div>
-        <div class="bg-[#0d111a] border border-white/10 rounded-lg p-4">
-          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Clientes Únicos</span>
-          <span id="kpi-customers" class="text-2xl font-bold text-white tabular-nums tracking-tight mt-1 block">0</span>
-        </div>
-        <div class="bg-[#0d111a] border border-white/10 rounded-lg p-4">
-          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Unidades Vendidas</span>
-          <span id="kpi-units" class="text-2xl font-bold text-sky-400 tabular-nums tracking-tight mt-1 block">0</span>
-        </div>
-        <div class="bg-[#0d111a] border border-white/10 rounded-lg p-4 col-span-2 md:col-span-1">
-          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Stock Total</span>
-          <span id="kpi-stock" class="text-2xl font-bold text-slate-300 tabular-nums tracking-tight mt-1 block">0 uds</span>
-        </div>
-      </section>
+      <div class="p-4 border-t border-slate-200 text-[11px] text-slate-500 flex items-center space-x-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>Conexión activa (:8080)</span>
+      </div>
+    </aside>
 
-      <!-- Tabs Navigation -->
-      <div class="flex items-center justify-between border-b border-white/10 pb-3">
-        <div class="flex space-x-1 bg-[#0d111a] p-1 rounded-lg border border-white/10">
-          <button id="tab-inventory" class="px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors bg-[#171d2b] text-white shadow-sm">
-            Inventario y Stock
-          </button>
-          <button id="tab-sales" class="px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-400 hover:text-slate-200">
-            Historial de Ventas
-          </button>
-          <button id="tab-customers" class="px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-400 hover:text-slate-200">
-            Directorio de Clientes
-          </button>
+    <!-- Main Content Area -->
+    <main class="flex-1 p-6 md:p-8 space-y-6 overflow-x-hidden">
+      <!-- Minimalist Summary KPI Row -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div class="bg-white border border-slate-200 rounded-lg p-3.5">
+          <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">Ingresos</span>
+          <span id="kpi-revenue" class="text-xl font-bold text-slate-900 tabular-nums block mt-0.5">$0.00</span>
         </div>
-        <div class="text-xs text-slate-400 flex items-center space-x-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>SSE en vivo (:8080)</span>
+        <div class="bg-white border border-slate-200 rounded-lg p-3.5">
+          <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">Ventas</span>
+          <span id="kpi-orders" class="text-xl font-bold text-slate-900 tabular-nums block mt-0.5">0</span>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-lg p-3.5">
+          <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">Clientes</span>
+          <span id="kpi-customers" class="text-xl font-bold text-slate-900 tabular-nums block mt-0.5">0</span>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-lg p-3.5">
+          <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">Unidades</span>
+          <span id="kpi-units" class="text-xl font-bold text-slate-900 tabular-nums block mt-0.5">0</span>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-lg p-3.5 col-span-2 md:col-span-1">
+          <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">Stock Total</span>
+          <span id="kpi-stock" class="text-xl font-bold text-slate-900 tabular-nums block mt-0.5">0 uds</span>
         </div>
       </div>
 
-      <!-- Panel Content -->
-      <div id="panel-inventory" class="bg-[#0d111a] border border-white/10 rounded-lg overflow-hidden">
-        <div class="p-4 border-b border-white/10 flex items-center justify-between">
-          <h2 class="text-sm font-semibold text-white">Catálogo de Productos y Existencias en Almacén</h2>
-          <span class="text-xs text-slate-400">Descontado síncronamente en cada venta</span>
+      <!-- Tab 1: Inventory -->
+      <div id="panel-inventory" class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h2 class="text-sm font-bold text-slate-900">Catálogo de Productos y Existencias</h2>
+          <span id="inv-count" class="text-xs text-slate-500">0 productos</span>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-[#131722] text-slate-400 uppercase font-medium border-b border-white/10">
+          <table class="w-full text-left text-xs text-slate-700">
+            <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
               <tr>
-                <th class="py-3 px-4">Producto</th>
-                <th class="py-3 px-4">Categoría</th>
-                <th class="py-3 px-4 text-right">Precio</th>
-                <th class="py-3 px-4 text-center">Stock Inicial</th>
-                <th class="py-3 px-4 text-center">Stock Actual</th>
-                <th class="py-3 px-4 text-center">Estado</th>
+                <th class="py-2.5 px-4">Producto</th>
+                <th class="py-2.5 px-4">Categoría</th>
+                <th class="py-2.5 px-4 text-right">Precio</th>
+                <th class="py-2.5 px-4 text-center">Inicial</th>
+                <th class="py-2.5 px-4 text-center">Actual</th>
+                <th class="py-2.5 px-4 text-center">Estado</th>
               </tr>
             </thead>
-            <tbody id="inventory-tbody" class="divide-y divide-white/5"></tbody>
+            <tbody id="inventory-tbody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
 
-      <div id="panel-sales" class="bg-[#0d111a] border border-white/10 rounded-lg overflow-hidden hidden">
-        <div class="p-4 border-b border-white/10 flex items-center justify-between">
-          <h2 class="text-sm font-semibold text-white">Registro Cronológico de Ventas</h2>
-          <span id="sales-count" class="text-xs text-slate-400">0 órdenes</span>
+      <!-- Tab 2: Sales -->
+      <div id="panel-sales" class="bg-white border border-slate-200 rounded-lg overflow-hidden hidden">
+        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h2 class="text-sm font-bold text-slate-900">Registro Cronológico de Ventas</h2>
+          <span id="sales-count" class="text-xs text-slate-500">0 pedidos</span>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-[#131722] text-slate-400 uppercase font-medium border-b border-white/10">
+          <table class="w-full text-left text-xs text-slate-700">
+            <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
               <tr>
-                <th class="py-3 px-4">ID Orden</th>
-                <th class="py-3 px-4">Fecha / Hora</th>
-                <th class="py-3 px-4">Cliente</th>
-                <th class="py-3 px-4">Artículos</th>
-                <th class="py-3 px-4 text-right">Total</th>
-                <th class="py-3 px-4 text-center">Estado</th>
+                <th class="py-2.5 px-4">ID Orden</th>
+                <th class="py-2.5 px-4">Fecha / Hora</th>
+                <th class="py-2.5 px-4">Cliente</th>
+                <th class="py-2.5 px-4">Artículos</th>
+                <th class="py-2.5 px-4 text-right">Total</th>
+                <th class="py-2.5 px-4 text-center">Pago</th>
               </tr>
             </thead>
-            <tbody id="sales-tbody" class="divide-y divide-white/5"></tbody>
+            <tbody id="sales-tbody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
 
-      <div id="panel-customers" class="bg-[#0d111a] border border-white/10 rounded-lg overflow-hidden hidden">
-        <div class="p-4 border-b border-white/10 flex items-center justify-between">
-          <h2 class="text-sm font-semibold text-white">Directorio de Clientes</h2>
-          <span id="customers-count" class="text-xs text-slate-400">0 clientes</span>
+      <!-- Tab 3: Customers -->
+      <div id="panel-customers" class="bg-white border border-slate-200 rounded-lg overflow-hidden hidden">
+        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h2 class="text-sm font-bold text-slate-900">Directorio de Clientes</h2>
+          <span id="customers-count" class="text-xs text-slate-500">0 clientes</span>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-[#131722] text-slate-400 uppercase font-medium border-b border-white/10">
+          <table class="w-full text-left text-xs text-slate-700">
+            <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
               <tr>
-                <th class="py-3 px-4">Nombre</th>
-                <th class="py-3 px-4 text-center">Órdenes</th>
-                <th class="py-3 px-4 text-right">Gasto Acumulado</th>
-                <th class="py-3 px-4 text-right">Última Transacción</th>
+                <th class="py-2.5 px-4">Nombre</th>
+                <th class="py-2.5 px-4 text-center">Órdenes</th>
+                <th class="py-2.5 px-4 text-right">Total Acumulado</th>
+                <th class="py-2.5 px-4 text-right">Última Transacción</th>
               </tr>
             </thead>
-            <tbody id="customers-tbody" class="divide-y divide-white/5"></tbody>
+            <tbody id="customers-tbody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
@@ -167,9 +211,9 @@
       ['inventory', 'sales', 'customers'].forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
         if (t === tab) {
-          btn.className = 'px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors bg-[#171d2b] text-white shadow-sm';
+          btn.className = 'w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-semibold bg-slate-100 text-slate-900 transition-colors cursor-pointer';
         } else {
-          btn.className = 'px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-400 hover:text-slate-200';
+          btn.className = 'w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer';
         }
       });
     }
@@ -195,46 +239,51 @@
           document.getElementById('kpi-stock').innerText = (stats.totalStockLeft || 0) + ' uds';
         }
 
+        document.getElementById('nav-badge-products').innerText = products.length;
+        document.getElementById('nav-badge-orders').innerText = orders.length;
+        document.getElementById('nav-badge-customers').innerText = customers.length;
+        document.getElementById('inv-count').innerText = `${products.length} productos`;
+
         // Render Inventory
         const invBody = document.getElementById('inventory-tbody');
         invBody.innerHTML = products.map(p => `
-          <tr class="hover:bg-white/[0.02] transition-colors">
+          <tr class="hover:bg-slate-50/60 transition-colors">
             <td class="py-3 px-4 flex items-center space-x-3">
-              <img src="${p.image}" class="w-9 h-9 rounded object-cover border border-white/10 bg-slate-900" />
+              <img src="${p.image}" class="w-8 h-8 rounded object-cover border border-slate-200 bg-slate-100 shrink-0" />
               <div>
-                <span class="font-medium text-white block">${p.title}</span>
-                <span class="text-[11px] text-slate-400 block truncate max-w-xs">${p.description}</span>
+                <span class="font-medium text-slate-900 block">${p.title}</span>
+                <span class="text-[11px] text-slate-500 block truncate max-w-xs">${p.category}</span>
               </div>
             </td>
-            <td class="py-3 px-4 text-slate-400">${p.category}</td>
-            <td class="py-3 px-4 text-right font-medium text-white tabular-nums">${fmt.format(p.price)}</td>
-            <td class="py-3 px-4 text-center text-slate-400 tabular-nums">${p.initialStock} uds</td>
-            <td class="py-3 px-4 text-center font-bold tabular-nums ${p.stock < 5 ? 'text-rose-400' : 'text-emerald-400'}">${p.stock} uds</td>
+            <td class="py-3 px-4 text-slate-600">${p.category}</td>
+            <td class="py-3 px-4 text-right font-medium text-slate-900 tabular-nums">${fmt.format(p.price)}</td>
+            <td class="py-3 px-4 text-center text-slate-500 tabular-nums">${p.initialStock}</td>
+            <td class="py-3 px-4 text-center font-bold tabular-nums ${p.stock < 5 ? 'text-rose-600' : 'text-slate-900'}">${p.stock}</td>
             <td class="py-3 px-4 text-center">
-              ${p.stock === 0 ? '<span class="px-2 py-0.5 rounded text-[10px] bg-rose-950/40 text-rose-300 border border-rose-800/40">Agotado</span>' :
-                p.stock < 5 ? '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-950/40 text-amber-300 border border-amber-800/40">Bajo Stock</span>' :
-                '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950/40 text-emerald-300 border border-emerald-800/40">Disponible</span>'}
+              ${p.stock === 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200">Agotado</span>' :
+                p.stock < 5 ? '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Bajo Stock</span>' :
+                '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Disponible</span>'}
             </td>
           </tr>
         `).join('');
 
         // Render Orders
         const salesBody = document.getElementById('sales-tbody');
-        document.getElementById('sales-count').innerText = `${orders.length} órdenes`;
+        document.getElementById('sales-count').innerText = `${orders.length} pedidos`;
         if (orders.length === 0) {
-          salesBody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400 text-xs">Sin órdenes registradas</td></tr>';
+          salesBody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-500 text-xs">Sin transacciones registradas</td></tr>';
         } else {
           salesBody.innerHTML = orders.map(o => `
-            <tr class="hover:bg-white/[0.02] transition-colors">
-              <td class="py-3 px-4 font-mono text-sky-400 font-semibold">${o.id}</td>
-              <td class="py-3 px-4 text-slate-400 tabular-nums">${new Date(o.createdAt).toLocaleTimeString()} ${new Date(o.createdAt).toLocaleDateString()}</td>
-              <td class="py-3 px-4 font-medium text-white">${o.customerName}</td>
+            <tr class="hover:bg-slate-50/60 transition-colors">
+              <td class="py-3 px-4 font-mono font-medium text-slate-900">${o.id}</td>
+              <td class="py-3 px-4 text-slate-500 tabular-nums">${new Date(o.createdAt).toLocaleTimeString()} ${new Date(o.createdAt).toLocaleDateString()}</td>
+              <td class="py-3 px-4 font-medium text-slate-900">${o.customerName}</td>
               <td class="py-3 px-4">
-                ${o.items.map(it => `<div class="text-[11px] text-slate-300"><span class="font-mono text-slate-400">${it.quantity}x</span> ${it.title} (${fmt.format(it.subtotal)})</div>`).join('')}
+                ${o.items.map(it => `<div class="text-[11px] text-slate-600"><span class="font-mono text-slate-500">${it.quantity}x</span> ${it.title} (${fmt.format(it.subtotal)})</div>`).join('')}
               </td>
-              <td class="py-3 px-4 text-right font-bold text-white tabular-nums">${fmt.format(o.total)}</td>
+              <td class="py-3 px-4 text-right font-bold text-slate-900 tabular-nums">${fmt.format(o.total)}</td>
               <td class="py-3 px-4 text-center">
-                <span class="px-2 py-0.5 rounded text-[10px] bg-sky-950/40 text-sky-300 border border-sky-800/40">Completada (•••• ${o.cardLast4})</span>
+                <span class="text-slate-600 font-mono text-[11px]">•••• ${o.cardLast4}</span>
               </td>
             </tr>
           `).join('');
@@ -244,19 +293,19 @@
         const custBody = document.getElementById('customers-tbody');
         document.getElementById('customers-count').innerText = `${customers.length} clientes`;
         if (customers.length === 0) {
-          custBody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-400 text-xs">Sin clientes registrados</td></tr>';
+          custBody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-500 text-xs">Sin clientes registrados</td></tr>';
         } else {
           custBody.innerHTML = customers.map(c => `
-            <tr class="hover:bg-white/[0.02] transition-colors">
-              <td class="py-3 px-4 font-medium text-white flex items-center space-x-2">
-                <div class="w-6 h-6 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-[10px] font-bold text-sky-400">
+            <tr class="hover:bg-slate-50/60 transition-colors">
+              <td class="py-3 px-4 font-medium text-slate-900 flex items-center space-x-2">
+                <div class="w-6 h-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-700">
                   ${c.name.slice(0, 2).toUpperCase()}
                 </div>
                 <span>${c.name}</span>
               </td>
-              <td class="py-3 px-4 text-center font-semibold text-slate-300 tabular-nums">${c.ordersCount}</td>
-              <td class="py-3 px-4 text-right font-bold text-white tabular-nums">${fmt.format(c.totalSpent)}</td>
-              <td class="py-3 px-4 text-right text-slate-400 tabular-nums">${new Date(c.lastOrderAt).toLocaleDateString()}</td>
+              <td class="py-3 px-4 text-center font-medium text-slate-800 tabular-nums">${c.ordersCount}</td>
+              <td class="py-3 px-4 text-right font-bold text-slate-900 tabular-nums">${fmt.format(c.totalSpent)}</td>
+              <td class="py-3 px-4 text-right text-slate-500 tabular-nums">${new Date(c.lastOrderAt).toLocaleDateString()}</td>
             </tr>
           `).join('');
         }
@@ -266,7 +315,7 @@
     }
 
     document.getElementById('btn-reset').onclick = async () => {
-      if (confirm('¿Deseas reiniciar las existencias de inventario y limpiar las órdenes de prueba?')) {
+      if (confirm('¿Deseas restaurar las existencias y vaciar las órdenes de prueba?')) {
         await fetch('/api/reset', { method: 'POST' });
         loadData();
       }
@@ -275,7 +324,6 @@
     loadData();
     setInterval(loadData, 3000);
 
-    // Setup SSE
     try {
       const evt = new EventSource('/api/events');
       evt.onmessage = () => loadData();

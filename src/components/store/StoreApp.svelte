@@ -4,7 +4,7 @@
   import Navbar from './Navbar.svelte';
   import Hero from './Hero.svelte';
   import CuratedEdit from './CuratedEdit.svelte';
-  import ProductGrid from './ProductGrid.svelte';
+  import HomeSpotlight from './HomeSpotlight.svelte';
   import ProductModal from './ProductModal.svelte';
   import CartDrawer from './CartDrawer.svelte';
   import CheckoutModal from './CheckoutModal.svelte';
@@ -30,9 +30,7 @@
           }
         } catch (e) {}
       };
-    } catch (e) {
-      console.warn('SSE disconnected, fallback active.');
-    }
+    } catch (e) {}
 
     pollInterval = setInterval(() => {
       store.fetchProducts();
@@ -46,12 +44,12 @@
   });
 </script>
 
-<div class="min-h-screen w-full max-w-[100vw] overflow-x-clip bg-[#090a0f] text-slate-200 antialiased selection:bg-sky-500/20">
+<div class="min-h-screen w-full max-w-[100vw] overflow-x-clip bg-white text-slate-900 antialiased selection:bg-indigo-500/10">
   <Navbar />
   <main>
     <Hero />
     <CuratedEdit />
-    <ProductGrid />
+    <HomeSpotlight />
   </main>
   <Footer />
 
