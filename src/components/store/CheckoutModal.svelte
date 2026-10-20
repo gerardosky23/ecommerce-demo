@@ -38,7 +38,7 @@
 </script>
 
 {#if store.isCheckoutOpen}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40">
     <button
       type="button"
       aria-label="Cerrar ventana"
@@ -46,7 +46,7 @@
       onclick={closeModal}
     ></button>
 
-    <div class="relative bg-white border border-slate-200 rounded-lg max-w-lg w-full overflow-hidden shadow-2xl z-10 p-6 sm:p-8 space-y-6 text-slate-900">
+    <div class="relative bg-white border border-slate-200 rounded-lg max-w-lg w-full overflow-hidden shadow-md z-10 p-6 sm:p-8 space-y-6 text-slate-900">
       <!-- Close button -->
       <button
         type="button"
@@ -89,8 +89,8 @@
               <span class="text-slate-800">{completedOrder.items.length} productos ({completedOrder.totalItems} uds)</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-slate-500">Impacto en Backoffice:</span>
-              <span class="text-emerald-700 font-mono font-medium">Stock descontado & Venta en vivo</span>
+              <span class="text-slate-500">Estado de Orden:</span>
+              <span class="text-emerald-700 font-mono font-medium">Confirmada</span>
             </div>
           </div>
 
@@ -113,14 +113,10 @@
         </div>
       {:else}
         <!-- CHECKOUT FORM -->
-        <div class="space-y-2">
-          <div class="flex items-center space-x-2 text-xs font-mono uppercase tracking-wider text-indigo-600 font-semibold">
-            <span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
-            <span>Checkout Express de Demostración</span>
-          </div>
+        <div class="space-y-1.5">
           <h3 class="text-2xl font-serif font-bold text-slate-950">Finalizar Orden</h3>
           <p class="text-xs text-slate-600">
-            Ingresa tu nombre para ver cómo el Backoffice en Go registra tu compra y actualiza el inventario en tiempo real.
+            Ingresa tu nombre para completar el registro de la orden.
           </p>
         </div>
 

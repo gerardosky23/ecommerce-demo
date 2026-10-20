@@ -33,23 +33,19 @@
         </ul>
       </div>
 
-      <!-- Technical Architecture / Anti-Slop notice -->
+      <!-- Brand Commitment -->
       <div class="space-y-2">
-        <span class="text-xs font-semibold text-slate-900 uppercase tracking-wider block">Especificación Demo</span>
+        <span class="text-xs font-semibold text-slate-900 uppercase tracking-wider block">Compromiso</span>
         <p class="text-[11px] text-slate-500 leading-relaxed">
-          Diseñado bajo las directivas estrictas de AGENTS.md: Astro 5, Svelte 5 Runes, Go HTTP Server, tema claro 100%, tipografía tabular y validación multi-motor.
+          Cultivo orgánico y destilación al vapor en Ontario, Canadá. Fórmulas botánicas puras sin parabenos ni aditivos sintéticos.
         </p>
       </div>
     </div>
 
     <!-- Copyright -->
     <div class="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
-      <div>© 2026 Terre Bleu Botanical Demo. Maqueta interactiva para presentaciones comerciales.</div>
-      <div class="flex items-center space-x-4">
-        <span>Astro 5 + Svelte 5</span>
-        <span>•</span>
-        <span>Go Server :8080</span>
-      </div>
+      <div>© 2026 Terre Bleu Botanical Goods. Todos los derechos reservados.</div>
+      <div>Cultivado y destilado en Ontario, Canadá</div>
     </div>
   </div>
 </footer>

@@ -19,7 +19,6 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
       <div>
-        <span class="text-xs font-mono uppercase tracking-widest text-indigo-600 block mb-1 font-semibold">Selección Cosechada</span>
         <h2 class="text-3xl font-serif font-bold text-slate-950 tracking-tight">Esencias Destacadas</h2>
       </div>
 
@@ -40,17 +39,17 @@
           tabindex="0"
           onclick={() => handleProductClick(product)}
           onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleProductClick(product); }}
-          class="group bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col justify-between hover:border-slate-300 hover:shadow-md transition-all cursor-pointer text-left"
+          class="group bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col justify-between hover:border-slate-300 transition-colors cursor-pointer text-left"
         >
           <div class="aspect-square bg-slate-100 relative overflow-hidden">
             <img
               src={product.image}
               alt={product.title}
-              class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+              class="w-full h-full object-cover"
               loading="lazy"
             />
             {#if product.stock <= 0}
-              <div class="absolute inset-0 bg-white/70 backdrop-blur-2xs flex items-center justify-center">
+              <div class="absolute inset-0 bg-white/80 flex items-center justify-center">
                 <span class="text-xs font-bold text-rose-700 uppercase tracking-wider bg-rose-50 px-2.5 py-1 rounded border border-rose-200">
                   Agotado
                 </span>

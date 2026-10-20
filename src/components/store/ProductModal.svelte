@@ -31,7 +31,7 @@
 </script>
 
 {#if product}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/40">
     <!-- Click outside -->
     <button
       type="button"
@@ -40,7 +40,7 @@
       onclick={closeModal}
     ></button>
 
-    <div class="relative bg-white border border-slate-200 rounded-lg max-w-3xl w-full overflow-hidden shadow-2xl z-10 grid grid-cols-1 md:grid-cols-2 text-slate-900">
+    <div class="relative bg-white border border-slate-200 rounded-lg max-w-3xl w-full overflow-hidden shadow-md z-10 grid grid-cols-1 md:grid-cols-2 text-slate-900">
       <!-- Close button -->
       <button
         type="button"

@@ -27,22 +27,18 @@
           class="relative group cursor-pointer text-left p-0 border-none bg-transparent w-full"
           onclick={handleViewDetails}
         >
-          <div class="aspect-4/3 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-md">
+          <div class="aspect-4/3 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
             <img
               src={comfortEdit.image}
               alt={comfortEdit.title}
-              class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
+              class="w-full h-full object-cover"
             />
-          </div>
-          <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-xs px-3 py-1.5 rounded-md border border-slate-200 text-xs font-mono text-slate-700 shadow-sm">
-            Edición Insignia • Stock Limitado
           </div>
         </button>
 
         <!-- Copy & Actions -->
         <div class="space-y-6">
-          <div class="space-y-2">
-            <span class="text-xs font-mono uppercase tracking-widest text-indigo-600 font-semibold">The Terre Bleu Edit</span>
+          <div class="space-y-1">
             <h2 class="text-3xl sm:text-4xl font-serif font-bold text-slate-950 tracking-tight">
               {comfortEdit.title}
             </h2>

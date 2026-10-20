@@ -14,11 +14,6 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
       <!-- Left Column: Copy & CTAs -->
       <div class="space-y-6 max-w-xl">
-        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-md border border-slate-300 bg-white text-[11px] font-mono tracking-wider uppercase text-slate-700 shadow-2xs">
-          <span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
-          <span>Granja Botánica Orgánica • Ontario, Canadá</span>
-        </div>
-
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-slate-950 leading-tight">
           Elixires de Lavanda Pura & Bienestar.
         </h1>
@@ -62,15 +57,12 @@
 
       <!-- Right Column: Clean Heritage Visual -->
       <div class="relative">
-        <div class="aspect-4/3 rounded-lg overflow-hidden border border-slate-200 bg-white shadow-lg">
+        <div class="aspect-4/3 rounded-lg overflow-hidden border border-slate-200 bg-white">
           <img
             src="https://www.terrebleu.ca/cdn/shop/files/TerreBleuLavenderSpaCollection.png?v=1792113654&width=1080"
             alt="Colección Botánica Terre Bleu"
             class="w-full h-full object-cover"
           />
-        </div>
-        <div class="absolute -bottom-3 -left-3 bg-white px-3.5 py-2 rounded-md border border-slate-200 text-xs font-mono text-slate-700 shadow-md">
-          Cosecha de Temporada • 2026
         </div>
       </div>
     </div>

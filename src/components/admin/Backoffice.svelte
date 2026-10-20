@@ -432,7 +432,7 @@
 
   <!-- Live Toast Notification -->
   {#if notification}
-    <div class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded shadow-lg text-xs flex items-center space-x-2">
+    <div class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded shadow-md text-xs flex items-center space-x-2">
       <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
       <span>{notification}</span>
     </div>
@@ -440,8 +440,8 @@
 
   <!-- Reset Confirmation Modal -->
   {#if showResetModal}
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-      <div class="bg-white border border-slate-200 rounded-lg max-w-sm w-full p-5 shadow-xl space-y-4">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
+      <div class="bg-white border border-slate-200 rounded-lg max-w-sm w-full p-5 shadow-md space-y-4">
         <h3 class="text-sm font-bold text-slate-900">¿Restablecer Demostración?</h3>
         <p class="text-xs text-slate-600 leading-relaxed">
           Esta acción restaurará el stock inicial de todos los artículos y eliminará el historial de órdenes y clientes creados en esta sesión de prueba.

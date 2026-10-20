@@ -1,0 +1,299 @@
+import { chromium } from 'playwright';
+import fs from 'fs';
+import path from 'path';
+
+const SCREENSHOT_DIR = './demo-verification';
+if (!fs.existsSync(SCREENSHOT_DIR)) {
+  fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
+}
+
+async function runVerification() {
+  console.log('🚀 Iniciando verificación E2E del Rediseño 100% Tema Claro + Catálogo /tienda + Backoffice Sidebar...');
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0'
+  });
+
+  const page = await context.newPage();
+  const consoleErrors = [];
+  page.on('console', msg => {
+    if (msg.type() === 'error') {
+      consoleErrors.push(msg.text());
+    }
+  });
+
+  // ==========================================
+  // STEP 1: Landing Page (http://localhost:4321/)
+  // ==========================================
+  console.log('1️⃣ Navegando a Landing Page (http://localhost:4321/)...');
+  await page.goto('http://localhost:4321/', { waitUntil: 'networkidle', timeout: 30000 });
+  await page.waitForTimeout(1500);
+
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '01-landing-light-hero.png'), fullPage: false });
+  console.log('📸 01-landing-light-hero.png capturado');
+
+  // Verificar estilos y ausencia de AI Slop en Landing
+  const landingAudit = await page.evaluate(() => {
+    const bodyStyle = window.getComputedStyle(document.body);
+    const docWidth = document.documentElement.clientWidth;
+    const scrollWidth = document.body.scrollWidth;
+
+    const forbiddenClasses = Array.from(document.querySelectorAll('*')).flatMap(el => {
+      const cls = el.className || '';
+      if (typeof cls === 'string') {
+        return cls.split(' ').filter(c => c.includes('blur-') || c.includes('bg-clip-text') || c.includes('rounded-3xl') || c.includes('shadow-lg') || c.includes('shadow-xl') || c.includes('shadow-2xl'));
+      }
+      return [];
+    });
+
+    const pageText = document.body.innerText;
+    const forbiddenPhrases = [
+      'Edición Insignia',
+      'The Terre Bleu Edit',
+      'Terre Bleu Club',
+      'Granja Botánica Orgánica • Ontario',
+      'Selección Cosechada'
+    ];
+    const detectedPhrases = forbiddenPhrases.filter(p => pageText.includes(p));
+
+    return {
+      bodyBg: bodyStyle.backgroundColor,
+      bodyColor: bodyStyle.color,
+      clientWidth: docWidth,
+      scrollWidth: scrollWidth,
+      hasOverflow: scrollWidth > docWidth,
+      forbiddenClassesCount: forbiddenClasses.length,
+      forbiddenClasses,
+      detectedPhrases
+    };
+  });
+
+  console.log('📊 Auditoría Landing Page:', landingAudit);
+
+  if (landingAudit.bodyBg !== 'rgb(255, 255, 255)') {
+    throw new Error(`Tema claro no cargado en Landing: body background es ${landingAudit.bodyBg}, esperado rgb(255, 255, 255)`);
+  }
+  if (landingAudit.hasOverflow) {
+    throw new Error(`Desbordamiento horizontal detectado en Landing: scrollWidth (${landingAudit.scrollWidth}) > clientWidth (${landingAudit.clientWidth})`);
+  }
+  if (landingAudit.forbiddenClassesCount > 0) {
+    throw new Error(`Clases prohibidas detectadas en DOM de Landing: ${landingAudit.forbiddenClasses.join(', ')}`);
+  }
+  if (landingAudit.detectedPhrases.length > 0) {
+    throw new Error(`Frases de AI Slop detectadas en DOM de Landing: ${landingAudit.detectedPhrases.join(', ')}`);
+  }
+
+  // Verificar estabilidad de productos (CERO cambios de productos o rotación tras ciclo de polling)
+  console.log('🔒 Verificando estabilidad de productos (cero carrusel, cero efecto de cambio)...');
+  const initialTitles = await page.locator('section h3').allInnerTexts();
+  console.log('📌 Títulos iniciales:', initialTitles);
+  await page.waitForTimeout(4500); // Esperar que se ejecute el intervalo de polling
+  const postPollingTitles = await page.locator('section h3').allInnerTexts();
+  if (JSON.stringify(initialTitles) !== JSON.stringify(postPollingTitles)) {
+    throw new Error(`Efecto de cambio de productos detectado tras polling: iniciales=${JSON.stringify(initialTitles)}, nuevos=${JSON.stringify(postPollingTitles)}`);
+  }
+  console.log('✅ Cuadrícula 100% estática: Cero efecto de cambio o movimiento de productos confirmado.');
+
+  // ==========================================
+  // STEP 2: Navegar a /tienda (Catálogo Completo Dedicado)
+  // ==========================================
+  console.log('2️⃣ Navegando al catálogo profesional en http://localhost:4321/tienda ...');
+  await page.goto('http://localhost:4321/tienda', { waitUntil: 'networkidle', timeout: 30000 });
+  await page.waitForTimeout(1500);
+
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '02-tienda-catalog-view.png'), fullPage: false });
+  console.log('📸 02-tienda-catalog-view.png capturado');
+
+  const tiendaAudit = await page.evaluate(() => {
+    const forbiddenClasses = Array.from(document.querySelectorAll('*')).flatMap(el => {
+      const cls = el.className || '';
+      if (typeof cls === 'string') {
+        return cls.split(' ').filter(c => c.includes('blur-') || c.includes('bg-clip-text') || c.includes('rounded-3xl') || c.includes('shadow-lg') || c.includes('shadow-xl') || c.includes('shadow-2xl'));
+      }
+      return [];
+    });
+    return {
+      forbiddenClassesCount: forbiddenClasses.length,
+      forbiddenClasses
+    };
+  });
+  if (tiendaAudit.forbiddenClassesCount > 0) {
+    throw new Error(`Clases prohibidas detectadas en DOM de /tienda: ${tiendaAudit.forbiddenClasses.join(', ')}`);
+  }
+  console.log('📊 Auditoría /tienda sin clases prohibidas');
+
+  // Verificar búsqueda y filtros en /tienda
+  console.log('3️⃣ Probando buscador en tiempo real de /tienda...');
+  const searchInput = page.locator('input[placeholder*="Buscar por nombre"]');
+  await searchInput.fill('Lavender');
+  await page.waitForTimeout(500);
+
+  const searchResultsCount = await page.locator('button:has-text("+ Añadir")').count();
+  console.log(`🔎 Productos encontrados para "Lavender": ${searchResultsCount}`);
+  if (searchResultsCount === 0) {
+    throw new Error('El buscador de /tienda no retornó resultados para "Lavender"');
+  }
+
+  // Limpiar búsqueda
+  await searchInput.fill('');
+  await page.waitForTimeout(500);
+
+  // Probar filtro de categoría
+  console.log('4️⃣ Probando filtro por categoría en /tienda...');
+  const bodyCareFilter = page.locator('button:has-text("Body & Care")');
+  if (await bodyCareFilter.isVisible()) {
+    await bodyCareFilter.click();
+    await page.waitForTimeout(500);
+    console.log('✅ Filtro "Body & Care" aplicado');
+  }
+
+  // Volver a todos
+  const allFilter = page.locator('button:has-text("Todos")');
+  await allFilter.click();
+  await page.waitForTimeout(500);
+
+  // ==========================================
+  // STEP 3: Añadir Producto al Carrito desde /tienda
+  // ==========================================
+  console.log('5️⃣ Añadiendo primer producto al carrito...');
+  const addBtn = page.locator('button:has-text("+ Añadir")').first();
+  await addBtn.click();
+  await page.waitForTimeout(1000);
+
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '03-cart-drawer-light.png'), fullPage: false });
+  console.log('📸 03-cart-drawer-light.png capturado');
+
+  // ==========================================
+  // STEP 4: Checkout Ficticio Express
+  // ==========================================
+  console.log('6️⃣ Abriendo pasarela de Checkout...');
+  const checkoutBtn = page.locator('button:has-text("Completar Compra Ficticia")');
+  await checkoutBtn.click();
+  await page.waitForTimeout(1000);
+
+  const testCustomer = 'Camila Vega';
+  console.log(`7️⃣ Ingresando nombre del cliente: "${testCustomer}"...`);
+  const nameInput = page.locator('input#cust-name');
+  await nameInput.fill(testCustomer);
+  await page.waitForTimeout(500);
+
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '04-checkout-modal-light.png'), fullPage: false });
+  console.log('📸 04-checkout-modal-light.png capturado');
+
+  const payBtn = page.locator('button:has-text("Pagar")');
+  await payBtn.click();
+  await page.waitForTimeout(2000);
+
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '05-order-confirmed-light.png'), fullPage: false });
+  console.log('📸 05-order-confirmed-light.png capturado');
+
+  // Verificar en Perfil de Cliente
+  console.log('8️⃣ Verificando pedido en Mi Perfil...');
+  const viewProfileBtn = page.locator('button:has-text("Ver en Mi Perfil")');
+  await viewProfileBtn.click();
+  await page.waitForTimeout(1500);
+
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '06-profile-drawer-light.png'), fullPage: false });
+  console.log('📸 06-profile-drawer-light.png capturado');
+
+  const profileContent = await page.evaluate(() => document.body.innerText);
+  if (!profileContent.includes('Camila Vega')) {
+    throw new Error('El perfil de cliente no reflejó el nombre de Camila Vega.');
+  }
+
+  // ==========================================
+  // STEP 5: Verificar Backoffice Go con Barra Lateral (http://localhost:8080/admin/)
+  // ==========================================
+  console.log('9️⃣ Navegando al Backoffice Go en http://localhost:8080/admin/ ...');
+  const adminPage = await context.newPage();
+  await adminPage.goto('http://localhost:8080/admin/', { waitUntil: 'networkidle', timeout: 30000 });
+  await adminPage.waitForTimeout(2000);
+
+  await adminPage.screenshot({ path: path.join(SCREENSHOT_DIR, '07-backoffice-sidebar-inventory.png'), fullPage: false });
+  console.log('📸 07-backoffice-sidebar-inventory.png capturado');
+
+  // Verificar Estilo Claro y Barra Lateral del Backoffice
+  const adminAudit = await adminPage.evaluate(() => {
+    const bodyStyle = window.getComputedStyle(document.body);
+    const sidebar = document.querySelector('aside');
+    const sidebarStyle = sidebar ? window.getComputedStyle(sidebar) : null;
+    return {
+      bodyBg: bodyStyle.backgroundColor,
+      hasSidebar: !!sidebar,
+      sidebarWidth: sidebarStyle?.width,
+      revenueText: document.getElementById('kpi-revenue')?.innerText,
+      ordersText: document.getElementById('kpi-orders')?.innerText,
+      customersText: document.getElementById('kpi-customers')?.innerText,
+    };
+  });
+  console.log('📊 Auditoría Backoffice:', adminAudit);
+
+  if (adminAudit.bodyBg !== 'rgb(248, 250, 252)') {
+    throw new Error(`Tema claro no cargado en Backoffice: body background es ${adminAudit.bodyBg}, esperado rgb(248, 250, 252)`);
+  }
+  if (!adminAudit.hasSidebar) {
+    throw new Error('El Backoffice no tiene barra lateral (aside no encontrado)');
+  }
+
+  // Cambiar a pestaña Ventas en Backoffice
+  console.log('🔟 Cambiando a pestaña Ventas en Backoffice...');
+  await adminPage.click('#tab-sales');
+  await adminPage.waitForTimeout(1000);
+  await adminPage.screenshot({ path: path.join(SCREENSHOT_DIR, '08-backoffice-sales-verified.png'), fullPage: false });
+  console.log('📸 08-backoffice-sales-verified.png capturado');
+
+  const salesTableText = await adminPage.evaluate(() => document.getElementById('sales-tbody')?.innerText);
+  if (!salesTableText || !salesTableText.includes('Camila Vega')) {
+    throw new Error('La venta de Camila Vega no se visualiza en la tabla de Ventas del Backoffice.');
+  }
+
+  // Cambiar a pestaña Clientes en Backoffice
+  console.log('1️⃣1️⃣ Cambiando a pestaña Clientes en Backoffice...');
+  await adminPage.click('#tab-customers');
+  await adminPage.waitForTimeout(1000);
+  await adminPage.screenshot({ path: path.join(SCREENSHOT_DIR, '09-backoffice-customers-verified.png'), fullPage: false });
+  console.log('📸 09-backoffice-customers-verified.png capturado');
+
+  const customersTableText = await adminPage.evaluate(() => document.getElementById('customers-tbody')?.innerText);
+  if (!customersTableText || !customersTableText.includes('Camila Vega')) {
+    throw new Error('Camila Vega no aparece en el Directorio de Clientes del Backoffice.');
+  }
+
+  // ==========================================
+  // STEP 6: Verificar Responsividad Móvil (375px)
+  // ==========================================
+  console.log('1️⃣2️⃣ Verificando responsividad móvil 375px en Landing y Tienda...');
+  const mobilePage = await context.newPage();
+  await mobilePage.setViewportSize({ width: 375, height: 667 });
+
+  await mobilePage.goto('http://localhost:4321/', { waitUntil: 'networkidle' });
+  await mobilePage.waitForTimeout(1000);
+  const mobileLandingOverflow = await mobilePage.evaluate(() => document.body.scrollWidth > document.documentElement.clientWidth);
+  if (mobileLandingOverflow) {
+    throw new Error('Desbordamiento horizontal detectado en móvil 375px en Landing Page');
+  }
+  await mobilePage.screenshot({ path: path.join(SCREENSHOT_DIR, '10-mobile-landing-375px.png') });
+
+  await mobilePage.goto('http://localhost:4321/tienda', { waitUntil: 'networkidle' });
+  await mobilePage.waitForTimeout(1000);
+  const mobileTiendaOverflow = await mobilePage.evaluate(() => document.body.scrollWidth > document.documentElement.clientWidth);
+  if (mobileTiendaOverflow) {
+    throw new Error('Desbordamiento horizontal detectado en móvil 375px en /tienda');
+  }
+  await mobilePage.screenshot({ path: path.join(SCREENSHOT_DIR, '11-mobile-tienda-375px.png') });
+  console.log('📸 Capturas móviles 375px verificadas sin overflow');
+
+  await browser.close();
+
+  if (consoleErrors.length > 0) {
+    console.warn('⚠️ Console errors detectados:', consoleErrors);
+  }
+
+  console.log('🎉 ¡TODAS LAS VERIFICACIONES E2E PASARON CON 100% DE ÉXITO!');
+}
+
+runVerification().catch(err => {
+  console.error('❌ Error en la verificación E2E:', err);
+  process.exit(1);
+});

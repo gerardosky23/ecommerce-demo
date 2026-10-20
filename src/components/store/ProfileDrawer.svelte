@@ -29,17 +29,16 @@
     <button
       type="button"
       aria-label="Cerrar perfil"
-      class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity w-full h-full border-none p-0 cursor-default"
+      class="absolute inset-0 bg-slate-900/40 transition-opacity w-full h-full border-none p-0 cursor-default"
       onclick={closeProfile}
     ></button>
 
     <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
-      <div class="w-screen max-w-md bg-white border-l border-slate-200 shadow-xl flex flex-col justify-between">
+      <div class="w-screen max-w-md bg-white border-l border-slate-200 shadow-md flex flex-col justify-between">
         <!-- Header -->
         <div class="p-6 border-b border-slate-200 flex items-center justify-between bg-white">
           <div class="flex items-center space-x-2">
             <h2 class="text-base font-semibold text-slate-900">Mi Perfil & Compras</h2>
-            <span class="text-xs font-mono text-slate-500">Terre Bleu Club</span>
           </div>
           <button
             type="button"

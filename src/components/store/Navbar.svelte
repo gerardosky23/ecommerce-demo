@@ -4,7 +4,7 @@
   let isMegaMenuOpen = $state(false);
 </script>
 
-<header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
+<header class="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-2xs">
   <!-- Top announcement bar -->
   <div class="bg-[#f8fafc] text-slate-600 text-[11px] font-medium py-1.5 px-4 text-center tracking-wider uppercase border-b border-slate-200">
     Envío gratuito en órdenes superiores a $65 CAD • Cosecha Botánica Orgánica
@@ -46,7 +46,7 @@
         </button>
 
         {#if isMegaMenuOpen}
-          <div class="absolute left-0 top-full mt-1 w-64 bg-white border border-slate-200 rounded-lg shadow-xl p-4 space-y-2 z-50">
+          <div class="absolute left-0 top-full mt-1 w-64 bg-white border border-slate-200 rounded-lg shadow-md p-4 space-y-2 z-50">
             <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Categorías Botánicas</div>
             <div class="space-y-1 text-xs">
               <a href="/tienda?cat=Signature Sets" class="block py-1 text-slate-700 hover:text-indigo-600">

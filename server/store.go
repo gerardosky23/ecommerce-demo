@@ -9,19 +9,21 @@ import (
 )
 
 type Store struct {
-	mu        sync.RWMutex
-	products  map[string]*Product
-	orders    []*Order
-	customers map[string]*Customer
-	listeners map[chan []byte]bool
+	mu         sync.RWMutex
+	productIDs []string
+	products   map[string]*Product
+	orders     []*Order
+	customers  map[string]*Customer
+	listeners  map[chan []byte]bool
 }
 
 func NewStore() *Store {
 	s := &Store{
-		products:  make(map[string]*Product),
-		orders:    make([]*Order, 0),
-		customers: make(map[string]*Customer),
-		listeners: make(map[chan []byte]bool),
+		productIDs: make([]string, 0),
+		products:   make(map[string]*Product),
+		orders:     make([]*Order, 0),
+		customers:  make(map[string]*Customer),
+		listeners:  make(map[chan []byte]bool),
 	}
 	s.seedDefaultProducts()
 	return s
@@ -128,17 +130,21 @@ func (s *Store) seedDefaultProducts() {
 		},
 	}
 
+	s.productIDs = make([]string, 0, len(defaultProducts))
 	for _, p := range defaultProducts {
 		s.products[p.ID] = p
+		s.productIDs = append(s.productIDs, p.ID)
 	}
 }
 
 func (s *Store) GetProducts() []*Product {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	res := make([]*Product, 0, len(s.products))
-	for _, p := range s.products {
-		res = append(res, p)
+	res := make([]*Product, 0, len(s.productIDs))
+	for _, id := range s.productIDs {
+		if p, ok := s.products[id]; ok {
+			res = append(res, p)
+		}
 	}
 	return res
 }

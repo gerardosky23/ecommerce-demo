@@ -170,7 +170,16 @@ class StoreState {
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
-          this.products = data;
+          const idOrder = DEFAULT_PRODUCTS.map(p => p.id);
+          const sorted = [...data].sort((a, b) => {
+            const idxA = idOrder.indexOf(a.id);
+            const idxB = idOrder.indexOf(b.id);
+            if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+            if (idxA !== -1) return -1;
+            if (idxB !== -1) return 1;
+            return a.id.localeCompare(b.id);
+          });
+          this.products = sorted;
         }
       }
     } catch (e) {

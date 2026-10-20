@@ -104,7 +104,7 @@
         Catálogo de Productos
       </h1>
       <p class="text-xs text-slate-600">
-        Buscador y catálogo profesional conectado en tiempo real con el servidor de inventario
+        Colección completa de fórmulas botánicas y lavanda pura.
       </p>
     </div>
 
@@ -180,18 +180,18 @@
             tabindex="0"
             onclick={() => handleProductClick(product)}
             onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleProductClick(product); }}
-            class="group bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col justify-between hover:border-slate-300 hover:shadow-md transition-all cursor-pointer text-left"
+            class="group bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col justify-between hover:border-slate-300 transition-colors cursor-pointer text-left"
           >
             <!-- Thumbnail -->
             <div class="aspect-square bg-slate-50 relative overflow-hidden">
               <img
                 src={product.image}
                 alt={product.title}
-                class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+                class="w-full h-full object-cover"
                 loading="lazy"
               />
               {#if product.stock <= 0}
-                <div class="absolute inset-0 bg-white/70 backdrop-blur-2xs flex items-center justify-center">
+                <div class="absolute inset-0 bg-white/80 flex items-center justify-center">
                   <span class="text-xs font-bold text-rose-700 uppercase tracking-wider bg-rose-50 px-2.5 py-1 rounded border border-rose-200">
                     Agotado
                   </span>
