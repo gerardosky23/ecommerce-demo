@@ -31,7 +31,7 @@
         href="/#curated"
         class="hover:text-sky-600 transition-colors py-2"
       >
-        The Comfort Edit
+        Set Comfort Edit
       </a>
 
       <div class="relative group">
@@ -49,19 +49,19 @@
           <div class="absolute left-0 top-full mt-1 w-64 bg-white border border-slate-200 rounded-lg shadow-sm p-4 space-y-2 z-50">
             <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Categorías Botánicas</div>
             <div class="space-y-1 text-xs">
-              <a href="/tienda?cat=Signature Sets" class="block py-1 text-slate-700 hover:text-sky-600">
-                Signature Sets & Regalos
+              <a href="/tienda?cat=Sets Exclusivos" class="block py-1 text-slate-700 hover:text-sky-600">
+                Sets Exclusivos & Regalos
               </a>
-              <a href="/tienda?cat=Body & Care" class="block py-1 text-slate-700 hover:text-sky-600">
+              <a href="/tienda?cat=Cuidado Corporal" class="block py-1 text-slate-700 hover:text-sky-600">
                 Cuidado Corporal & Manos
               </a>
-              <a href="/tienda?cat=Wellness" class="block py-1 text-slate-700 hover:text-sky-600">
+              <a href="/tienda?cat=Bienestar" class="block py-1 text-slate-700 hover:text-sky-600">
                 Bienestar & Aromaterapia
               </a>
-              <a href="/tienda?cat=Botanicals" class="block py-1 text-slate-700 hover:text-sky-600">
+              <a href="/tienda?cat=Botánica y Hogar" class="block py-1 text-slate-700 hover:text-sky-600">
                 Flores Secas & Ramilletes
               </a>
-              <a href="/tienda?cat=Culinary" class="block py-1 text-slate-700 hover:text-sky-600">
+              <a href="/tienda?cat=Gourmet y Culinario" class="block py-1 text-slate-700 hover:text-sky-600">
                 Galletas & Tés Culinarios
               </a>
             </div>

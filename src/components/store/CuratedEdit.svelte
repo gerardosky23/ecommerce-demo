@@ -62,9 +62,9 @@
           <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2 text-xs">
             <div class="font-semibold text-slate-900">El set exclusivo incluye:</div>
             <ul class="space-y-1 text-slate-600 list-disc list-inside">
-              <li>Lavender Bath Soak (sales minerales del Mar Muerto con lavanda pura)</li>
-              <li>Aromatic Culinary Bud (flores secas comestibles para infusión)</li>
-              <li>Floral Water Mist (hidrolato puro destilado al vapor)</li>
+              <li>Sales de Baño Minerales (con lavanda francesa y sales del Mar Muerto)</li>
+              <li>Capullos Florales Aromáticos (flores orgánicas para infusión y ambientación)</li>
+              <li>Agua Floral Pura en Bruma (hidrolato botánico destilado al vapor)</li>
             </ul>
           </div>
 

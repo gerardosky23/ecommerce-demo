@@ -26,14 +26,16 @@ type OrderItem struct {
 }
 
 type Order struct {
-	ID           string      `json:"id"`
-	CustomerName string      `json:"customerName"`
-	Items        []OrderItem `json:"items"`
-	TotalItems   int         `json:"totalItems"`
-	Total        float64     `json:"total"`
-	Status       string      `json:"status"` // "completed"
-	CardLast4    string      `json:"cardLast4"`
-	CreatedAt    time.Time   `json:"createdAt"`
+	ID              string      `json:"id"`
+	CustomerName    string      `json:"customerName"`
+	ShippingAddress string      `json:"shippingAddress"`
+	ShippingCity    string      `json:"shippingCity,omitempty"`
+	Items           []OrderItem `json:"items"`
+	TotalItems      int         `json:"totalItems"`
+	Total           float64     `json:"total"`
+	Status          string      `json:"status"` // "completed"
+	CardLast4       string      `json:"cardLast4"`
+	CreatedAt       time.Time   `json:"createdAt"`
 }
 
 type Customer struct {
@@ -44,9 +46,11 @@ type Customer struct {
 }
 
 type CheckoutRequest struct {
-	CustomerName string `json:"customerName"`
-	CardNumber   string `json:"cardNumber"`
-	Items        []struct {
+	CustomerName    string `json:"customerName"`
+	ShippingAddress string `json:"shippingAddress"`
+	ShippingCity    string `json:"shippingCity,omitempty"`
+	CardNumber      string `json:"cardNumber"`
+	Items           []struct {
 		ProductID string `json:"productId"`
 		Quantity  int    `json:"quantity"`
 	} `json:"items"`

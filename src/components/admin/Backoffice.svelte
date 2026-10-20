@@ -27,6 +27,8 @@
   interface Order {
     id: string;
     customerName: string;
+    shippingAddress?: string;
+    shippingCity?: string;
     items: OrderItem[];
     totalItems: number;
     total: number;
@@ -507,6 +509,7 @@
                     <th class="py-2.5 px-4">ID Orden</th>
                     <th class="py-2.5 px-4">Fecha / Hora</th>
                     <th class="py-2.5 px-4">Cliente</th>
+                    <th class="py-2.5 px-4">Dirección de Envío</th>
                     <th class="py-2.5 px-4">Artículos</th>
                     <th class="py-2.5 px-4 text-right">Total</th>
                     <th class="py-2.5 px-4 text-center">Pago</th>
@@ -518,6 +521,12 @@
                       <td class="py-3 px-4 font-mono font-medium text-slate-900">{o.id}</td>
                       <td class="py-3 px-4 text-slate-500 tabular-nums">{formatDate(o.createdAt)}</td>
                       <td class="py-3 px-4 font-medium text-slate-900">{o.customerName}</td>
+                      <td class="py-3 px-4 text-slate-600 text-[11px]">
+                        <span class="font-medium text-slate-800">{o.shippingAddress || 'No especificada'}</span>
+                        {#if o.shippingCity}
+                          <br><span class="text-slate-400 text-[10px]">{o.shippingCity}</span>
+                        {/if}
+                      </td>
                       <td class="py-3 px-4">
                         <div class="space-y-0.5">
                           {#each o.items as it}

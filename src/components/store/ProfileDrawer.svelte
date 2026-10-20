@@ -1,21 +1,33 @@
 <script lang="ts">
-  import { store } from '../../lib/store.svelte';
+  import { store, type Order } from '../../lib/store.svelte';
 
-  let customSearchName = $state(store.activeCustomerName);
+  let loginNameInput = $state('');
 
   function closeProfile() {
     store.isProfileOpen = false;
   }
 
-  function handleFilterCustomer() {
-    store.activeCustomerName = customSearchName.trim();
+  function handleLogin(e: SubmitEvent) {
+    e.preventDefault();
+    if (loginNameInput.trim()) {
+      store.login(loginNameInput.trim());
+      loginNameInput = '';
+    }
+  }
+
+  function handleLogout() {
+    store.logout();
   }
 
   function formatDate(isoStr: string): string {
     if (!isoStr) return '—';
-    const d = new Date(isoStr);
-    return d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }) + ' • ' +
-           d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' });
+    try {
+      const d = new Date(isoStr);
+      return d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }) + ' • ' +
+             d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch {
+      return isoStr;
+    }
   }
 
   const customerTotalSpent = $derived(
@@ -52,60 +64,82 @@
           </button>
         </div>
 
-        <!-- Customer Identity Bar & Selector -->
+        <!-- Customer Identity Section -->
         <div class="p-6 bg-slate-50 border-b border-slate-200 space-y-4">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-sm font-bold text-slate-700">
-              {store.activeCustomerName ? store.activeCustomerName.slice(0, 2).toUpperCase() : 'TB'}
-            </div>
-            <div>
-              <span class="text-sm font-bold text-slate-900 block">
-                {store.activeCustomerName || 'Sin compras recientes'}
-              </span>
-              <span class="text-[11px] text-slate-500">
-                {store.customerOrders.length} {store.customerOrders.length === 1 ? 'pedido completado' : 'pedidos completados'}
-              </span>
-            </div>
-          </div>
+          {#if store.activeCustomerName}
+            <!-- LOGGED IN USER -->
+            <div class="flex items-start justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold font-serif">
+                  {store.activeCustomerName.slice(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <span class="text-sm font-bold text-slate-950 block">
+                    {store.activeCustomerName}
+                  </span>
+                  <span class="text-[11px] text-slate-500">
+                    {store.customerOrders.length} {store.customerOrders.length === 1 ? 'pedido registrado' : 'pedidos registrados'}
+                  </span>
+                </div>
+              </div>
 
-          <!-- Quick switcher to view any client's history during presentations -->
-          <div class="space-y-1.5 pt-2 border-t border-slate-200">
-            <label for="profile-cust-search" class="block text-[10px] font-mono uppercase tracking-wider text-slate-500">
-              Consultar Historial de Cliente:
-            </label>
-            <div class="flex space-x-2">
-              <input
-                id="profile-cust-search"
-                type="text"
-                bind:value={customSearchName}
-                placeholder="Ingresa nombre de cliente"
-                class="flex-1 bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-slate-800"
-              />
               <button
-                onclick={handleFilterCustomer}
-                class="px-3 py-1.5 text-xs font-medium bg-slate-900 text-white rounded hover:bg-slate-800 cursor-pointer transition-colors"
+                onclick={handleLogout}
+                class="px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:text-rose-700 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 rounded transition-colors cursor-pointer"
+                title="Cerrar sesión actual"
               >
-                Filtrar
+                Cerrar Sesión
               </button>
             </div>
-          </div>
 
-          <!-- Total Spent Metric -->
-          <div class="pt-2 flex justify-between items-center text-xs border-t border-slate-200">
-            <span class="text-slate-500">Total acumulado invertido:</span>
-            <span class="font-bold text-slate-900 tabular-nums">
-              ${customerTotalSpent.toFixed(2)} CAD
-            </span>
-          </div>
+            <!-- Total Spent Metric -->
+            <div class="pt-2 flex justify-between items-center text-xs border-t border-slate-200">
+              <span class="text-slate-500">Total acumulado invertido:</span>
+              <span class="font-bold text-slate-900 tabular-nums">
+                ${customerTotalSpent.toFixed(2)} CAD
+              </span>
+            </div>
+          {:else}
+            <!-- GUEST / LOGIN PROMPT -->
+            <form onsubmit={handleLogin} class="space-y-3">
+              <div>
+                <span class="text-xs font-bold text-slate-900 block">Iniciar Sesión / Identificarse</span>
+                <p class="text-[11px] text-slate-500 mt-0.5">
+                  Ingresa tu nombre para consultar tus compras o realizar seguimiento a tus pedidos.
+                </p>
+              </div>
+
+              <div class="flex space-x-2">
+                <input
+                  type="text"
+                  bind:value={loginNameInput}
+                  placeholder="Tu Nombre Completo"
+                  required
+                  class="flex-1 bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-sky-600"
+                />
+                <button
+                  type="submit"
+                  class="px-3.5 py-1.5 text-xs font-semibold bg-slate-900 text-white rounded hover:bg-slate-800 cursor-pointer transition-colors"
+                >
+                  Acceder
+                </button>
+              </div>
+            </form>
+          {/if}
         </div>
 
         <!-- Orders History -->
         <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-white">
-          <h3 class="text-xs font-mono uppercase tracking-wider text-slate-400">Órdenes Realizadas</h3>
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-mono uppercase tracking-wider text-slate-400">Historial de Órdenes</h3>
+            {#if store.customerOrders.length > 0}
+              <span class="text-[11px] font-mono text-slate-400">{store.customerOrders.length} registros</span>
+            {/if}
+          </div>
 
           {#if store.customerOrders.length === 0}
             <div class="p-8 text-center text-xs text-slate-500 space-y-2">
-              <p>No se encontraron pedidos registrados para este nombre.</p>
+              <p>No se encontraron pedidos registrados para esta cuenta.</p>
               <p class="text-slate-400">Realiza una compra en la tienda para ver cómo se refleja aquí al instante.</p>
             </div>
           {:else}
@@ -117,10 +151,28 @@
                       <span class="font-mono font-bold text-slate-900 text-xs block">{order.id}</span>
                       <span class="text-[10px] text-slate-500 tabular-nums">{formatDate(order.createdAt)}</span>
                     </div>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      Entregado
-                    </span>
+
+                    <button
+                      onclick={() => store.openTracking(order)}
+                      class="px-2.5 py-1 text-[11px] font-medium text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                      title="Ver seguimiento de este pedido"
+                    >
+                      <svg class="w-3 h-3 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      </svg>
+                      <span>Seguimiento</span>
+                    </button>
                   </div>
+
+                  {#if order.shippingAddress}
+                    <div class="text-[11px] text-slate-600 bg-white border border-slate-200 rounded p-2 space-y-0.5">
+                      <div class="text-[10px] font-mono text-slate-400 uppercase">Dirección de Envío:</div>
+                      <div class="font-medium text-slate-900 truncate">{order.shippingAddress}</div>
+                      {#if order.shippingCity}
+                        <div class="text-[10px] text-slate-500">{order.shippingCity}</div>
+                      {/if}
+                    </div>
+                  {/if}
 
                   <!-- Items in Order -->
                   <div class="space-y-1.5 pt-2 border-t border-slate-200 text-xs">

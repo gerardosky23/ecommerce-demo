@@ -7,12 +7,13 @@
   import CartDrawer from './CartDrawer.svelte';
   import CheckoutModal from './CheckoutModal.svelte';
   import ProfileDrawer from './ProfileDrawer.svelte';
+  import OrderTrackingModal from './OrderTrackingModal.svelte';
 
   let searchQuery = $state('');
   let selectedCategory = $state('Todos');
   let sortBy = $state<'featured' | 'price-asc' | 'price-desc' | 'name'>('featured');
 
-  const categories = ['Todos', 'Signature Sets', 'Body & Care', 'Wellness', 'Botanicals', 'Culinary', 'Bath & Spa'];
+  const categories = ['Todos', 'Sets Exclusivos', 'Cuidado Corporal', 'Bienestar', 'Botánica y Hogar', 'Gourmet y Culinario', 'Baño y Spa'];
 
   const filteredProducts = $derived.by(() => {
     let list = store.products;
@@ -238,4 +239,5 @@
   <CartDrawer />
   <CheckoutModal />
   <ProfileDrawer />
+  <OrderTrackingModal />
 </div>

@@ -9,6 +9,7 @@
   import CartDrawer from './CartDrawer.svelte';
   import CheckoutModal from './CheckoutModal.svelte';
   import ProfileDrawer from './ProfileDrawer.svelte';
+  import OrderTrackingModal from './OrderTrackingModal.svelte';
   import Footer from './Footer.svelte';
 
   let eventSource: EventSource | null = null;
@@ -58,4 +59,5 @@
   <CartDrawer />
   <CheckoutModal />
   <ProfileDrawer />
+  <OrderTrackingModal />
 </div>

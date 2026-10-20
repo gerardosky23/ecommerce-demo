@@ -2,9 +2,24 @@
   import { store, type Order } from '../../lib/store.svelte';
 
   let customerName = $state(store.activeCustomerName || '');
+  let shippingAddress = $state(store.customerAddress || '');
+  let shippingCity = $state(store.customerCity || '');
   let isSubmitting = $state(false);
   let errorMessage = $state<string | null>(null);
   let completedOrder = $state<Order | null>(null);
+
+  // Sync if activeCustomerName or address changes in store
+  $effect(() => {
+    if (store.activeCustomerName && !customerName) {
+      customerName = store.activeCustomerName;
+    }
+    if (store.customerAddress && !shippingAddress) {
+      shippingAddress = store.customerAddress;
+    }
+    if (store.customerCity && !shippingCity) {
+      shippingCity = store.customerCity;
+    }
+  });
 
   function closeModal() {
     store.isCheckoutOpen = false;
@@ -13,15 +28,21 @@
   }
 
   async function handlePay() {
-    if (!customerName.trim()) {
-      errorMessage = 'Por favor ingresa tu nombre para registrar la compra.';
+    const activeName = (store.activeCustomerName || customerName).trim();
+    if (!activeName) {
+      errorMessage = 'Por favor ingresa tu nombre completo para registrar la compra.';
+      return;
+    }
+
+    if (!shippingAddress.trim()) {
+      errorMessage = 'Por favor ingresa la dirección de envío (calle y número).';
       return;
     }
 
     isSubmitting = true;
     errorMessage = null;
 
-    const res = await store.submitCheckout(customerName);
+    const res = await store.submitCheckout(activeName, shippingAddress, shippingCity);
     isSubmitting = false;
 
     if (res.success && res.order) {
@@ -46,7 +67,7 @@
       onclick={closeModal}
     ></button>
 
-    <div class="relative bg-white border border-slate-200 rounded-lg max-w-lg w-full overflow-hidden shadow-sm z-10 p-6 sm:p-8 space-y-6 text-slate-900">
+    <div class="relative bg-white border border-slate-200 rounded-lg max-w-lg w-full overflow-hidden shadow-sm z-10 p-6 sm:p-8 space-y-6 text-slate-900 max-h-[90vh] overflow-y-auto">
       <!-- Close button -->
       <button
         type="button"
@@ -69,7 +90,7 @@
           </div>
 
           <div class="space-y-1">
-            <h3 class="text-xl font-serif font-bold text-slate-950">¡Compra Demo Confirmada!</h3>
+            <h3 class="text-xl font-serif font-bold text-slate-950">¡Compra Confirmada!</h3>
             <p class="text-xs text-slate-600">
               Orden registrada exitosamente con el ID: <strong class="text-sky-600 font-mono">{completedOrder.id}</strong>
             </p>
@@ -77,8 +98,12 @@
 
           <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 text-xs text-left space-y-2">
             <div class="flex justify-between">
-              <span class="text-slate-500">Cliente Registrado:</span>
+              <span class="text-slate-500">Destinatario:</span>
               <span class="font-bold text-slate-900">{completedOrder.customerName}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Dirección de Entrega:</span>
+              <span class="font-medium text-slate-900 text-right max-w-[240px] truncate">{completedOrder.shippingAddress || 'No especificada'}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-slate-500">Total Facturado:</span>
@@ -102,13 +127,12 @@
               Ver en Mi Perfil
             </button>
 
-            <a
-              href="/admin"
-              target="_blank"
-              class="flex-1 py-3 px-4 text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-slate-950 bg-slate-100 hover:bg-slate-200 rounded-md border border-slate-300 transition-colors text-center"
+            <button
+              onclick={closeModal}
+              class="flex-1 py-3 px-4 text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-slate-950 bg-slate-100 hover:bg-slate-200 rounded-md border border-slate-300 transition-colors text-center cursor-pointer"
             >
-              Ver en Backoffice →
-            </a>
+              Seguir Comprando
+            </button>
           </div>
         </div>
       {:else}
@@ -116,7 +140,7 @@
         <div class="space-y-1.5">
           <h3 class="text-2xl font-serif font-bold text-slate-950">Finalizar Orden</h3>
           <p class="text-xs text-slate-600">
-            Ingresa tu nombre para completar el registro de la orden.
+            Ingresa tus datos de envío para completar el pedido.
           </p>
         </div>
 
@@ -127,19 +151,66 @@
         {/if}
 
         <div class="space-y-4">
-          <!-- Customer Name Input -->
-          <div class="space-y-1.5">
-            <label for="cust-name" class="block text-xs font-medium text-slate-700">
-              Nombre Completo del Comprador <span class="text-sky-600">*</span>
-            </label>
-            <input
-              id="cust-name"
-              type="text"
-              bind:value={customerName}
-              placeholder="Ej: Carlos Medina o Valeria Gómez"
-              class="w-full bg-white border border-slate-300 rounded-md px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-sky-600 shadow-2xs"
-              autocomplete="name"
-            />
+          <!-- Customer Identity Box / Input -->
+          {#if store.activeCustomerName}
+            <div class="bg-slate-50 border border-slate-200 rounded-md p-3 flex items-center justify-between text-xs">
+              <div>
+                <span class="text-slate-500 block text-[10px] uppercase font-mono">Comprando como:</span>
+                <span class="font-bold text-slate-900 text-sm">{store.activeCustomerName}</span>
+              </div>
+              <button
+                type="button"
+                onclick={() => { store.activeCustomerName = ''; customerName = ''; }}
+                class="text-[11px] text-sky-700 hover:text-sky-900 font-medium underline cursor-pointer"
+              >
+                Cambiar nombre
+              </button>
+            </div>
+          {:else}
+            <div class="space-y-1.5">
+              <label for="cust-name" class="block text-xs font-medium text-slate-700">
+                Nombre Completo <span class="text-sky-600">*</span>
+              </label>
+              <input
+                id="cust-name"
+                type="text"
+                bind:value={customerName}
+                placeholder="Ej: Carlos Medina o Valeria Gómez"
+                class="w-full bg-white border border-slate-300 rounded-md px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-sky-600 shadow-2xs"
+                autocomplete="name"
+              />
+            </div>
+          {/if}
+
+          <!-- Shipping Address Fields (Structured for GPS / Map Geocoding) -->
+          <div class="space-y-3">
+            <div class="space-y-1.5">
+              <label for="shipping-address" class="block text-xs font-medium text-slate-700">
+                Dirección de Envío (Calle y Número) <span class="text-sky-600">*</span>
+              </label>
+              <input
+                id="shipping-address"
+                type="text"
+                bind:value={shippingAddress}
+                placeholder="Ej: Av. Las Begonias 441, Depto 502"
+                class="w-full bg-white border border-slate-300 rounded-md px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-sky-600 shadow-2xs"
+                autocomplete="street-address"
+              />
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="shipping-city" class="block text-xs font-medium text-slate-700">
+                Ciudad / Distrito / Referencia
+              </label>
+              <input
+                id="shipping-city"
+                type="text"
+                bind:value={shippingCity}
+                placeholder="Ej: San Isidro, Lima (Frente al parque)"
+                class="w-full bg-white border border-slate-300 rounded-md px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-sky-600 shadow-2xs"
+                autocomplete="address-level2"
+              />
+            </div>
           </div>
 
           <!-- Mock Card Details (Read-only simulation) -->

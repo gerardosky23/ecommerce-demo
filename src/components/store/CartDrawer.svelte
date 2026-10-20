@@ -164,7 +164,7 @@
             </button>
 
             <p class="text-[10px] text-center text-slate-500">
-              Modo Demo: Solo requerirá tu nombre para registrar la orden en el Backoffice.
+              Transacción de prueba simulada con entrega y confirmación instantánea.
             </p>
           </div>
         {/if}

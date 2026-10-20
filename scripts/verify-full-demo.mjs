@@ -135,13 +135,13 @@ async function runVerification() {
   // Verificar búsqueda y filtros en /tienda
   console.log('3️⃣ Probando buscador en tiempo real de /tienda...');
   const searchInput = page.locator('input[placeholder*="Buscar por nombre"]');
-  await searchInput.fill('Lavender');
+  await searchInput.fill('Lavanda');
   await page.waitForTimeout(500);
 
   const searchResultsCount = await page.locator('button:has-text("+ Añadir")').count();
-  console.log(`🔎 Productos encontrados para "Lavender": ${searchResultsCount}`);
+  console.log(`🔎 Productos encontrados para "Lavanda": ${searchResultsCount}`);
   if (searchResultsCount === 0) {
-    throw new Error('El buscador de /tienda no retornó resultados para "Lavender"');
+    throw new Error('El buscador de /tienda no retornó resultados para "Lavanda"');
   }
 
   // Limpiar búsqueda
@@ -150,11 +150,11 @@ async function runVerification() {
 
   // Probar filtro de categoría
   console.log('4️⃣ Probando filtro por categoría en /tienda...');
-  const bodyCareFilter = page.locator('button:has-text("Body & Care")');
+  const bodyCareFilter = page.locator('button:has-text("Cuidado Corporal")');
   if (await bodyCareFilter.isVisible()) {
     await bodyCareFilter.click();
     await page.waitForTimeout(500);
-    console.log('✅ Filtro "Body & Care" aplicado');
+    console.log('✅ Filtro "Cuidado Corporal" aplicado');
   }
 
   // Volver a todos
@@ -182,9 +182,20 @@ async function runVerification() {
   await page.waitForTimeout(1000);
 
   const testCustomer = 'Camila Vega';
-  console.log(`7️⃣ Ingresando nombre del cliente: "${testCustomer}"...`);
+  const testAddress = 'Av. Las Begonias 441, Depto 502';
+  const testCity = 'San Isidro, Lima';
+  console.log(`7️⃣ Ingresando nombre del cliente: "${testCustomer}" y dirección: "${testAddress}"...`);
+  
   const nameInput = page.locator('input#cust-name');
-  await nameInput.fill(testCustomer);
+  if (await nameInput.isVisible()) {
+    await nameInput.fill(testCustomer);
+  }
+
+  const addressInput = page.locator('input#shipping-address');
+  await addressInput.fill(testAddress);
+
+  const cityInput = page.locator('input#shipping-city');
+  await cityInput.fill(testCity);
   await page.waitForTimeout(500);
 
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '04-checkout-modal-light.png'), fullPage: false });
@@ -194,11 +205,18 @@ async function runVerification() {
   await payBtn.click();
   await page.waitForTimeout(2000);
 
+  // Verificar que NO haya botón de ir a Backoffice en el modal de éxito
+  const backofficeInModal = await page.locator('a[href="/admin"], a:has-text("Backoffice")').count();
+  if (backofficeInModal > 0) {
+    throw new Error('Se detectó un enlace o botón de Backoffice en el modal de confirmación de compra.');
+  }
+  console.log('✅ Cero enlaces al Backoffice tras completar compra confirmado.');
+
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '05-order-confirmed-light.png'), fullPage: false });
   console.log('📸 05-order-confirmed-light.png capturado');
 
   // Verificar en Perfil de Cliente
-  console.log('8️⃣ Verificando pedido en Mi Perfil...');
+  console.log('8️⃣ Verificando pedido en Mi Perfil y probando Seguimiento...');
   const viewProfileBtn = page.locator('button:has-text("Ver en Mi Perfil")');
   await viewProfileBtn.click();
   await page.waitForTimeout(1500);
@@ -210,6 +228,32 @@ async function runVerification() {
   if (!profileContent.includes('Camila Vega')) {
     throw new Error('El perfil de cliente no reflejó el nombre de Camila Vega.');
   }
+  if (!profileContent.includes('Av. Las Begonias 441')) {
+    throw new Error('El perfil de cliente no reflejó la dirección de envío.');
+  }
+
+  // Probar botón "Seguimiento"
+  console.log('📍 Probando botón de "Seguimiento" del pedido...');
+  const trackBtn = page.locator('button:has-text("Seguimiento")').first();
+  await trackBtn.click();
+  await page.waitForTimeout(1000);
+
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '06b-tracking-modal.png'), fullPage: false });
+  console.log('📸 06b-tracking-modal.png capturado');
+
+  const trackingText = await page.evaluate(() => document.body.innerText);
+  if (!trackingText.includes('Seguimiento de Pedido') || !trackingText.includes('En proceso')) {
+    throw new Error('El modal de seguimiento no mostró el título o el estado "En proceso".');
+  }
+  if (!trackingText.includes('Módulo de Rastreo GPS Satelital')) {
+    throw new Error('El modal de seguimiento no mostró el espacio para el módulo de mapas GPS.');
+  }
+  console.log('✅ Modal de Seguimiento con estado "En proceso" y contenedor de mapas GPS verificado.');
+
+  // Cerrar modal de seguimiento
+  const closeTrackingBtn = page.locator('button:has-text("Cerrar Seguimiento")');
+  await closeTrackingBtn.click();
+  await page.waitForTimeout(500);
 
   // ==========================================
   // STEP 5: Verificar Backoffice Go con Login y Control Sold Out (http://localhost:8080/admin/)
@@ -283,6 +327,10 @@ async function runVerification() {
   if (!salesTableText || !salesTableText.includes('Camila Vega')) {
     throw new Error('La venta de Camila Vega no se visualiza en la tabla de Ventas del Backoffice.');
   }
+  if (!salesTableText.includes('Av. Las Begonias 441')) {
+    throw new Error('La dirección de envío no se visualiza en la tabla de Ventas del Backoffice.');
+  }
+  console.log('✅ Venta y Dirección de Envío de Camila Vega verificadas en tabla de Ventas del Backoffice.');
 
   // Cambiar a pestaña Clientes en Backoffice
   console.log('1️⃣1️⃣ Cambiando a pestaña Clientes en Backoffice...');
