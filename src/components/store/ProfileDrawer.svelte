@@ -26,10 +26,12 @@
 {#if store.isProfileOpen}
   <div class="fixed inset-0 z-50 overflow-hidden">
     <!-- Backdrop -->
-    <div
-      class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity"
+    <button
+      type="button"
+      aria-label="Cerrar perfil"
+      class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity w-full h-full border-none p-0 cursor-default"
       onclick={closeProfile}
-    ></div>
+    ></button>
 
     <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
       <div class="w-screen max-w-md bg-white border-l border-slate-200 shadow-xl flex flex-col justify-between">
@@ -40,6 +42,8 @@
             <span class="text-xs font-mono text-slate-500">Terre Bleu Club</span>
           </div>
           <button
+            type="button"
+            aria-label="Cerrar perfil de usuario"
             onclick={closeProfile}
             class="w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer"
           >
@@ -67,11 +71,12 @@
 
           <!-- Quick switcher to view any client's history during presentations -->
           <div class="space-y-1.5 pt-2 border-t border-slate-200">
-            <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-500">
+            <label for="profile-cust-search" class="block text-[10px] font-mono uppercase tracking-wider text-slate-500">
               Consultar Historial de Cliente:
             </label>
             <div class="flex space-x-2">
               <input
+                id="profile-cust-search"
                 type="text"
                 bind:value={customSearchName}
                 placeholder="Ingresa nombre de cliente"

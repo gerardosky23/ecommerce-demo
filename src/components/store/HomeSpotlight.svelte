@@ -36,8 +36,11 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {#each spotlightProducts as product (product.id)}
         <div
+          role="button"
+          tabindex="0"
           onclick={() => handleProductClick(product)}
-          class="group bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col justify-between hover:border-slate-300 hover:shadow-md transition-all cursor-pointer"
+          onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleProductClick(product); }}
+          class="group bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col justify-between hover:border-slate-300 hover:shadow-md transition-all cursor-pointer text-left"
         >
           <div class="aspect-square bg-slate-100 relative overflow-hidden">
             <img

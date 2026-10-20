@@ -384,6 +384,7 @@
       class="center-stage relative w-full overflow-hidden select-none"
       class:immersive={heroImmersive}
       class:has-film={heroHasFilm}
+      tabindex="0"
       onkeydown={handleHeroKeydown}
       role="region"
       aria-label="Escena cinemática del gorila"
@@ -1804,10 +1805,6 @@
       opacity: 1 !important;
       visibility: visible !important;
       transition: none !important;
-    }
-
-    .scroll-wheel {
-      animation: none !important;
     }
 
     .center-content,

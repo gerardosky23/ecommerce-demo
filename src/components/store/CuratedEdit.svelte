@@ -21,7 +21,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <!-- Visual Presentation -->
-        <div class="relative group cursor-pointer" onclick={handleViewDetails}>
+        <button
+          type="button"
+          aria-label="Ver detalles de {comfortEdit.title}"
+          class="relative group cursor-pointer text-left p-0 border-none bg-transparent w-full"
+          onclick={handleViewDetails}
+        >
           <div class="aspect-4/3 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-md">
             <img
               src={comfortEdit.image}
@@ -32,7 +37,7 @@
           <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-xs px-3 py-1.5 rounded-md border border-slate-200 text-xs font-mono text-slate-700 shadow-sm">
             Edición Insignia • Stock Limitado
           </div>
-        </div>
+        </button>
 
         <!-- Copy & Actions -->
         <div class="space-y-6">

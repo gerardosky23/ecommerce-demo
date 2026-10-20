@@ -39,11 +39,18 @@
 
 {#if store.isCheckoutOpen}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-    <div class="absolute inset-0" onclick={closeModal}></div>
+    <button
+      type="button"
+      aria-label="Cerrar ventana"
+      class="absolute inset-0 bg-transparent w-full h-full border-none cursor-default"
+      onclick={closeModal}
+    ></button>
 
     <div class="relative bg-white border border-slate-200 rounded-lg max-w-lg w-full overflow-hidden shadow-2xl z-10 p-6 sm:p-8 space-y-6 text-slate-900">
       <!-- Close button -->
       <button
+        type="button"
+        aria-label="Cerrar pasarela de pago"
         onclick={closeModal}
         class="absolute top-4 right-4 w-7 h-7 rounded-md text-slate-400 hover:text-slate-900 flex items-center justify-center cursor-pointer"
       >
@@ -141,9 +148,9 @@
 
           <!-- Mock Card Details (Read-only simulation) -->
           <div class="space-y-1.5">
-            <label class="block text-xs font-medium text-slate-700">
+            <span class="block text-xs font-medium text-slate-700">
               Método de Pago Ficticio
-            </label>
+            </span>
             <div class="bg-slate-50 border border-slate-200 rounded-md p-3 flex items-center justify-between text-xs">
               <div class="flex items-center space-x-2.5">
                 <div class="w-8 h-5 rounded bg-slate-800 text-white flex items-center justify-center text-[9px] font-mono font-bold">

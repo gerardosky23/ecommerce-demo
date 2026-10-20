@@ -33,11 +33,18 @@
 {#if product}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs">
     <!-- Click outside -->
-    <div class="absolute inset-0" onclick={closeModal}></div>
+    <button
+      type="button"
+      aria-label="Cerrar modal"
+      class="absolute inset-0 bg-transparent w-full h-full border-none cursor-default"
+      onclick={closeModal}
+    ></button>
 
     <div class="relative bg-white border border-slate-200 rounded-lg max-w-3xl w-full overflow-hidden shadow-2xl z-10 grid grid-cols-1 md:grid-cols-2 text-slate-900">
       <!-- Close button -->
       <button
+        type="button"
+        aria-label="Cerrar detalle de producto"
         onclick={closeModal}
         class="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center transition-colors cursor-pointer"
       >

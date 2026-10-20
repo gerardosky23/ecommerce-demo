@@ -14,10 +14,12 @@
 {#if store.isCartOpen}
   <div class="fixed inset-0 z-50 overflow-hidden">
     <!-- Backdrop -->
-    <div
-      class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+    <button
+      type="button"
+      aria-label="Cerrar carrito"
+      class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity w-full h-full border-none p-0 cursor-default"
       onclick={closeCart}
-    ></div>
+    ></button>
 
     <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
       <div class="w-screen max-w-md bg-white border-l border-slate-200 shadow-2xl flex flex-col justify-between text-slate-900">
@@ -28,6 +30,8 @@
             <span class="text-xs font-mono text-slate-500">({store.cartTotalItems} artículos)</span>
           </div>
           <button
+            type="button"
+            aria-label="Cerrar carrito de compras"
             onclick={closeCart}
             class="w-7 h-7 rounded-md text-slate-400 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer"
           >
