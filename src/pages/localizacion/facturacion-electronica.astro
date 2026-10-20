@@ -1,0 +1,225 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+import FaqAccordion from '../../components/common/FaqAccordion.svelte';
+
+const faqs = [
+  {
+    question: '¿Odoo emite facturas electrónicas válidas para la SUNAT?',
+    answer: 'Sí. Con la localización peruana, Odoo emite facturas, boletas, notas y guías que se validan ante la SUNAT mediante un proveedor autorizado (PSE u OSE), como Nubefact.'
+  },
+  {
+    question: '¿Qué diferencia hay entre un PSE y un OSE?',
+    answer: 'Un Proveedor de Servicios Electrónicos (PSE) envía tus comprobantes a la SUNAT o a un OSE. Un Operador de Servicios Electrónicos (OSE) valida el comprobante directamente en segundos y emite la constancia de recepción (CDR) con validez legal inmediata.'
+  },
+  {
+    question: '¿Podemos conservar nuestras series actuales?',
+    answer: 'Sí. Al configurar la facturación en Odoo, definimos las mismas series electrónicas (F001, B001, T001, etc.) y continuamos con el correlativo siguiente sin generar saltos ni inconsistencias.'
+  },
+  {
+    question: '¿Qué pasa si se cae internet en la tienda?',
+    answer: 'El Punto de Venta (POS) de Odoo funciona en modo offline en el navegador. Las ventas se registran en local y, al restablecer la conexión, se sincronizan y emiten los comprobantes electrónicos automáticamente.'
+  },
+  {
+    question: '¿Dónde quedan guardados el XML y el CDR?',
+    answer: 'Quedan adjuntos automáticamente al registro de cada factura en Odoo y almacenados en la nube. Puedes descargarlos, reenviarlos por correo o consultarlos cuando la SUNAT o tus auditores los requieran.'
+  }
+];
+---
+
+<BaseLayout
+  title="Facturación electrónica SUNAT en Odoo · Flexone"
+  description="Emisión directa de facturas, boletas, notas y guías UBL 2.1 en Odoo. Conexión con PSE / OSE homologado y validación de RUC ante SUNAT."
+>
+  <Navbar />
+
+  <main id="main">
+    <!-- Hero Section (Dark #161618) -->
+    <section class="bg-[#161618] text-white pt-44 sm:pt-44 lg:pt-48 pb-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+      <div class="max-w-4xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-medium mb-6">
+          <span>Localización Perú · Facturación electrónica</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-light text-white tracking-tight mb-6 leading-tight">
+          Se vende, se factura y <br class="hidden sm:inline" />
+          <span class="font-normal text-brand-magenta">la SUNAT ya lo sabe</span>
+        </h1>
+
+        <p class="text-white/70 text-base sm:text-lg max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+          Facturas, boletas, notas y guías salen del mismo sistema donde se vende y se despacha, sin un facturador aparte. Cada comprobante electrónico se envía a la SUNAT y su respuesta queda guardada junto a la venta.
+        </p>
+
+        <div class="mb-12">
+          <a
+            href="/contacto"
+            class="inline-block px-6 py-3 rounded-full bg-brand-cyan text-[#06222b] text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-colors shadow-lg"
+          >
+            Ver cómo funciona en mi empresa ›
+          </a>
+        </div>
+
+        <!-- Invoice preview frame -->
+        <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#202124]">
+          <img
+            src="/hero/factura-odoo-1100.webp"
+            alt="Facturación electrónica en Odoo"
+            width="1000"
+            height="550"
+            class="w-full h-auto object-cover"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Steps Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            De la venta a la SUNAT en <span class="font-normal text-brand-magenta">4 pasos</span>
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+          <div class="space-y-3">
+            <div class="w-14 h-14 rounded-full bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mx-auto">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
+            <h3 class="font-medium text-base text-brand-dark">1. Vender</h3>
+            <p class="text-xs text-brand-muted leading-relaxed font-light">
+              El pedido, el despacho o la caja ya tienen al cliente, los productos y los precios. Nada se vuelve a digitar.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="w-14 h-14 rounded-full bg-brand-cyan/10 text-brand-cyan flex items-center justify-center mx-auto">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <h3 class="font-medium text-base text-brand-dark">2. Emitir</h3>
+            <p class="text-xs text-brand-muted leading-relaxed font-light">
+              Factura, boleta o nota con su serie y número correlativo (CPE), en soles o en dólares.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="w-14 h-14 rounded-full bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mx-auto">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <h3 class="font-medium text-base text-brand-dark">3. Validar</h3>
+            <p class="text-xs text-brand-muted leading-relaxed font-light">
+              Se envía a la SUNAT a través de un proveedor autorizado (PSE u OSE) y vuelve la respuesta: aceptada, observada o rechazada.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="w-14 h-14 rounded-full bg-brand-cyan/10 text-brand-cyan flex items-center justify-center mx-auto">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <h3 class="font-medium text-base text-brand-dark">4. Entregar</h3>
+            <p class="text-xs text-brand-muted leading-relaxed font-light">
+              El cliente recibe por correo el PDF con código QR y el archivo XML enviados automáticamente sin que nadie los adjunte.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dark Section: Todos los comprobantes -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#202124] text-white">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-12">
+          <span class="text-xs font-semibold text-brand-cyan uppercase tracking-widest block mb-2">Todos los comprobantes</span>
+          <h2 class="text-3xl sm:text-4xl font-light text-white">
+            Cada venta con el documento que le corresponde
+          </h2>
+        </div>
+
+        <div class="rounded-2xl bg-[#292a2d] border border-white/10 p-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center shadow-xl">
+          <div class="space-y-4">
+            <span class="px-3 py-1 rounded bg-brand-cyan text-[#06222b] text-xs font-bold uppercase">Factura</span>
+            <h3 class="text-2xl font-light text-white">Facturas que el cliente recibe listas</h3>
+            <p class="text-xs sm:text-sm text-white/70 leading-relaxed font-light">
+              Una factura que llega tarde o mal hecha retrasa el pago. Sale en el momento de la venta, con el diseño de tu empresa, y el cliente puede validarla en su celular mediante el código QR.
+            </p>
+            <ul class="space-y-2 text-xs text-white/80 font-light pt-2">
+              <li class="flex items-center gap-2">
+                <span class="text-brand-cyan">●</span> Factura electrónica en soles o dólares
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-cyan">●</span> PDF con código QR y archivo XML
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-cyan">●</span> Anticipos, descuentos y ventas a crédito
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-cyan">●</span> Operaciones con detracción, exportación o gratuitas
+              </li>
+            </ul>
+          </div>
+          <div class="rounded-xl overflow-hidden bg-white p-4 shadow-lg">
+            <img
+              src="/secciones/modulos-contabilidad.webp"
+              alt="Módulo de facturas y boletas"
+              width="450"
+              height="300"
+              class="w-full h-auto object-cover rounded"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Problems of Separate Invoicing -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50 border-y border-brand-border text-brand-dark">
+      <div class="max-w-5xl mx-auto rounded-3xl bg-[#202124] text-white p-8 sm:p-12 shadow-xl border border-white/10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div class="lg:col-span-6 space-y-4">
+          <h2 class="text-2xl sm:text-3xl font-light text-white leading-snug">
+            Los problemas de facturar en un <span class="text-rose-400 font-normal">sistema aparte</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-white/70 leading-relaxed font-light">
+            Muchas empresas facturan en el portal de la SUNAT o en un programa distinto al que usan para vender y para la contabilidad. Funciona, hasta que hay que cuadrar.
+          </p>
+          <div class="pt-2">
+            <a href="/contacto" class="inline-block px-5 py-2.5 rounded bg-white text-brand-dark text-xs font-semibold hover:bg-neutral-100 transition-colors">
+              Ver cómo se resuelve ›
+            </a>
+          </div>
+        </div>
+        <div class="lg:col-span-6 space-y-2.5 text-xs text-white/80 font-light">
+          <div class="p-3 rounded-lg bg-white/5 border border-white/10 flex items-start gap-2.5">
+            <span class="text-rose-400 font-bold shrink-0">✕</span>
+            <span>La factura se hace dos veces: en el facturador y en el sistema de ventas.</span>
+          </div>
+          <div class="p-3 rounded-lg bg-white/5 border border-white/10 flex items-start gap-2.5">
+            <span class="text-rose-400 font-bold shrink-0">✕</span>
+            <span>Nadie sabe qué despacho ya se facturó y cuál sigue pendiente.</span>
+          </div>
+          <div class="p-3 rounded-lg bg-white/5 border border-white/10 flex items-start gap-2.5">
+            <span class="text-rose-400 font-bold shrink-0">✕</span>
+            <span>Un rechazo de SUNAT se descubre semanas después cuando el cliente reclama.</span>
+          </div>
+          <div class="p-3 rounded-lg bg-white/5 border border-white/10 flex items-start gap-2.5">
+            <span class="text-rose-400 font-bold shrink-0">✕</span>
+            <span>El registro de ventas no coincide con los reportes descargados del portal SUNAT.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Accordion -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Preguntas sobre la <span class="font-normal text-brand-magenta">facturación electrónica</span> en Odoo
+          </h2>
+        </div>
+        <FaqAccordion client:visible items={faqs} />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,234 @@
+---
+const clientLogos = [
+  { name: 'EVS Ingenieros', src: '/clientes/evs-ingenieros.webp' },
+  { name: 'Excursiones Oasis', src: '/clientes/excursiones-oasis.webp' },
+  { name: 'Fiberlux', src: '/clientes/fiberlux.webp' },
+  { name: 'Infiniti', src: '/clientes/infiniti.webp' },
+  { name: 'IT Service', src: '/clientes/it-service.webp' },
+  { name: 'Libus', src: '/clientes/libus.webp' }
+];
+---
+
+<section id="heroSection" class="relative bg-[#161618] text-white pt-44 sm:pt-44 lg:pt-48 pb-20 overflow-hidden">
+  <!-- Subtle magenta radial glow in the center-top -->
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-brand-magenta/10 blur-[150px] rounded-full pointer-events-none -z-10" aria-hidden="true"></div>
+
+  <!-- Angled / diagonal white slash background cut behind the laptop showcase -->
+  <div
+    class="absolute inset-x-0 bottom-0 h-[620px] sm:h-[580px] lg:h-[540px] bg-white pointer-events-none z-0"
+    style="clip-path: polygon(0 45px, 50% 0, 100% 45px, 100% 100%, 0 100%);"
+    aria-hidden="true"
+  ></div>
+
+  <div class="max-w-[1300px] mx-auto px-4 sm:px-6 text-center relative z-10">
+    <!-- Main Headline with typewriter cursor effect -->
+    <h1 data-content="hero-title" class="text-3xl sm:text-5xl lg:text-[57.6px] lg:leading-[72px] font-light tracking-tight text-white mb-6">
+      Impulsa tu negocio con <br class="hidden sm:inline" />
+      un ERP <span class="font-normal text-[#ff0066]">modular</span><span class="inline-block w-[3px] h-8 sm:h-12 bg-[#ff0066] align-middle animate-pulse ml-1"></span>
+    </h1>
+
+    <!-- Subtitle / Value Proposition -->
+    <p data-content="hero-subtitle" class="text-base sm:text-[18px] text-white/75 max-w-3xl mx-auto mb-9 font-light leading-relaxed">
+      Una implementación pragmática de Odoo ERP — orientada a resultados medibles y adaptada a los procesos operativos de tu empresa en Perú.
+    </p>
+
+    <!-- Interactive AI Assistant Search Box -->
+    <div class="max-w-2xl mx-auto mb-6">
+      <form
+        action="/contacto"
+        method="GET"
+        class="flex items-center rounded-2xl bg-[#202226]/90 border border-white/10 p-2 focus-within:border-brand-magenta/70 transition-all shadow-[0_15px_40px_rgba(0,0,0,0.6)] backdrop-blur-md"
+      >
+        <input
+          type="text"
+          name="q"
+          placeholder="Pregunta sobre Odoo, procesos o costos..."
+          class="flex-1 bg-transparent px-4 py-2.5 text-sm sm:text-base text-white placeholder-white/40 focus:outline-none"
+          aria-label="Pregunta sobre Odoo"
+        />
+        <button
+          type="submit"
+          class="w-11 h-11 rounded-xl bg-white text-[#161618] hover:bg-neutral-100 flex items-center justify-center transition-all shadow-md flex-shrink-0"
+          aria-label="Consultar"
+        >
+          <svg class="w-5 h-5 text-[#ff0066]" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    <!-- Value Pills -->
+    <div class="flex flex-wrap items-center justify-center gap-6 text-xs sm:text-[13px] text-white/70 mb-14">
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 rounded-full bg-[#ff0066] text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+        <span>Conecta tus apps favoritas</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 rounded-full bg-[#ff0066] text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+        <span>Crece sin límites</span>
+      </div>
+    </div>
+
+    <!-- Hero Mockup & Dashboard Preview with Floating Cards & Doodles -->
+    <div class="relative max-w-4xl mx-auto mb-16">
+      <!-- Decorative Doodle 1: 5 White radiating chalk lines at top-left of the card matching reference -->
+      <svg
+        class="absolute -top-11 -left-9 sm:-top-13 sm:-left-11 w-18 h-18 sm:w-22 sm:h-22 pointer-events-none text-white z-20 select-none drop-shadow-md"
+        viewBox="0 0 80 80"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <!-- Stroke 1 (tall near-vertical) -->
+        <path d="M 40 12 C 41 28, 41.5 50, 40 70 C 38.5 50, 39 28, 40 12 Z" opacity="0.95" />
+        <!-- Stroke 2 (~60 deg) -->
+        <path d="M 32 30 C 35 42, 36 56, 33 69 C 30 56, 29 42, 32 30 Z" opacity="0.95" />
+        <!-- Stroke 3 (~35 deg) -->
+        <path d="M 16 34 C 23 45, 27 58, 28 69 C 24 60, 18 48, 16 34 Z" opacity="0.95" />
+        <!-- Stroke 4 (~10 deg) -->
+        <path d="M 12 56 C 17 61, 22 67, 26 71 C 21 68, 16 63, 12 56 Z" opacity="0.9" />
+        <!-- Stroke 5 (~ -15 deg) -->
+        <path d="M 10 74 C 15 74.5, 21 74, 25 73 C 20 73.5, 14 74, 10 74 Z" opacity="0.85" />
+      </svg>
+
+      <!-- Decorative Doodle 2: Curved looping pink chalk arrow pointing to CDR accepted badge -->
+      <svg
+        class="absolute -top-20 sm:-top-24 right-10 sm:right-16 w-28 h-28 sm:w-32 sm:h-32 pointer-events-none text-[#ff0066] z-20 hidden md:block select-none drop-shadow-md"
+        viewBox="0 0 100 100"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M 12 28 C 38 12, 62 10, 72 26 C 82 44, 76 66, 52 78 C 34 86, 36 102, 50 102 C 64 102, 70 82, 74 68 C 76 60, 78 82, 88 96" />
+      </svg>
+
+      <!-- Main Dashboard Container -->
+      <div class="relative rounded-2xl overflow-hidden border border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.8)] bg-[#202124]">
+        <img
+          src="/hero/factura-odoo-1100.webp"
+          alt="Interfaz de Odoo con Facturación SUNAT"
+          width="1100"
+          height="660"
+          class="w-full h-auto object-cover block"
+          loading="eager"
+        />
+
+        <!-- Centered Play Demo Overlay Button: Vibrant pink circle with halo and dark pill below -->
+        <a
+          href="/contacto"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center group cursor-pointer"
+          aria-label="Ver demostración de Odoo en 1 minuto"
+        >
+          <!-- Pink circular play button with outer halo ring and radiant glow -->
+          <div class="relative flex items-center justify-center group-hover:scale-105 active:scale-95 transition-all duration-300">
+            <!-- Outer halo ring -->
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#ff0066]/40 bg-[#ff0066]/15 flex items-center justify-center p-1 sm:p-1.5 shadow-[0_0_30px_rgba(255,0,102,0.4)]">
+              <!-- Inner solid pink circle -->
+              <div class="w-full h-full rounded-full bg-[#ff0066] text-white flex items-center justify-center shadow-md">
+                <svg class="w-6 h-6 sm:w-7 sm:h-7 fill-current ml-1" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <!-- Dark pill connected below slightly overlapping halo -->
+          <span data-content="hero-cta-primary" class="-mt-3 px-5 py-2 rounded-full bg-[#2b2f36]/95 text-white text-xs sm:text-[13px] font-semibold backdrop-blur-md border border-white/15 shadow-xl group-hover:border-white/30 transition-all z-10">
+            Recorre Odoo en 1 minuto
+          </span>
+        </a>
+      </div>
+
+      <!-- Floating Badge 1: Middle Left - "Un solo sistema ● en vivo" with 4 app icons -->
+      <div class="hidden sm:flex absolute top-1/2 -left-6 lg:-left-10 -translate-y-1/2 z-20 flex-col gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#1c1d22]/95 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-md text-left">
+        <div class="flex items-center justify-between gap-3">
+          <span class="text-[11px] font-semibold text-white/90">Un solo sistema</span>
+          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[9px] font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            en vivo
+          </span>
+        </div>
+        <div class="flex items-center gap-1.5 pt-0.5">
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#25282e] border border-white/10 flex items-center justify-center p-1.5 shadow-sm">
+            <img src="/images/flexone/odoo/account.svg" alt="Contabilidad" class="w-full h-full object-contain" />
+          </div>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#25282e] border border-white/10 flex items-center justify-center p-1.5 shadow-sm">
+            <img src="/images/flexone/odoo/sale_management.svg" alt="Ventas" class="w-full h-full object-contain" />
+          </div>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#25282e] border border-white/10 flex items-center justify-center p-1.5 shadow-sm">
+            <img src="/images/flexone/odoo/stock.svg" alt="Inventario" class="w-full h-full object-contain" />
+          </div>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#25282e] border border-white/10 flex items-center justify-center p-1.5 shadow-sm">
+            <img src="/images/flexone/odoo/crm.svg" alt="CRM" class="w-full h-full object-contain" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Badge 2: Top Right - "SUNAT · CDR aceptado" with 3D checkmark icon -->
+      <div class="hidden sm:flex absolute -top-4 -right-4 sm:-right-6 z-20 items-center gap-3 px-4 py-3 rounded-2xl bg-white text-brand-dark shadow-[0_15px_35px_rgba(0,0,0,0.12)] border border-neutral-200/90 text-left">
+        <img
+          src="/images/flexone/odoo/check_mark_button.webp"
+          alt="Aceptado"
+          width="32"
+          height="32"
+          class="w-8 h-8 object-contain flex-shrink-0"
+        />
+        <div>
+          <div class="text-[12px] font-bold text-neutral-900 leading-tight">SUNAT · CDR aceptado</div>
+          <div class="text-[10px] text-neutral-500 font-normal mt-0.5">F001-00128 · hace 2 min</div>
+        </div>
+      </div>
+
+      <!-- Floating Badge 3: Bottom Left - "Por cobrar · septiembre S/ 48,200" with floating 3D money bag -->
+      <div class="hidden sm:flex absolute -bottom-6 -left-4 sm:-left-8 z-20 flex-col gap-1 p-4 rounded-2xl bg-white text-brand-dark shadow-[0_20px_40px_rgba(0,0,0,0.15)] border border-neutral-200/90 text-left w-52 relative">
+        <!-- Floating 3D Money Bag icon on the top-right corner of the card -->
+        <img
+          src="/images/flexone/odoo/money_bag.webp"
+          alt="Dinero"
+          width="36"
+          height="36"
+          class="absolute -top-4 -right-2 w-9 h-9 object-contain drop-shadow-md pointer-events-none"
+        />
+        <span class="text-[11px] font-medium text-neutral-500">Por cobrar · septiembre</span>
+        <div class="text-xl font-bold text-neutral-900 tracking-tight">S/ 48,200</div>
+        <!-- Mini bar sparkline matching reference -->
+        <div class="flex items-end gap-1.5 h-7 pt-2">
+          <div class="w-3 bg-[#9cd5db] rounded-[2px] h-2"></div>
+          <div class="w-3 bg-[#9cd5db] rounded-[2px] h-4"></div>
+          <div class="w-3 bg-[#9cd5db] rounded-[2px] h-2.5"></div>
+          <div class="w-3 bg-[#9cd5db] rounded-[2px] h-5"></div>
+          <div class="w-3 bg-[#9cd5db] rounded-[2px] h-3.5"></div>
+          <div class="w-3 bg-[#5c3856] rounded-[2px] h-6"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client Trust Section (On pure white background, gray text, white cards with subtle shadow) -->
+    <div class="pt-6 sm:pt-10">
+      <p class="text-sm sm:text-[15px] text-[#555555] mb-6 font-normal">
+        Ellos ya digitalizaron su negocio con Flexone
+      </p>
+
+      <!-- Row of 6 white cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 items-center justify-center max-w-4xl mx-auto">
+        {clientLogos.map((client) => (
+          <div class="flex items-center justify-center p-3 sm:p-4 rounded-2xl bg-white border border-neutral-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-all h-20">
+            <img
+              src={client.src}
+              alt={client.name}
+              width="100"
+              height="35"
+              class="max-h-7 sm:max-h-8 w-auto object-contain"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+
+      <!-- Subtle bottom divider line matching reference -->
+      <div class="mt-12 sm:mt-14 border-b border-neutral-200/70 max-w-4xl mx-auto"></div>
+    </div>
+  </div>
+</section>

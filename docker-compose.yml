@@ -1,0 +1,10 @@
+services:
+  ecommerce-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: terrebleu-ecommerce-demo
+    ports:
+      - "80:80"
+      - "8080:8080"
+    restart: unless-stopped

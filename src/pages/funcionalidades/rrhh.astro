@@ -1,0 +1,262 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+import FaqAccordion from '../../components/common/FaqAccordion.svelte';
+
+const rrhhFaqs = [
+  {
+    question: '¿Odoo calcula todos los conceptos de la planilla peruana?',
+    answer: 'Sí. Con la localización de Flexone y Planiflex, calcula sueldos, asignación familiar, horas extra, comisiones, AFP (fondo, comisión y seguro), ONP, EsSalud, retención de quinta categoría con proyección mensual, gratificaciones, CTS, vacaciones y liquidaciones.'
+  },
+  {
+    question: '¿Genera los archivos para la PDT PLAME y T-Registro?',
+    answer: 'Sí. Odoo exporta directamente las estructuras de remuneraciones, días laborados y no laborados (archivos .rem, .jor, .snl) listos para importar a la PDT PLAME de la SUNAT, además de los archivos de alta y baja para el T-Registro.'
+  },
+  {
+    question: '¿Cómo se conecta con AFPnet?',
+    answer: 'El sistema genera el archivo de aportes y comisiones con la estructura oficial que exige AFPnet para validar y pagar sin necesidad de digitar manualmente a cada trabajador.'
+  },
+  {
+    question: '¿Los trabajadores pueden consultar sus boletas por sí mismos?',
+    answer: 'Sí. Cada colaborador tiene acceso al Portal del Empleado o recibe su boleta de pago firmada digitalmente por correo electrónico, registrando la fecha y hora de acuse de recibo conforme a ley.'
+  },
+  {
+    question: '¿Soporta control de asistencias y descansos médicos?',
+    answer: 'Sí. Se conecta con relojes biométricos y aplicaciones móviles, registrando tardanzas, faltas, permisos, horas extra aprobadas y descansos médicos que impactan automáticamente en la planilla del mes.'
+  },
+  {
+    question: '¿Aplica para regímenes especiales (REMYPE, Construcción o Minería)?',
+    answer: 'Totalmente. El motor de reglas salariales permite parametrizar el Régimen General, Pequeña Empresa (REMYPE), Microempresa, Régimen Minero y Agrario, adaptando los topes de ley y porcentajes de gratificación y CTS.'
+  }
+];
+
+const modules = [
+  { name: 'Planilla y Nóminas', desc: 'Sueldos, gratificaciones, CTS, vacaciones, utilidades y liquidaciones automáticas con normativa peruana.', iconPath: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+  { name: 'T-Registro y PLAME', desc: 'Estructuras de importación para SUNAT (.rem, .jor, .snl) y validación de aportes con AFPnet.', iconPath: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+  { name: 'Asistencias y Marcaciones', desc: 'Integración con biometría y turnos rotativos. Cálculo automático de horas extras diurnas y nocturnas.', iconPath: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
+  { name: 'Vacaciones y Ausencias', desc: 'Control de días ganados, descansos médicos, licencias con goce y programación anual de vacaciones.', iconPath: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
+  { name: 'Portal del Colaborador', desc: 'Boletas electrónicas en PDF con acuse de recibo, solicitud de permisos y certificados de trabajo en línea.', iconPath: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
+  { name: 'Reclutamiento y Selección', desc: 'Publicación de vacantes, seguimiento de postulantes, entrevistas y contratación con firma digital.', iconPath: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+  { name: 'Evaluaciones de Desempeño', desc: 'Gestión por objetivos (OKRs), retroalimentación 360° y planes de carrera vinculados a bonos.', iconPath: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z' },
+  { name: 'Costos de Personal a Contabilidad', desc: 'Asiento automático de provisión de planilla por centro de costo, CTS, gratificaciones y EsSalud.', iconPath: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z' }
+];
+
+const steps = [
+  { num: '1', title: 'Configurar', desc: 'Régimen laboral, contratos, conceptos remunerativos, topes de ley y cuentas contables por centro de costo.' },
+  { num: '2', title: 'Capturar', desc: 'Horas laboradas, tardanzas, descansos médicos y comisiones sincronizados desde biometría o ventas.' },
+  { num: '3', title: 'Calcular y Validar', desc: 'Procesamiento en segundos de la planilla del mes con cálculo de quinta categoría, AFP y beneficios de ley.' },
+  { num: '4', title: 'Pagar y Presentar', desc: 'Emisión de boletas digitales, archivos para PLAME, AFPnet y telecrédito bancario para pago masivo.' }
+];
+---
+
+<BaseLayout
+  title="Recursos Humanos y Planillas en Odoo (Planiflex) · Flexone"
+  description="Gestión integral de personal y nóminas peruanas en Odoo: cálculo de planilla, PLAME, AFPnet, CTS, gratificaciones, vacaciones y portal del empleado."
+>
+  <Navbar />
+
+  <main id="main">
+    <!-- Hero Section (Dark #161618) - Padding pt-44 sm:pt-44 lg:pt-48 to prevent header overlap -->
+    <section class="bg-[#161618] text-white pt-44 sm:pt-44 lg:pt-48 pb-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+      <!-- Glow effect -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-brand-cyan/10 blur-[140px] rounded-full pointer-events-none -z-10" aria-hidden="true"></div>
+
+      <div class="max-w-4xl mx-auto relative z-10">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-brand-cyan text-xs font-medium mb-6">
+          <span class="w-2 h-2 rounded-full bg-brand-cyan animate-pulse"></span>
+          <span>RR. HH. y Planillas Peruanas</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-light text-white tracking-tight mb-6 leading-tight">
+          Gestión de personal y nóminas, <br class="hidden sm:inline" />
+          <span class="font-normal text-brand-magenta">con la ley peruana al día</span>
+        </h1>
+
+        <p class="text-white/70 text-base sm:text-lg max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+          Desde el ingreso del colaborador hasta la emisión de boletas electrónicas, PLAME, AFPnet y el asiento automático de costos de planilla. Sin cálculos en hojas de cálculo ni errores de digitación.
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center gap-4 mb-14">
+          <a
+            href="/contacto"
+            class="px-8 py-3.5 rounded-full bg-brand-cyan text-[#06222b] text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-all shadow-lg hover:shadow-cyan-500/20"
+          >
+            Pedir una demostración ›
+          </a>
+          <a
+            href="/planiflex"
+            class="px-8 py-3.5 rounded-full bg-white/10 text-white text-xs font-semibold hover:bg-white/20 transition-all border border-white/20"
+          >
+            Ver módulo Planiflex →
+          </a>
+        </div>
+
+        <!-- Dashboard preview frame -->
+        <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#202124] text-left p-4 sm:p-6 text-xs text-white/80">
+          <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <span class="font-medium text-white">Nómina Mensual · Régimen General y REMYPE</span>
+            </div>
+            <span class="text-emerald-400 font-mono text-[11px] bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">PLAME & AFPnet Listo</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-[11px]">
+              <thead>
+                <tr class="text-white/40 border-b border-white/10">
+                  <th class="pb-2 font-sans">Colaborador</th>
+                  <th class="pb-2 font-sans">Cargo / Área</th>
+                  <th class="pb-2 text-right font-sans">Sueldo Base</th>
+                  <th class="pb-2 text-right font-sans">Asig. Fam.</th>
+                  <th class="pb-2 text-right font-sans">AFP / ONP</th>
+                  <th class="pb-2 text-right font-sans">5ta Cat.</th>
+                  <th class="pb-2 text-right font-sans text-brand-cyan">Neto a Pagar</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                <tr>
+                  <td class="py-2.5 text-white font-sans font-medium">Carlos Mendoza V.</td>
+                  <td class="py-2.5 text-white/60 font-sans">Jefe de Almacén</td>
+                  <td class="py-2.5 text-right">S/ 4,200.00</td>
+                  <td class="py-2.5 text-right">S/ 102.50</td>
+                  <td class="py-2.5 text-right text-rose-300">- S/ 516.30</td>
+                  <td class="py-2.5 text-right text-rose-300">- S/ 185.40</td>
+                  <td class="py-2.5 text-right font-bold text-brand-cyan">S/ 3,600.80</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 text-white font-sans font-medium">Lucía Ramos P.</td>
+                  <td class="py-2.5 text-white/60 font-sans">Analista Contable</td>
+                  <td class="py-2.5 text-right">S/ 3,500.00</td>
+                  <td class="py-2.5 text-right">S/ 102.50</td>
+                  <td class="py-2.5 text-right text-rose-300">- S/ 432.30</td>
+                  <td class="py-2.5 text-right text-rose-300">- S/ 92.10</td>
+                  <td class="py-2.5 text-right font-bold text-brand-cyan">S/ 3,078.10</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 text-white font-sans font-medium">Javier Rojas T.</td>
+                  <td class="py-2.5 text-white/60 font-sans">Ejecutivo Comercial</td>
+                  <td class="py-2.5 text-right">S/ 2,800.00</td>
+                  <td class="py-2.5 text-right">S/ 0.00</td>
+                  <td class="py-2.5 text-right text-rose-300">- S/ 364.00</td>
+                  <td class="py-2.5 text-right text-rose-300">- S/ 0.00</td>
+                  <td class="py-2.5 text-right font-bold text-brand-cyan">S/ 2,436.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Steps Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            El ciclo de nómina en <span class="font-normal text-brand-magenta">4 pasos</span>
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+          {steps.map((s) => (
+            <div class="space-y-3">
+              <div class="w-14 h-14 rounded-full bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mx-auto text-xl font-bold">
+                {s.num}
+              </div>
+              <h3 class="font-medium text-base text-brand-dark">{s.title}</h3>
+              <p class="text-xs text-brand-muted leading-relaxed font-light">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Módulos de Odoo para RR. HH. -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#f8f8f8] text-brand-dark border-t border-neutral-200/60">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Módulos integrados para <span class="font-normal text-brand-magenta">recursos humanos</span>
+          </h2>
+          <p class="text-sm text-brand-muted max-w-2xl mx-auto mt-3 font-light">
+            Planiflex y Odoo Enterprise conectan la administración del personal con la contabilidad, el banco y la SUNAT.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {modules.map((m) => (
+            <div class="p-6 rounded-2xl bg-white border border-neutral-200 hover:border-brand-magenta/40 hover:shadow-lg transition-all flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-brand-cyan/20 text-cyan-800 flex items-center justify-center mb-4">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d={m.iconPath}></path>
+                  </svg>
+                </div>
+                <h3 class="font-medium text-base text-brand-dark mb-2">{m.name}</h3>
+                <p class="text-xs text-brand-muted leading-relaxed font-light">{m.desc}</p>
+              </div>
+              <div class="mt-6 pt-4 border-t border-neutral-100">
+                <a href="/contacto" class="text-xs font-medium text-brand-magenta hover:underline inline-flex items-center gap-1">
+                  Solicitar demo →
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Deep Dive Features (Dark Section) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#202124] text-white">
+      <div class="max-w-5xl mx-auto space-y-12">
+        <div class="max-w-2xl">
+          <h2 class="text-3xl sm:text-4xl font-light text-white mb-4">
+            Beneficios de ley calculados <span class="font-normal text-brand-magenta">sin margen de error</span>
+          </h2>
+          <p class="text-white/70 text-sm sm:text-base leading-relaxed font-light">
+            Odoo aplica las fórmulas normativas del Perú automáticamente. Si la RMV cambia, el sistema actualiza la asignación familiar y los conceptos proporcionales al instante.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="p-6 rounded-2xl bg-[#292a2d] border border-white/10 space-y-3">
+            <span class="px-2.5 py-1 rounded bg-brand-cyan/20 text-brand-cyan font-mono text-xs">01</span>
+            <h3 class="text-lg font-light text-white">Gratificaciones y Bonos</h3>
+            <p class="text-xs text-white/70 leading-relaxed font-light">
+              Cálculo semestral (julio y diciembre) con bonificación extraordinaria del 9% (EsSalud) o 6.75% (EPS).
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-[#292a2d] border border-white/10 space-y-3">
+            <span class="px-2.5 py-1 rounded bg-brand-cyan/20 text-brand-cyan font-mono text-xs">02</span>
+            <h3 class="text-lg font-light text-white">Compensación por Tiempo de Servicios</h3>
+            <p class="text-xs text-white/70 leading-relaxed font-light">
+              Depósitos semestrales de CTS en mayo y noviembre, con cálculo exacto de meses y días efectivos de labor.
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-[#292a2d] border border-white/10 space-y-3">
+            <span class="px-2.5 py-1 rounded bg-brand-cyan/20 text-brand-cyan font-mono text-xs">03</span>
+            <h3 class="text-lg font-light text-white">Liquidaciones Inmediatas</h3>
+            <p class="text-xs text-white/70 leading-relaxed font-light">
+              En caso de cese, Odoo emite la liquidación de beneficios sociales truncos y el certificado de trabajo en 48 horas.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Accordion -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Preguntas frecuentes sobre <span class="font-normal text-brand-magenta">planillas en Odoo</span>
+          </h2>
+        </div>
+        <FaqAccordion client:visible items={rrhhFaqs} />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

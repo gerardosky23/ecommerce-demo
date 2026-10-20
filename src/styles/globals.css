@@ -1,29 +1,33 @@
+@import "@fontsource/poppins/300.css";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+@import "@fontsource/poppins/800.css";
 @import "tailwindcss";
 
 @theme {
-  --color-ground: #0b0d13;
-  --color-ground-deep: #050609;
-  --color-carbon: #10131c;
-  --color-ink: #ffffff;
-  --color-ink-soft: rgba(255, 255, 255, 0.74);
-  --color-ink-faint: rgba(255, 255, 255, 0.48);
-  --color-ink-ghost: rgba(255, 255, 255, 0.2);
+  --color-brand-magenta: #e0004d;
+  --color-brand-magenta-dark: #c20043;
+  --color-brand-magenta-lit: #ff1a6c;
+  --color-brand-magenta-subtle: rgba(224, 0, 77, 0.1);
 
-  --color-audi-red: #f50537;
-  --color-audi-red-lit: #ff335f;
-  --color-ascari: #2563eb;
-  --color-ascari-lit: #60a5fa;
-  --color-flame: #f50537;
-  --color-flame-lit: #ff3b5c;
+  --color-brand-dark: #202124;
+  --color-brand-dark-deep: #161618;
+  --color-brand-surface: #292a2d;
 
-  --color-glass: rgba(14, 17, 26, 0.62);
-  --color-glass-strong: rgba(8, 10, 16, 0.84);
-  --color-hair: rgba(255, 255, 255, 0.13);
-  --color-hair-soft: rgba(255, 255, 255, 0.07);
+  --color-brand-muted: #606261;
+  --color-brand-subtle: #85878a;
+  --color-brand-light: #f8f8f8;
+  --color-brand-border: #dce0e5;
+  --color-brand-border-dark: rgba(255, 255, 255, 0.08);
 
-  --font-display: 'Inter Tight', system-ui, -apple-system, sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-italic: 'Instrument Serif', Georgia, serif;
+  --color-brand-cyan: #04ffff;
+  --color-brand-cyan-dark: #00ace0;
+  --color-brand-cyan-soft: rgba(0, 172, 224, 0.1);
+
+  --font-display: 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-body: 'Poppins', system-ui, -apple-system, sans-serif;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -35,11 +39,17 @@
 
   html {
     scroll-behavior: smooth;
+    font-family: var(--font-body);
   }
 
   body {
-    @apply min-h-[100svh] bg-ground-deep text-ink font-body text-base antialiased overflow-x-hidden selection:bg-audi-red selection:text-white;
+    background-color: #ffffff;
+    color: #202124;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
 
   /* Prevenir CLS en transiciones de vista */
@@ -50,21 +60,97 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center gap-[10px] rounded-full font-body font-medium tracking-tight whitespace-nowrap transition-all duration-350 ease-[var(--ease-out)];
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+  .btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   }
 
-  .btn--light {
-    @apply py-[0.72em] px-[1.35em] bg-white text-[#07080c] shadow-[0_10px_26px_rgba(0,0,0,0.45)] hover:-translate-y-px hover:bg-[#f0f4ff] hover:shadow-[0_14px_34px_rgba(255,255,255,0.22)];
+  .btn-magenta {
+    background-color: #e0004d;
+    color: #ffffff;
+    border: 1px solid #e0004d;
+  }
+  .btn-magenta:hover {
+    background-color: #c20043;
+    border-color: #c20043;
+    box-shadow: 0 8px 24px rgba(224, 0, 77, 0.35);
   }
 
-  .btn--flame {
-    @apply py-[0.5em] pr-[0.5em] pl-[1.5em] bg-gradient-to-r from-audi-red to-audi-red-lit text-white font-semibold shadow-[0_14px_40px_rgba(245,5,55,0.38)] hover:-translate-y-[2px] hover:shadow-[0_20px_52px_rgba(245,5,55,0.58)];
+  .btn-dark {
+    background-color: #202124;
+    color: #ffffff;
+    border: 1px solid #202124;
+  }
+  .btn-dark:hover {
+    background-color: #33363b;
+    border-color: #33363b;
   }
 
-  .carbon-grid {
-    background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 48px 48px;
+  .btn-white {
+    background-color: #ffffff;
+    color: #222427;
+    border: 1px solid #ffffff;
+  }
+  .btn-white:hover {
+    background-color: #f0f0f0;
+    border-color: #f0f0f0;
+  }
+
+  .btn-cyan {
+    background-color: #04ffff;
+    color: #06222b;
+    border: 1px solid #04ffff;
+    font-weight: 600;
+  }
+  .btn-cyan:hover {
+    background-color: #2ac5f5;
+    border-color: #2ac5f5;
+  }
+
+  .btn-outline-magenta {
+    background-color: transparent;
+    color: #c20043;
+    border: 1px solid #e0004d;
+  }
+  .btn-outline-magenta:hover {
+    background-color: #e0004d;
+    color: #ffffff;
+  }
+
+  .btn-outline-dark {
+    background-color: transparent;
+    color: #202124;
+    border: 1px solid #dce0e5;
+  }
+  .btn-outline-dark:hover {
+    background-color: #f8f8f8;
+    border-color: #202124;
+  }
+
+  .btn-outline-white {
+    background-color: transparent;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+  .btn-outline-white:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
   }
 }

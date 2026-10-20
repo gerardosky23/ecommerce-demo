@@ -1,0 +1,160 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/common/Navbar.astro';
+import Footer from '../components/common/Footer.astro';
+import SubpageHero from '../components/common/SubpageHero.astro';
+import PlaniflexCalculator from '../components/common/PlaniflexCalculator.svelte';
+
+const planiflexFeatures = [
+  {
+    title: 'Cálculo de Beneficios Sociales de Ley',
+    desc: 'Gratificaciones ordinarias con bonificación extraordinaria (9% EsSalud / 6.75% EPS), Compensación por Tiempo de Servicios (CTS), vacaciones truncas y gozadas, utilidades anuales y liquidaciones automáticas.'
+  },
+  {
+    title: 'Generación Automática para PDT Plame & T-Registro',
+    desc: 'Exporta los archivos de texto (.rem, .jor, .snl, .toc, .tra) con la codificación exacta requerida por SUNAT, eliminando inconsistencias en las declaraciones mensuales.'
+  },
+  {
+    title: 'Integración Directa con AFPnet',
+    desc: 'Genera el archivo consolidado de aportes previsionales para AFPnet (Integra, Prima, Profuturo, Habitat) discriminando comisión sobre flujo/mixta, fondo y prima de seguro.'
+  },
+  {
+    title: 'Portal Web del Colaborador (Self-Service)',
+    desc: 'Los empleados acceden a su propio portal para visualizar y descargar boletas de pago firmadas digitalmente, solicitar permisos, vacaciones y constancias de trabajo.'
+  },
+  {
+    title: 'Régimen Laboral MYPE, General y Agrario',
+    desc: 'Configuración versátil de parámetros para empresas bajo Régimen General, REMYPE (Micro y Pequeña Empresa), Régimen Agrario Ley 31110 y Construcción Civil.'
+  },
+  {
+    title: 'Contabilización Automática de Planilla',
+    desc: 'Cada corrida de nómina genera de forma instantánea el asiento contable de provisión (cuenta 62 gasto de personal, 40 tributos, 41 remuneraciones) y el asiento de destino analítico.'
+  }
+];
+
+const laborRegimes = [
+  {
+    regime: 'Régimen Laboral General',
+    scope: 'Empresas no inscritas en REMYPE o con ventas mayores a 1,700 UIT',
+    benefits: ['Gratificaciones completas (2 al año)', 'CTS completa (1 sueldo al año)', '30 días de vacaciones pagadas', 'EsSalud 9% a cargo del empleador', 'Asignación Familiar (10% de RMV)']
+  },
+  {
+    regime: 'Pequeña Empresa (REMYPE)',
+    scope: 'Ventas anuales entre 150 y 1,700 UIT inscritas en el MTPE',
+    benefits: ['Media gratificación en Julio y Diciembre', 'Media CTS por año laborado', '15 días de vacaciones pagadas', 'EsSalud 9% a cargo del empleador', 'Indemnización por despido topada a 90 días']
+  },
+  {
+    regime: 'Microempresa (REMYPE)',
+    scope: 'Ventas anuales hasta 150 UIT inscritas en el MTPE',
+    benefits: ['15 días de vacaciones pagadas', 'Afiliación al SIS o EsSalud', 'No perciben gratificaciones de ley', 'No perciben CTS legal', 'Reducción drástica del sobrecosto laboral']
+  }
+];
+---
+
+<BaseLayout
+  title="Planiflex — Planillas y RR. HH. para Odoo en Perú · Flexone"
+  description="Planiflex es la solución líder de nóminas para Odoo en Perú: PDT Plame, AFPnet, T-Registro, CTS, Gratificaciones y portal del empleado."
+>
+  <Navbar />
+
+  <main id="main">
+    <SubpageHero
+      title="Planiflex: Planillas y RR. HH."
+      subtitle="Cálculo de beneficios sociales, PDT Plame, T-Registro y AFPnet 100% automatizados en Odoo."
+      icon="graduation"
+    />
+
+    <!-- Interactive Calculator Island -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <PlaniflexCalculator client:visible />
+    </section>
+
+    <!-- Features Grid -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-white text-brand-dark">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-3xl sm:text-4xl font-light text-brand-dark mb-4">
+          Todo lo que tu área de <span class="font-normal text-brand-magenta">Recursos Humanos</span> necesita
+        </h2>
+        <p class="text-brand-muted text-base font-light leading-relaxed">
+          Diseñado por contadores especialistas en derecho laboral peruano e ingenieros certificados de Odoo.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {planiflexFeatures.map((f) => (
+          <article class="p-8 rounded-2xl bg-neutral-50 border border-brand-border hover:shadow-md hover:border-brand-magenta/30 transition-all">
+            <h3 class="font-medium text-lg text-brand-dark mb-3">
+              {f.title}
+            </h3>
+            <p class="text-brand-muted text-sm leading-relaxed font-light">
+              {f.desc}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Regímenes Especiales -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50 border-y border-brand-border text-brand-dark">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark mb-4">
+            Adaptado a los regímenes laborales del Perú
+          </h2>
+          <p class="text-brand-muted text-base font-light leading-relaxed">
+            Planiflex gestiona de forma simultánea empleados bajo diferentes modalidades contractuales en una sola empresa.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {laborRegimes.map((r) => (
+            <article class="p-8 rounded-2xl bg-white border border-brand-border flex flex-col justify-between shadow-sm">
+              <div>
+                <h3 class="font-medium text-xl text-brand-dark mb-2">{r.regime}</h3>
+                <p class="text-brand-muted text-xs mb-6 pb-4 border-b border-neutral-100 font-light">{r.scope}</p>
+
+                <ul class="space-y-2.5 mb-6 text-xs text-brand-dark font-light">
+                  {r.benefits.map((b) => (
+                    <li class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta shrink-0"></span>
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div class="pt-4 border-t border-neutral-100">
+                <a
+                  href="/contacto"
+                  class="block text-center py-2.5 px-4 rounded bg-brand-dark text-white text-xs font-semibold uppercase tracking-wider hover:bg-black transition-colors"
+                >
+                  Consultar configuración
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Callout -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-white text-center">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl sm:text-3xl font-light text-brand-dark mb-4">
+          Automatiza la planilla de tu empresa con Planiflex
+        </h2>
+        <p class="text-brand-muted text-sm font-light mb-8">
+          Coordina una demostración en vivo con nuestros especialistas en nómina y liquidaciones.
+        </p>
+        <a
+          href="/contacto"
+          class="px-6 py-3 rounded bg-brand-magenta text-white text-xs font-semibold uppercase tracking-wider hover:bg-brand-magenta-dark transition-colors shadow-md"
+        >
+          Solicitar demostración Planiflex
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

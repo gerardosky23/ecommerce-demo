@@ -1,22 +1,59 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Navbar from '../components/Navbar.svelte';
-import Hero from '../components/Hero.svelte';
-import AudiShowroom from '../components/AudiShowroom.svelte';
-import EngineeringBento from '../components/EngineeringBento.svelte';
-import DriveSelectLab from '../components/DriveSelectLab.svelte';
-import ModelComparator from '../components/ModelComparator.svelte';
-import VipBooking from '../components/VipBooking.svelte';
+import '../styles/terrebleu.css';
+import StoreApp from '../components/store/StoreApp.svelte';
 ---
 
-<Layout title="Audi R8 V10 Performance quattro — Showroom Interactivo 1080p">
-  <Navbar client:idle />
-  <main id="main">
-    <Hero client:load />
-    <AudiShowroom client:load />
-    <EngineeringBento client:visible />
-    <DriveSelectLab client:visible />
-    <ModelComparator client:visible />
-    <VipBooking client:visible />
-  </main>
-</Layout>
+<!doctype html>
+<html lang="es" class="bg-[#090a0f]">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="https://www.terrebleu.ca/cdn/shop/files/Terre_Bleu_REBRAND_ddaec335-2294-4f47-bca4-e71dd6775e7a.svg?v=1738957020" />
+    <title>Terre Bleu — Lavanda Pura & Bienestar Botánico</title>
+    <meta name="description" content="Maqueta interactiva de ecommerce inspirada en Terre Bleu con inventario y ventas en tiempo real." />
+    <meta name="theme-color" content="#090a0f" />
+
+    <!-- Google Fonts: Inter & Playfair Display for Serene Botanical Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <style is:global>
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+      img, svg, video {
+        display: block;
+        max-width: 100%;
+      }
+      /* Regla de Oro AGENTS.md para compatibilidad multi-motor (Firefox/Gecko/WebKit) */
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        max-width: 100vw;
+        min-height: 100%;
+        overflow-x: clip;
+        overflow-y: visible;
+        background-color: #090a0f;
+        color: #f1f5f9;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      }
+
+      .font-serif {
+        font-family: 'Playfair Display', Georgia, serif;
+      }
+
+      /* Tabular nums for prices, metrics, and stock */
+      .tabular-nums {
+        font-variant-numeric: tabular-nums;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-[#090a0f] text-slate-200 antialiased">
+    <StoreApp client:load />
+  </body>
+</html>

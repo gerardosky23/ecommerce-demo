@@ -1,0 +1,419 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+import FaqAccordion from '../../components/common/FaqAccordion.svelte';
+
+const faqs = [
+  {
+    question: '¿Odoo calcula la planilla peruana?',
+    answer: 'Sí, con la localización peruana: sueldos, asignación familiar, AFP u ONP, EsSalud, quinta categoría, gratificaciones, CTS, vacaciones, utilidades y liquidaciones, con los conceptos oficiales de la SUNAT.'
+  },
+  {
+    question: '¿Genera los archivos de la PLAME?',
+    answer: 'Sí. Los archivos de remuneraciones, jornada, días no laborados y otras condiciones salen del cálculo del mes, junto con el archivo de AFPnet para las administradoras de fondos de pensiones.'
+  },
+  {
+    question: '¿Qué pasa cuando sube el sueldo mínimo?',
+    answer: 'Se actualiza el valor en una tabla central y la planilla de ese mes ya lo usa: la asignación familiar y los conceptos que dependen de la RMV se recalculan automáticamente sin alterar código.'
+  },
+  {
+    question: '¿Sirve para empresas mineras?',
+    answer: 'Sí. El régimen minero incluye el fondo complementario de jubilación minera y sus propias reglas de cómputo en vacaciones, jornadas acumulativas y liquidaciones.'
+  },
+  {
+    question: '¿Los trabajadores reciben la boleta por correo?',
+    answer: 'Sí. Cada boleta electrónica en PDF se envía por correo al trabajador, quien confirma la recepción con un enlace registrando la fecha y hora de acuse.'
+  }
+];
+
+const regimes = [
+  { name: 'Régimen General', desc: 'Gratificación completa, CTS semestral, 30 días de vacaciones y asignación familiar.' },
+  { name: 'Pequeña Empresa (REMYPE)', desc: 'Media gratificación, media CTS, 15 días de vacaciones y seguro de salud EsSalud/SIS.' },
+  { name: 'Microempresa (REMYPE)', desc: '15 días de vacaciones continuas, cobertura SIS y exención de gratificación y CTS.' },
+  { name: 'Régimen Minero', desc: 'Fondo complementario de jubilación minera, remuneración mínima minera y turnos atípicos.' }
+];
+
+const payrollScenarios = [
+  {
+    title: 'Actualización RMV (S/ 1,230)',
+    desc: 'La asignación familiar pasa a S/ 123.00, recalculando gratificaciones, CTS, vacaciones y horas extra de forma automática.',
+    badge: 'Normativa Vigente'
+  },
+  {
+    title: 'Gestión REMYPE',
+    desc: 'Pequeña y microempresa aplican sus reglas sin ajustes manuales. Los topes y porcentajes de ley se respetan por contrato.',
+    badge: 'MYPE'
+  },
+  {
+    title: 'Régimen Minero',
+    desc: 'Cálculo del fondo complementario de jubilación minera, sobretiempos en campamento y descansos compensatorios.',
+    badge: 'Especial'
+  },
+  {
+    title: 'Bonos y Comisiones',
+    desc: 'Remuneraciones variables y su incidencia en el promedio computable de gratificación y compensación por tiempo de servicios.',
+    badge: 'Variables'
+  },
+  {
+    title: 'Renuncias y Despidos',
+    desc: 'Liquidación de beneficios sociales inmediata con cálculo de truncos, deducciones y emisión de carta de liberación de CTS.',
+    badge: 'Cese'
+  },
+  {
+    title: 'Préstamos y Adelantos',
+    desc: 'Descuentos en cuotas automáticas sobre sueldo regular o gratificaciones, sin planillas paralelas en hojas de cálculo.',
+    badge: 'Descuentos'
+  },
+  {
+    title: 'Subsidios y Maternidad',
+    desc: 'Días subsidiados por EsSalud (descanso médico pre y posnatal) con exclusión automática del cómputo de aportes afectos.',
+    badge: 'EsSalud'
+  }
+];
+
+const closeSteps = [
+  {
+    step: '01',
+    title: 'Desde las asistencias',
+    desc: 'Días trabajados, tardanzas, faltas y horas extra importadas desde relojes biométricos o aprobadas en el portal.'
+  },
+  {
+    step: '02',
+    title: 'Cálculo completo',
+    desc: 'Sueldo básico, asignación familiar, retención AFP/ONP, 5ta categoría, aportes EsSalud y provisión de beneficios.'
+  },
+  {
+    step: '03',
+    title: 'Declaración lista',
+    desc: 'Estructuras TXT automáticas para la PLAME (T-Registro / PDT 601) y archivo de pago masivo para AFPnet.'
+  },
+  {
+    step: '04',
+    title: 'Pago al banco',
+    desc: 'Archivos de telecrédito masivo compatibles con BCP, BBVA, Interbank, Scotiabank y BanBif.'
+  }
+];
+---
+
+<BaseLayout
+  title="Sistema de Planillas para el Perú · Flexone"
+  description="Software de planillas integrado con Odoo para empresas en Perú: cálculo normativo, boletas electrónicas, PLAME, AFPnet, CTS y gratificaciones."
+>
+  <Navbar />
+
+  <main id="main">
+    <!-- Hero Section -->
+    <section class="bg-[#161618] text-white pt-44 sm:pt-44 lg:pt-48 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <!-- Left Column -->
+        <div class="lg:col-span-7">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-brand-magenta text-xs font-medium mb-6">
+            <span>Localización Laboral · Perú</span>
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight mb-6 leading-tight">
+            Sistema de planillas <br />
+            <span class="font-normal text-brand-magenta">para el Perú</span>
+          </h1>
+
+          <p class="text-white/80 text-base sm:text-lg mb-8 font-light leading-relaxed max-w-2xl">
+            Al día con cada norma laboral peruana. La legislación cambia con frecuencia y un error impacta dos veces: con el colaborador y ante SUNAT/SUNAFIL. Sueldos, beneficios, retenciones y aportes se calculan con exactitud matemática, generando boletas, declaraciones y archivos bancarios con un solo clic.
+          </p>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+            {regimes.map((r) => (
+              <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+                <span class="text-xs font-medium text-white block mb-1">{r.name}</span>
+                <span class="text-[11px] text-white/60 font-light leading-tight block">{r.desc}</span>
+              </div>
+            ))}
+          </div>
+
+          <div class="flex items-center gap-4">
+            <a
+              href="/contacto"
+              class="px-6 py-3 rounded-full bg-brand-magenta text-white text-xs font-medium uppercase tracking-wider hover:bg-brand-magenta-hover transition-colors shadow-lg"
+            >
+              Pedir una demostración ›
+            </a>
+            <a
+              href="https://wa.me/51917573821"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="px-6 py-3 rounded-full bg-white/10 text-white text-xs font-medium uppercase tracking-wider hover:bg-white/20 transition-colors border border-white/20"
+            >
+              Consultar por WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Column: Demo Form Card -->
+        <div class="lg:col-span-5" id="demostracion">
+          <div class="bg-white rounded-2xl p-6 sm:p-8 text-brand-dark shadow-2xl border border-neutral-100">
+            <h2 class="text-xl font-medium text-brand-dark mb-2">
+              Una demostración con la planilla de tu empresa
+            </h2>
+            <p class="text-xs text-brand-muted mb-6 font-light">
+              Sin costo ni compromiso. Simulamos tus conceptos laborales reales en Odoo.
+            </p>
+
+            <form class="space-y-4" action="/contacto" method="GET">
+              <div>
+                <label for="plan-name" class="block text-xs font-medium text-brand-dark mb-1">Nombre completo *</label>
+                <input
+                  id="plan-name"
+                  type="text"
+                  required
+                  placeholder="Ej. Roberto Sánchez"
+                  class="w-full px-3 py-2.5 rounded-lg border border-neutral-300 text-xs focus:outline-none focus:border-brand-magenta transition-colors"
+                />
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label for="plan-email" class="block text-xs font-medium text-brand-dark mb-1">Correo corporativo *</label>
+                  <input
+                    id="plan-email"
+                    type="email"
+                    required
+                    placeholder="roberto@empresa.pe"
+                    class="w-full px-3 py-2.5 rounded-lg border border-neutral-300 text-xs focus:outline-none focus:border-brand-magenta transition-colors"
+                  />
+                </div>
+                <div>
+                  <label for="plan-phone" class="block text-xs font-medium text-brand-dark mb-1">Teléfono / Celular *</label>
+                  <input
+                    id="plan-phone"
+                    type="tel"
+                    required
+                    placeholder="+51 987 654 321"
+                    class="w-full px-3 py-2.5 rounded-lg border border-neutral-300 text-xs focus:outline-none focus:border-brand-magenta transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label for="plan-company" class="block text-xs font-medium text-brand-dark mb-1">Empresa y N° de trabajadores *</label>
+                <input
+                  id="plan-company"
+                  type="text"
+                  required
+                  placeholder="Ej. Textil Andina SAC (45 trabajadores)"
+                  class="w-full px-3 py-2.5 rounded-lg border border-neutral-300 text-xs focus:outline-none focus:border-brand-magenta transition-colors"
+                />
+              </div>
+
+              <button
+                type="submit"
+                class="w-full py-3 px-4 rounded-full bg-brand-magenta text-white font-medium text-xs uppercase tracking-wider hover:bg-brand-magenta-hover transition-colors shadow-md mt-2"
+              >
+                Solicitar Demostración de Planillas ›
+              </button>
+
+              <p class="text-[11px] text-center text-neutral-400 font-light mt-2">
+                Información tratada bajo estricto acuerdo de confidencialidad.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Casos Resueltos -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="text-xs font-semibold text-brand-magenta uppercase tracking-wider mb-2">Casuística Compleja</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Lo que pasa en la planilla, <span class="font-normal text-brand-magenta">resuelto</span>
+          </h2>
+          <p class="text-brand-muted text-sm mt-3 font-light">
+            Las reglas laborales peruanas contemplan decenas de excepciones. Nuestro módulo las resuelve por configuración, no con parches manuales.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {payrollScenarios.map((item) => (
+            <div class="p-6 rounded-2xl bg-neutral-50 border border-neutral-200 hover:border-brand-magenta/40 hover:shadow-sm transition-all flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-[11px] font-semibold text-brand-magenta bg-brand-magenta/10 px-2.5 py-0.5 rounded-full">
+                    {item.badge}
+                  </span>
+                </div>
+                <h3 class="text-base font-medium text-brand-dark mb-2">{item.title}</h3>
+                <p class="text-xs text-brand-muted font-light leading-relaxed">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Cierre de Mes (4 Steps) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50 text-brand-dark border-t border-neutral-200">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="text-xs font-semibold text-brand-cyan uppercase tracking-wider mb-2">Automatización de Fin de Mes</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Cerrar el mes <span class="font-normal text-brand-magenta">sin volver a digitar nada</span>
+          </h2>
+          <p class="text-brand-muted text-sm mt-3 font-light">
+            Flujo continuo desde el control de asistencias hasta la contabilidad general de la empresa.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {closeSteps.map((s) => (
+            <div class="p-6 rounded-2xl bg-white border border-neutral-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <span class="text-2xl font-mono text-brand-cyan font-semibold block mb-2">{s.step}</span>
+                <h3 class="text-base font-medium text-brand-dark mb-2">{s.title}</h3>
+                <p class="text-xs text-brand-muted font-light leading-relaxed">{s.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Employee Transparency (Boletas + 5ta) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-6">
+          <div class="text-xs font-semibold text-brand-magenta uppercase tracking-wider mb-2">Transparencia para el Colaborador</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark mb-6">
+            Lo que más preguntan <span class="font-normal text-brand-magenta">los trabajadores</span>
+          </h2>
+          <p class="text-brand-muted text-sm leading-relaxed font-light mb-6">
+            «¿Por qué me descontaron esto?», «¿cuánto me toca de gratificación?», «¿cómo calcularon mi quinta?». Cuando el cálculo es claro y la boleta está desglosada por concepto oficial, el equipo de RR. HH. deja de perder horas respondiendo consultas repetitivas.
+          </p>
+
+          <div class="space-y-4">
+            <div class="p-4 rounded-xl bg-neutral-50 border border-neutral-200">
+              <h3 class="text-sm font-medium text-brand-dark mb-1">Boletas con acuse de recibo electrónico</h3>
+              <p class="text-xs text-brand-muted font-light leading-relaxed">
+                Envío masivo por correo electrónico en formato PDF. El colaborador confirma la recepción con un solo clic y queda registrada la fecha y hora ante SUNAFIL.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-neutral-50 border border-neutral-200">
+              <h3 class="text-sm font-medium text-brand-dark mb-1">Retención de 5ta categoría proyectada mes a mes</h3>
+              <p class="text-xs text-brand-muted font-light leading-relaxed">
+                El algoritmo proyecta los ingresos anuales y recalcula las retenciones mensuales evitando deducciones desproporcionadas en el mes de diciembre.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-neutral-50 border border-neutral-200">
+              <h3 class="text-sm font-medium text-brand-dark mb-1">Liquidaciones de beneficios sociales instantáneas</h3>
+              <p class="text-xs text-brand-muted font-light leading-relaxed">
+                Cálculo de vacaciones no gozadas, truncas, CTS y gratificación proporcional emitidas dentro del plazo de 48 horas con certificados de trabajo y cartas de liberación.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6">
+          <div class="rounded-2xl overflow-hidden border border-neutral-200 shadow-xl bg-neutral-100">
+            <img
+              src="/secciones/boleta-de-pago-odoo.webp"
+              alt="Boleta de Pago Odoo Perú"
+              width="600"
+              height="450"
+              class="w-full h-auto object-cover"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Provisiones y Centros de Costo -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#161618] text-white">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-6">
+          <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#202124]">
+            <img
+              src="/secciones/costo-planilla-area-odoo.webp"
+              alt="Costo de planilla por área"
+              width="600"
+              height="400"
+              class="w-full h-auto object-cover"
+            />
+          </div>
+        </div>
+
+        <div class="lg:col-span-6">
+          <div class="text-xs font-semibold text-brand-cyan uppercase tracking-wider mb-2">Control Financiero</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-white mb-6">
+            Beneficios sociales y el <span class="font-normal text-brand-magenta">costo real del personal</span>
+          </h2>
+          <p class="text-white/70 text-sm leading-relaxed font-light mb-6">
+            Por cada sol de sueldo bruto, la empresa asume aportes de seguridad social y provisiones de beneficios. Odoo calcula la provisión mensual contable de CTS, gratificaciones y vacaciones distribuyéndola por centros de costos, líneas de negocio o proyectos en tiempo real.
+          </p>
+
+          <ul class="space-y-3">
+            <li class="flex items-center gap-3 text-xs sm:text-sm text-white/90">
+              <svg class="w-4 h-4 text-brand-cyan shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <span>Provisión mensual automática de CTS (Mayo / Noviembre)</span>
+            </li>
+            <li class="flex items-center gap-3 text-xs sm:text-sm text-white/90">
+              <svg class="w-4 h-4 text-brand-cyan shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <span>Provisión mensual de Gratificación con bonificación extraordinaria (9% EsSalud / 6.75% EPS)</span>
+            </li>
+            <li class="flex items-center gap-3 text-xs sm:text-sm text-white/90">
+              <svg class="w-4 h-4 text-brand-cyan shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <span>Asiento contable automático de planilla y cargas sociales distribuido por cuentas del PCGE</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: FAQs -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <div class="text-xs font-semibold text-brand-magenta uppercase tracking-wider mb-2">Dudas Habituales</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Preguntas sobre la <span class="font-normal text-brand-magenta">planilla en Odoo</span>
+          </h2>
+          <p class="text-brand-muted text-sm mt-3 font-light">
+            Todo lo que tu equipo de recursos humanos y contabilidad debe saber.
+          </p>
+        </div>
+
+        <FaqAccordion client:visible items={faqs} />
+      </div>
+    </section>
+
+    <!-- Section 7: Final CTA -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#161618] text-white text-center">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl sm:text-4xl font-light text-white mb-4">
+          La planilla de tu empresa, <span class="font-normal text-brand-magenta">automatizada y sin errores</span>
+        </h2>
+        <p class="text-white/70 text-sm font-light leading-relaxed mb-8 max-w-xl mx-auto">
+          Coordina una sesión técnica de 30 minutos para ver una demostración con las reglas laborales específicas de tu régimen.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href="/contacto"
+            class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-brand-magenta text-white text-xs font-medium uppercase tracking-wider hover:bg-brand-magenta-hover transition-colors shadow-lg"
+          >
+            Agendar Demostración de Planillas ›
+          </a>
+          <a
+            href="https://wa.me/51917573821"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/10 text-white text-xs font-medium uppercase tracking-wider hover:bg-white/20 transition-colors border border-white/20"
+          >
+            Hablar por WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+import SubpageHero from '../../components/common/SubpageHero.astro';
+import UnderConstructionCard from '../../components/common/UnderConstructionCard.astro';
+---
+
+<BaseLayout
+  title="Desarrollo a medida · Flexone"
+  description="Desarrollo de módulos Odoo a medida, integraciones API y reportes específicos para empresas peruanas."
+>
+  <Navbar />
+
+  <main id="main">
+    <SubpageHero
+      title="Desarrollo a medida"
+      subtitle="Odoo se adapta a tus procesos, no al revés."
+      icon="code"
+    />
+
+    <UnderConstructionCard />
+  </main>
+
+  <Footer />
+</BaseLayout>

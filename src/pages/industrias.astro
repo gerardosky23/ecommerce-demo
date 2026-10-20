@@ -1,0 +1,162 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/common/Navbar.astro';
+import Footer from '../components/common/Footer.astro';
+
+const conExperiencia = [
+  {
+    icon: 'cone',
+    title: 'Supervisión de obras públicas',
+    desc: 'Cargos, cuadernos de obra, asistencia en campo y concursos de especialistas.'
+  },
+  {
+    icon: 'bus',
+    title: 'Turismo receptivo y transporte',
+    desc: 'Files, viajes, flota, liquidaciones por operador y app para conductores.'
+  },
+  {
+    icon: 'box',
+    title: 'Manufactura de plásticos y empaque',
+    desc: 'Extrusión, impresión, laminado y corte con listas de materiales multinivel.'
+  },
+  {
+    icon: 'bank',
+    title: 'Sector público: planeamiento y presupuesto',
+    desc: 'Planeamiento, presupuesto y capacitación para entidades del Estado.'
+  },
+  {
+    icon: 'heart',
+    title: 'Salud y dispositivos médicos',
+    desc: 'Ventas, regulatorio y finanzas para distribuidores y clínicas.'
+  },
+  {
+    icon: 'eyedropper',
+    title: 'Laboratorios y servicios técnicos',
+    desc: 'CRM, rendiciones de gastos y control de servicios.'
+  },
+  {
+    icon: 'minecart',
+    title: 'Minería y contratistas mineros',
+    desc: 'Costos por centro de costo, compras y personal en unidad.'
+  },
+  {
+    icon: 'truck',
+    title: 'Logística y flotas',
+    desc: 'Flota con GPS, combustible, mantenimiento y sala de control.'
+  },
+  {
+    icon: 'bag',
+    title: 'Moda y comercio electrónico',
+    desc: 'Tienda en línea, catálogo por estilos y configurador de prendas.'
+  }
+];
+
+const tambienAtendemos = [
+  {
+    icon: 'box',
+    title: 'Distribuidoras',
+    desc: 'Ventas por ruta, inventario multialmacén y cobranzas.'
+  },
+  {
+    icon: 'shop',
+    title: 'Retail',
+    desc: 'Punto de venta, promociones y reposición.'
+  },
+  {
+    icon: 'egg',
+    title: 'Alimentos',
+    desc: 'Lotes, caducidades y producción por recetas.'
+  },
+  {
+    icon: 'buildings',
+    title: 'Constructoras',
+    desc: 'Presupuestos de obra, compras y avance por proyecto.'
+  },
+  {
+    icon: 'graduation',
+    title: 'Educación',
+    desc: 'Matrículas, cobranzas y gestión académica básica.'
+  },
+  {
+    icon: 'briefcase',
+    title: 'Servicios profesionales',
+    desc: 'Horas facturables, proyectos y contratos recurrentes.'
+  },
+  {
+    icon: 'rocket',
+    title: 'Startups',
+    desc: 'Arranque rápido con lo esencial y crecimiento por módulos.'
+  }
+];
+---
+
+<BaseLayout
+  title="Industrias · Flexone"
+  description="Odoo se adapta al rubro, no al revés. Estas son las industrias donde Flexone ya trabajó y las que atiende con la misma base."
+>
+  <Navbar />
+
+  <main id="main">
+    <!-- Header matching flexone.pe -->
+    <section class="bg-[#191b1d] text-white pt-44 sm:pt-44 lg:pt-48 pb-16 lg:pb-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden" data-bs-theme="dark">
+      <div class="max-w-4xl mx-auto relative z-10">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight mb-3">
+          Industrias
+        </h1>
+        <p class="text-white/80 text-base sm:text-lg max-w-2xl mx-auto font-light leading-relaxed">
+          Odoo se adapta al rubro, no al revés. Estas son las industrias donde Flexone ya trabajó y las que atiende con la misma base.
+        </p>
+      </div>
+    </section>
+
+    <!-- Con experiencia section -->
+    <section class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-[1300px] mx-auto">
+        <div class="max-w-3xl mb-8">
+          <h2 class="text-2xl sm:text-3xl font-semibold text-brand-dark mb-1">Con experiencia</h2>
+          <p class="text-neutral-600 text-sm font-light">Implementaciones hechas, con procesos y desarrollos propios de cada sector.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {conExperiencia.map((item) => (
+            <div class="rounded-xl border border-neutral-200/90 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div class="w-10 h-10 rounded-lg bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-4">
+                <svg class="w-5 h-5 fill-none stroke-current" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-brand-dark mb-2">{item.title}</h3>
+              <p class="text-neutral-600 text-xs sm:text-[13px] leading-relaxed font-light">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- También atendemos section -->
+    <section class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50/70 border-t border-neutral-200/80 text-brand-dark">
+      <div class="max-w-[1300px] mx-auto">
+        <div class="max-w-3xl mb-8">
+          <h2 class="text-2xl sm:text-3xl font-semibold text-brand-dark mb-1">También atendemos</h2>
+          <p class="text-neutral-600 text-sm font-light">Rubros donde Odoo resuelve bien con la configuración estándar y pocos ajustes.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {tambienAtendemos.map((item) => (
+            <div class="rounded-xl border border-neutral-200/80 bg-white p-5 shadow-sm">
+              <div class="text-brand-magenta mb-3">
+                <svg class="w-6 h-6 fill-none stroke-current" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+              <h3 class="text-base font-semibold text-brand-dark mb-1">{item.title}</h3>
+              <p class="text-neutral-500 text-xs leading-relaxed font-light">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

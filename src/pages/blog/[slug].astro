@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+
+export function getStaticPaths() {
+  return [
+    {
+      params: { slug: 'diferencia-entre-factura-y-boleta' },
+      props: {
+        title: 'Factura, boleta o nota de crédito: qué comprobante emitir en cada caso según SUNAT',
+        category: 'Facturación electrónica',
+        date: '6 de octubre de 2026',
+        readTime: '6 min de lectura',
+        content: `
+          <p class="lead text-lg text-brand-dark mb-6 font-normal">En el régimen tributario peruano, la emisión correcta de comprobantes de pago es un pilar fundamental para evitar contingencias fiscales, reparos en el Impuesto a la Renta y pérdida del crédito fiscal del IGV.</p>
+          
+          <h2 class="text-2xl font-light text-brand-dark mt-8 mb-4">1. La Factura Electrónica: Uso exclusivo para empresas y actividades comerciales</h2>
+          <p class="mb-4 text-brand-muted font-light leading-relaxed">La factura electrónica (Tipo 01) se debe emitir a favor del adquirente que posea número de RUC activo y habido, y que requiera sustentar crédito fiscal del IGV o costo/gasto para efectos del Impuesto a la Renta de Tercera Categoría.</p>
+          <p class="mb-6 text-brand-muted font-light leading-relaxed">En Odoo ERP, la validación del RUC se realiza en tiempo real conectándose directamente con la base de datos de la SUNAT, garantizando que los datos fiscales de la contraparte sean fidedignos antes del timbrado UBL 2.1.</p>
+
+          <h2 class="text-2xl font-light text-brand-dark mt-8 mb-4">2. La Boleta de Venta: Consumo final y personas naturales</h2>
+          <p class="mb-4 text-brand-muted font-light leading-relaxed">La boleta de venta (Tipo 03) está dirigida exclusivamente a consumidores o usuarios finales. No otorga derecho a deducir crédito fiscal ni a sustentar costo tributario, salvo en casos especiales normados por el régimen especial o personas con rentas de cuarta/quinta categoría.</p>
+          <p class="mb-6 text-brand-muted font-light leading-relaxed">Cuando el importe total de la boleta de venta supera los S/ 700.00, es obligatorio consignar los datos de identificación del cliente (DNI o Pasaporte/Carnet de Extranjería).</p>
+
+          <h2 class="text-2xl font-light text-brand-dark mt-8 mb-4">3. Ventajas de la automatización en Odoo con Flexone</h2>
+          <p class="mb-4 text-brand-muted font-light leading-relaxed">Con la localización peruana de Flexone, el sistema selecciona automáticamente el tipo de comprobante adecuado según si el contacto registrado tiene RUC o DNI, controlando las series correlativas autorizadas y emitiendo el XML firmado al instante.</p>
+        `
+      }
+    },
+    {
+      params: { slug: 'como-se-estan-preparando-las-empresas-para-competir-en-2026' },
+      props: {
+        title: 'Cómo se están preparando las empresas para competir en 2026',
+        category: 'Gestión y transformación digital',
+        date: '7 de enero de 2026',
+        readTime: '7 min de lectura',
+        content: `
+          <p class="lead text-lg text-brand-dark mb-6 font-normal">El entorno macroeconómico y tecnológico de 2026 exige mayor productividad con estructuras de costos más esbeltas. Las empresas peruanas que lideran sus sectores están reemplazando sistemas aislados por soluciones ERP integradas.</p>
+          
+          <h2 class="text-2xl font-light text-brand-dark mt-8 mb-4">1. Automatización punta a punta sin hojas de cálculo intermedias</h2>
+          <p class="mb-4 text-brand-muted font-light leading-relaxed">El costo de la doble digitación y el error humano en inventarios y facturación representa hasta un 8% de los márgenes brutos en pymes comerciales. La sincronización entre compras, almacén y ventas elimina las demoras en entregas.</p>
+
+          <h2 class="text-2xl font-light text-brand-dark mt-8 mb-4">2. Cumplimiento tributario en tiempo real (SIRE & GRE)</h2>
+          <p class="mb-4 text-brand-muted font-light leading-relaxed">El endurecimiento de las validaciones electrónicas de SUNAT hace indispensable que el ERP genere las estructuras de los registros de compras y ventas de forma nativa sin depender de conversiones externas.</p>
+
+          <h2 class="text-2xl font-light text-brand-dark mt-8 mb-4">3. Adopción ágil con financiamiento estatal</h2>
+          <p class="mb-4 text-brand-muted font-light leading-relaxed">A través de los concursos de ProInnóvate Perú, decenas de empresas están logrando subsidiar hasta el 70% de la consultoría de implementación de Odoo ERP, convirtiendo la modernización tecnológica en una inversión de altísimo retorno.</p>
+        `
+      }
+    },
+    {
+      params: { slug: 'el-rol-del-gerente-en-2026-menos-control-mas-estrategia' },
+      props: {
+        title: 'El rol del gerente en 2026: menos control, más estrategia',
+        category: 'Gestión y transformación digital',
+        date: '4 de febrero de 2026',
+        readTime: '6 min de lectura',
+        content: `
+          <p class="lead text-lg text-brand-dark mb-6 font-normal">Los gerentes generales y directores ejecutivos no deberían destinar sus mañanas a pedir reportes de cobranza o revisar existencias en Excel. En 2026, la información debe estar disponible al instante en tableros ejecutivos en vivo.</p>
+          
+          <h2 class="text-2xl font-light text-brand-dark mt-8 mb-4">1. De la reacción a la anticipación con tableros ejecutivos</h2>
+          <p class="mb-4 text-brand-muted font-light leading-relaxed">Con Odoo ERP, las métricas clave (KPIs) de liquidez, ventas diarias, rotación de inventarios y márgenes por línea de negocio se actualizan con cada transacción realizada en la empresa.</p>
+
+          <h2 class="text-2xl font-light text-brand-dark mt-8 mb-4">2. Descentralización operativa con controles estrictos</h2>
+          <p class="mb-4 text-brand-muted font-light leading-relaxed">Las matrices de aprobación en Odoo permiten que los jefes de área autoricen compras, descuentos y órdenes de pago dentro de límites preestablecidos, liberando tiempo valioso de la alta gerencia.</p>
+        `
+      }
+    }
+  ];
+}
+
+const { title, category, date, readTime, content } = Astro.props;
+---
+
+<BaseLayout
+  title={`${title} · Flexone Blog`}
+  description={`Lee el artículo: ${title}. Flexone Silver Partner Oficial de Odoo en Perú.`}
+>
+  <Navbar />
+
+  <main id="main">
+    <!-- Post Hero (Dark #161618) with standardized pt-44 sm:pt-44 lg:pt-48 -->
+    <section class="bg-[#161618] text-white pt-44 sm:pt-44 lg:pt-48 pb-16 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+      <div class="max-w-4xl mx-auto relative z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-medium mb-6">
+          <span>{category}</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight leading-tight mb-6 max-w-3xl mx-auto">
+          {title}
+        </h1>
+
+        <div class="flex items-center justify-center gap-3 text-xs text-white/70 font-light">
+          <span>{date}</span>
+          <span>•</span>
+          <span>{readTime}</span>
+        </div>
+      </div>
+    </section>
+
+    <article class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto bg-white text-brand-dark">
+
+      <div class="p-8 sm:p-12 rounded-2xl bg-neutral-50 border border-brand-border leading-relaxed font-light text-sm sm:text-base space-y-4" set:html={content} />
+
+      <div class="mt-12 text-center">
+        <a href="/blog" class="inline-flex items-center gap-2 text-xs font-semibold text-brand-magenta hover:underline">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 rotate-180">
+            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+          <span>Volver al listado del blog</span>
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</BaseLayout>

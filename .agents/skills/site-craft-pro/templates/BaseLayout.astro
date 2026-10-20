@@ -1,0 +1,46 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/globals.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  siteSlug?: string;
+  backofficeUrl?: string;
+}
+
+const {
+  title = "Empresa — Soluciones de Vanguardia",
+  description = "Soluciones tecnológicas y operativas de alta gama.",
+  siteSlug = "demo-site",
+  backofficeUrl = "http://localhost:8090"
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#161618" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <!-- Astro 5 ClientRouter View Transitions -->
+    <ClientRouter />
+
+    <!-- Backoffice Universal Embed Script (Contact Rail, WhatsApp QR, Chatwoot, Logo Sync) -->
+    <script src={`${backofficeUrl}/embed.js?site=${siteSlug}`} defer></script>
+  </head>
+  <body class="min-h-screen bg-white text-slate-900 font-sans antialiased flex flex-col selection:bg-brand-primary selection:text-slate-900">
+    <a class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 z-[100] px-4 py-2.5 rounded-full bg-brand-primary text-slate-900 text-sm font-bold shadow-lg" href="#main">
+      Saltar al contenido principal
+    </a>
+
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,86 @@
+---
+const comparisonRows = [
+  {
+    feature: 'Tus procesos',
+    closed: 'La empresa se adapta al sistema rígido',
+    flexone: 'El sistema se adapta a tu operación exacta'
+  },
+  {
+    feature: 'Reportes y analítica',
+    closed: 'Solo los formatos que trae de fábrica',
+    flexone: 'Dashboards a medida que tu gerencia necesita'
+  },
+  {
+    feature: 'Crecimiento del negocio',
+    closed: 'Comprar otro sistema o migrar cuando creces',
+    flexone: 'Activas el siguiente módulo sobre la misma base'
+  },
+  {
+    feature: 'Personal de campo y logística',
+    closed: 'Sin app o requiriendo software externo desconectado',
+    flexone: 'Apps móviles propias con geolocalización y modo offline'
+  },
+  {
+    feature: 'Integraciones externas',
+    closed: 'Cerradas, limitadas o con costos excesivos por API',
+    flexone: 'Con bancos, SUNAT, pasarelas y cualquier API REST'
+  },
+  {
+    feature: 'Ajustes y nuevas normativas',
+    closed: 'Esperar a que el proveedor lance otra versión comercial',
+    flexone: 'Un equipo local certificado que actualiza y ajusta el código'
+  }
+];
+---
+
+<section id="a-medida" class="py-24 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-light text-brand-dark tracking-tight mb-4">
+        Tu empresa <span class="font-normal text-brand-magenta">no debería adaptarse</span> al sistema
+      </h2>
+      <p class="text-brand-muted text-base sm:text-lg leading-relaxed font-light mb-6">
+        Con un sistema cerrado, lo que no trae de fábrica se resuelve en Excel. Con Odoo, lo propio de tu operación se configura o se desarrolla sobre la misma base.
+      </p>
+      <a
+        href="/servicios/desarrollo"
+        class="inline-block px-5 py-2.5 rounded bg-brand-dark text-white text-xs font-medium hover:bg-black transition-colors"
+      >
+        Ver desarrollo a medida
+      </a>
+    </div>
+
+    <!-- Comparison Table Card -->
+    <div class="max-w-4xl mx-auto rounded-2xl overflow-hidden border border-brand-border shadow-sm">
+      <div class="grid grid-cols-12 bg-neutral-100 text-xs font-semibold text-brand-dark uppercase tracking-wider py-4 px-6 border-b border-brand-border">
+        <div class="col-span-4 sm:col-span-3">Criterio</div>
+        <div class="col-span-4 sm:col-span-4 text-neutral-500">Sistema cerrado tradicional</div>
+        <div class="col-span-4 sm:col-span-5 text-brand-magenta font-bold">Odoo con Flexone</div>
+      </div>
+
+      <div class="divide-y divide-neutral-100 bg-white">
+        {comparisonRows.map((row) => (
+          <div class="grid grid-cols-12 items-center py-4 px-6 text-xs sm:text-sm hover:bg-neutral-50/50 transition-colors">
+            <div class="col-span-4 sm:col-span-3 font-medium text-brand-dark">
+              {row.feature}
+            </div>
+            <div class="col-span-4 sm:col-span-4 text-neutral-500 flex items-start gap-2 pr-2 font-light">
+              <span class="text-rose-500 font-bold shrink-0">✕</span>
+              <span>{row.closed}</span>
+            </div>
+            <div class="col-span-4 sm:col-span-5 text-brand-dark font-medium flex items-start gap-2">
+              <span class="text-emerald-500 font-bold shrink-0">✓</span>
+              <span>{row.flexone}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Bottom Note -->
+      <div class="bg-neutral-50 p-4 px-6 text-center text-xs text-brand-muted border-t border-brand-border font-light">
+        <strong>Hecho para clientes reales:</strong> Cuadernos de obra digitales, liquidaciones por operador con app para conductores y listas de materiales multinivel.
+      </div>
+    </div>
+  </div>
+</section>

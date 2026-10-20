@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+import SubpageHero from '../../components/common/SubpageHero.astro';
+import UnderConstructionCard from '../../components/common/UnderConstructionCard.astro';
+---
+
+<BaseLayout
+  title="Capacitaciones · Flexone"
+  description="Usuarios clave y equipos listos para operar Odoo en Perú."
+>
+  <Navbar />
+
+  <main id="main">
+    <SubpageHero
+      title="Capacitaciones"
+      subtitle="Usuarios clave y equipos listos para operar."
+      icon="mortarboard"
+    />
+
+    <UnderConstructionCard />
+  </main>
+
+  <Footer />
+</BaseLayout>

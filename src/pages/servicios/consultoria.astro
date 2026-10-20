@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+import SubpageHero from '../../components/common/SubpageHero.astro';
+import UnderConstructionCard from '../../components/common/UnderConstructionCard.astro';
+---
+
+<BaseLayout
+  title="Consultoría · Flexone"
+  description="Consultoría experta en procesos antes de elegir módulos para tu empresa."
+>
+  <Navbar />
+
+  <main id="main">
+    <SubpageHero
+      title="Consultoría"
+      subtitle="Procesos y alcance antes de elegir módulos."
+      icon="compass"
+    />
+
+    <UnderConstructionCard />
+  </main>
+
+  <Footer />
+</BaseLayout>

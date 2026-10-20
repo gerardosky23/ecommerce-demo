@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es" class="bg-[#090a0f]">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terre Bleu — Backoffice (Go Server)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#090a0f] text-slate-200 antialiased selection:bg-sky-500/20">
+  <div id="app">
+    <!-- Header -->
+    <header class="border-b border-white/10 bg-[#0d111a]/90 backdrop-blur-md sticky top-0 z-30">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-md bg-slate-900 border border-sky-500/30 flex items-center justify-center text-sky-400 font-semibold text-sm">
+            TB
+          </div>
+          <div>
+            <span class="text-white font-semibold text-sm tracking-tight">Terre Bleu Backoffice</span>
+            <span class="text-xs text-slate-400 ml-2 hidden sm:inline border-l border-white/10 pl-2">Engine: Go HTTP Native (:8080)</span>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <a href="http://localhost:4321/" class="text-xs text-slate-300 hover:text-white px-3 py-1.5 rounded-md border border-white/10 bg-[#131722] hover:bg-[#171d2b] transition-colors">
+            ← Ir a la Tienda (Astro)
+          </a>
+          <button id="btn-reset" class="text-xs font-medium text-rose-400 hover:text-rose-300 px-3 py-1.5 rounded-md border border-rose-900/40 bg-rose-950/20 hover:bg-rose-950/40 transition-colors flex items-center space-x-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Reiniciar Demo</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <!-- KPI Row -->
+      <section class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div class="bg-[#0d111a] border border-white/10 rounded-lg p-4">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Ingresos Totales</span>
+          <span id="kpi-revenue" class="text-2xl font-bold text-white tabular-nums tracking-tight mt-1 block">$0.00</span>
+        </div>
+        <div class="bg-[#0d111a] border border-white/10 rounded-lg p-4">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Ventas Registradas</span>
+          <span id="kpi-orders" class="text-2xl font-bold text-white tabular-nums tracking-tight mt-1 block">0</span>
+        </div>
+        <div class="bg-[#0d111a] border border-white/10 rounded-lg p-4">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Clientes Únicos</span>
+          <span id="kpi-customers" class="text-2xl font-bold text-white tabular-nums tracking-tight mt-1 block">0</span>
+        </div>
+        <div class="bg-[#0d111a] border border-white/10 rounded-lg p-4">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Unidades Vendidas</span>
+          <span id="kpi-units" class="text-2xl font-bold text-sky-400 tabular-nums tracking-tight mt-1 block">0</span>
+        </div>
+        <div class="bg-[#0d111a] border border-white/10 rounded-lg p-4 col-span-2 md:col-span-1">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider block">Stock Total</span>
+          <span id="kpi-stock" class="text-2xl font-bold text-slate-300 tabular-nums tracking-tight mt-1 block">0 uds</span>
+        </div>
+      </section>
+
+      <!-- Tabs Navigation -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex space-x-1 bg-[#0d111a] p-1 rounded-lg border border-white/10">
+          <button id="tab-inventory" class="px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors bg-[#171d2b] text-white shadow-sm">
+            Inventario y Stock
+          </button>
+          <button id="tab-sales" class="px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-400 hover:text-slate-200">
+            Historial de Ventas
+          </button>
+          <button id="tab-customers" class="px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-400 hover:text-slate-200">
+            Directorio de Clientes
+          </button>
+        </div>
+        <div class="text-xs text-slate-400 flex items-center space-x-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>SSE en vivo (:8080)</span>
+        </div>
+      </div>
+
+      <!-- Panel Content -->
+      <div id="panel-inventory" class="bg-[#0d111a] border border-white/10 rounded-lg overflow-hidden">
+        <div class="p-4 border-b border-white/10 flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-white">Catálogo de Productos y Existencias en Almacén</h2>
+          <span class="text-xs text-slate-400">Descontado síncronamente en cada venta</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-[#131722] text-slate-400 uppercase font-medium border-b border-white/10">
+              <tr>
+                <th class="py-3 px-4">Producto</th>
+                <th class="py-3 px-4">Categoría</th>
+                <th class="py-3 px-4 text-right">Precio</th>
+                <th class="py-3 px-4 text-center">Stock Inicial</th>
+                <th class="py-3 px-4 text-center">Stock Actual</th>
+                <th class="py-3 px-4 text-center">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-tbody" class="divide-y divide-white/5"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="panel-sales" class="bg-[#0d111a] border border-white/10 rounded-lg overflow-hidden hidden">
+        <div class="p-4 border-b border-white/10 flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-white">Registro Cronológico de Ventas</h2>
+          <span id="sales-count" class="text-xs text-slate-400">0 órdenes</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-[#131722] text-slate-400 uppercase font-medium border-b border-white/10">
+              <tr>
+                <th class="py-3 px-4">ID Orden</th>
+                <th class="py-3 px-4">Fecha / Hora</th>
+                <th class="py-3 px-4">Cliente</th>
+                <th class="py-3 px-4">Artículos</th>
+                <th class="py-3 px-4 text-right">Total</th>
+                <th class="py-3 px-4 text-center">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="sales-tbody" class="divide-y divide-white/5"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="panel-customers" class="bg-[#0d111a] border border-white/10 rounded-lg overflow-hidden hidden">
+        <div class="p-4 border-b border-white/10 flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-white">Directorio de Clientes</h2>
+          <span id="customers-count" class="text-xs text-slate-400">0 clientes</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-[#131722] text-slate-400 uppercase font-medium border-b border-white/10">
+              <tr>
+                <th class="py-3 px-4">Nombre</th>
+                <th class="py-3 px-4 text-center">Órdenes</th>
+                <th class="py-3 px-4 text-right">Gasto Acumulado</th>
+                <th class="py-3 px-4 text-right">Última Transacción</th>
+              </tr>
+            </thead>
+            <tbody id="customers-tbody" class="divide-y divide-white/5"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const fmt = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' });
+    let currentTab = 'inventory';
+
+    function setTab(tab) {
+      currentTab = tab;
+      document.getElementById('panel-inventory').classList.toggle('hidden', tab !== 'inventory');
+      document.getElementById('panel-sales').classList.toggle('hidden', tab !== 'sales');
+      document.getElementById('panel-customers').classList.toggle('hidden', tab !== 'customers');
+
+      ['inventory', 'sales', 'customers'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          btn.className = 'px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors bg-[#171d2b] text-white shadow-sm';
+        } else {
+          btn.className = 'px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-400 hover:text-slate-200';
+        }
+      });
+    }
+
+    document.getElementById('tab-inventory').onclick = () => setTab('inventory');
+    document.getElementById('tab-sales').onclick = () => setTab('sales');
+    document.getElementById('tab-customers').onclick = () => setTab('customers');
+
+    async function loadData() {
+      try {
+        const [products, orders, customers, stats] = await Promise.all([
+          fetch('/api/products').then(r => r.json()).catch(() => []),
+          fetch('/api/orders').then(r => r.json()).catch(() => []),
+          fetch('/api/customers').then(r => r.json()).catch(() => []),
+          fetch('/api/stats').then(r => r.json()).catch(() => ({}))
+        ]);
+
+        if (stats) {
+          document.getElementById('kpi-revenue').innerText = fmt.format(stats.totalRevenue || 0);
+          document.getElementById('kpi-orders').innerText = stats.totalOrders || 0;
+          document.getElementById('kpi-customers').innerText = stats.totalCustomers || 0;
+          document.getElementById('kpi-units').innerText = stats.totalUnitsSold || 0;
+          document.getElementById('kpi-stock').innerText = (stats.totalStockLeft || 0) + ' uds';
+        }
+
+        // Render Inventory
+        const invBody = document.getElementById('inventory-tbody');
+        invBody.innerHTML = products.map(p => `
+          <tr class="hover:bg-white/[0.02] transition-colors">
+            <td class="py-3 px-4 flex items-center space-x-3">
+              <img src="${p.image}" class="w-9 h-9 rounded object-cover border border-white/10 bg-slate-900" />
+              <div>
+                <span class="font-medium text-white block">${p.title}</span>
+                <span class="text-[11px] text-slate-400 block truncate max-w-xs">${p.description}</span>
+              </div>
+            </td>
+            <td class="py-3 px-4 text-slate-400">${p.category}</td>
+            <td class="py-3 px-4 text-right font-medium text-white tabular-nums">${fmt.format(p.price)}</td>
+            <td class="py-3 px-4 text-center text-slate-400 tabular-nums">${p.initialStock} uds</td>
+            <td class="py-3 px-4 text-center font-bold tabular-nums ${p.stock < 5 ? 'text-rose-400' : 'text-emerald-400'}">${p.stock} uds</td>
+            <td class="py-3 px-4 text-center">
+              ${p.stock === 0 ? '<span class="px-2 py-0.5 rounded text-[10px] bg-rose-950/40 text-rose-300 border border-rose-800/40">Agotado</span>' :
+                p.stock < 5 ? '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-950/40 text-amber-300 border border-amber-800/40">Bajo Stock</span>' :
+                '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950/40 text-emerald-300 border border-emerald-800/40">Disponible</span>'}
+            </td>
+          </tr>
+        `).join('');
+
+        // Render Orders
+        const salesBody = document.getElementById('sales-tbody');
+        document.getElementById('sales-count').innerText = `${orders.length} órdenes`;
+        if (orders.length === 0) {
+          salesBody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400 text-xs">Sin órdenes registradas</td></tr>';
+        } else {
+          salesBody.innerHTML = orders.map(o => `
+            <tr class="hover:bg-white/[0.02] transition-colors">
+              <td class="py-3 px-4 font-mono text-sky-400 font-semibold">${o.id}</td>
+              <td class="py-3 px-4 text-slate-400 tabular-nums">${new Date(o.createdAt).toLocaleTimeString()} ${new Date(o.createdAt).toLocaleDateString()}</td>
+              <td class="py-3 px-4 font-medium text-white">${o.customerName}</td>
+              <td class="py-3 px-4">
+                ${o.items.map(it => `<div class="text-[11px] text-slate-300"><span class="font-mono text-slate-400">${it.quantity}x</span> ${it.title} (${fmt.format(it.subtotal)})</div>`).join('')}
+              </td>
+              <td class="py-3 px-4 text-right font-bold text-white tabular-nums">${fmt.format(o.total)}</td>
+              <td class="py-3 px-4 text-center">
+                <span class="px-2 py-0.5 rounded text-[10px] bg-sky-950/40 text-sky-300 border border-sky-800/40">Completada (•••• ${o.cardLast4})</span>
+              </td>
+            </tr>
+          `).join('');
+        }
+
+        // Render Customers
+        const custBody = document.getElementById('customers-tbody');
+        document.getElementById('customers-count').innerText = `${customers.length} clientes`;
+        if (customers.length === 0) {
+          custBody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-400 text-xs">Sin clientes registrados</td></tr>';
+        } else {
+          custBody.innerHTML = customers.map(c => `
+            <tr class="hover:bg-white/[0.02] transition-colors">
+              <td class="py-3 px-4 font-medium text-white flex items-center space-x-2">
+                <div class="w-6 h-6 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-[10px] font-bold text-sky-400">
+                  ${c.name.slice(0, 2).toUpperCase()}
+                </div>
+                <span>${c.name}</span>
+              </td>
+              <td class="py-3 px-4 text-center font-semibold text-slate-300 tabular-nums">${c.ordersCount}</td>
+              <td class="py-3 px-4 text-right font-bold text-white tabular-nums">${fmt.format(c.totalSpent)}</td>
+              <td class="py-3 px-4 text-right text-slate-400 tabular-nums">${new Date(c.lastOrderAt).toLocaleDateString()}</td>
+            </tr>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Error cargando backoffice:', err);
+      }
+    }
+
+    document.getElementById('btn-reset').onclick = async () => {
+      if (confirm('¿Deseas reiniciar las existencias de inventario y limpiar las órdenes de prueba?')) {
+        await fetch('/api/reset', { method: 'POST' });
+        loadData();
+      }
+    };
+
+    loadData();
+    setInterval(loadData, 3000);
+
+    // Setup SSE
+    try {
+      const evt = new EventSource('/api/events');
+      evt.onmessage = () => loadData();
+    } catch(e) {}
+  </script>
+</body>
+</html>

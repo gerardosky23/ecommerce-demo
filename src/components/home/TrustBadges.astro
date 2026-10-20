@@ -1,0 +1,26 @@
+---
+const partners = [
+  { name: 'Odoo Silver Partner', desc: 'Partner oficial certificado en Perú' },
+  { name: 'SUNAT & SIRE', desc: 'Facturación electrónica y libros PLE' },
+  { name: 'Planiflex RRHH', desc: 'Nómina adaptada a normativa peruana' },
+  { name: 'Pro Innóvate', desc: 'Cofinanciamiento para transformación digital' },
+  { name: 'SLA 24/7', desc: 'Soporte técnico continuo para producción' },
+];
+---
+
+<section class="py-10 border-y border-white/10 bg-surface-card/30 backdrop-blur-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <p class="text-center text-xs uppercase font-bold tracking-widest text-ink-muted mb-8">
+      Acreditaciones, Alianzas y Certificaciones de Confianza
+    </p>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 items-center justify-center text-center">
+      {partners.map((p) => (
+        <div class="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-brand-accent/30 transition-all duration-300">
+          <div class="font-display font-bold text-white text-sm mb-1">{p.name}</div>
+          <div class="text-xs text-ink-muted leading-tight">{p.desc}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

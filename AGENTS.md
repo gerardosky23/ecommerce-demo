@@ -1,84 +1,63 @@
-🤖 AGENTS.md: Reglas de Desarrollo para Landing Pages de Alto Impacto
-Este documento define el comportamiento, el stack tecnológico y las reglas arquitectónicas estrictas que cualquier agente de IA o desarrollador debe seguir al escribir código en este repositorio. El objetivo es construir interfaces cinemáticas, altamente interactivas y de rendimiento extremo.
+# Directivas de Ingeniería UI/UX (Astro + Svelte) — Política Estricta Anti-Slop (Edición Claude Opus / Linear)
 
-🏗️ Stack Tecnológico Mandatorio
-Meta-Framework: Astro 5 (Arquitectura de Islas, SSR estático por defecto).
+## 1. Patrones Prohibidos ("AI Slop" Blacklist)
+Queda estrictamente prohibido introducir o mantener en archivos `.astro` o `.svelte` cualquiera de los siguientes elementos:
+- **Ornamentación de Vanidad:** Badges decorativos, "eyebrows" (píldoras o etiquetas pequeñas encima de los H1/H2/H3), emojis en títulos o botones, divisores con brillo y anillos decorativos (`ring-indigo-500/20`).
+- **Métricas y Social Proof Falso:** Contadores estáticos o inventados ("+10k usuarios", "99.9% uptime"), grupos de avatares falsos apilados, estrellas de reseñas estáticas o barras de logos de relleno.
+- **Clichés Visuales de LLM & Tech Neón:** 
+  - Prohibido el estilo ciberpunk / tech neón saturado (verde neón, morados chillones, cian flúor).
+  - Textos con gradiente (`bg-clip-text`, `text-transparent`), manchas borrosas de fondo (`blur-2xl`, `blur-3xl`, `blur-[*]`, gradient blobs).
+  - Sombras difusas pesadas (`shadow-lg`, `shadow-xl`, `shadow-2xl`).
+- **Redondez Excesiva ("Bubbly / Cartoon Slop"):** Prohibido el uso de `rounded-3xl` (24px) o contenedores burbuja (`rounded-[22px]`, `rounded-[28px]`). La arquitectura debe ser precisa y nítida.
+- **Layouts Redundantes:** Grillas simétricas de 3 tarjetas con "icono dentro de un círculo de color + título + 2 líneas de descripción". Contenedores anidados innecesarios ("cajas dentro de cajas" o `div` soup).
+- **Copywriting Hiperbólico:** Palabras vacías de marketing como "Revoluciona", "Potencia", "Sin fisuras", "Desbloquea", "Del futuro" o "Impulsado por IA". Usar microcopy técnico, directo y conciso.
 
-Reactividad y UI: Svelte 5 (Uso exclusivo de Runas).
+## 2. Principios de Diseño Funcionalista (Estilo Claude Opus / Linear / Stripe)
+- **Tipografía Sans-Serif de Alta Seriedad:**
+  - Pila tipográfica estricta: `Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif`.
+  - Escala tipográfica sobria, jerarquía clara mediante pesos (`font-semibold` vs `font-normal`) y color de texto contrastado (`text-white` vs `text-slate-400`).
+  - Aplicar `tabular-nums` en todas las cifras, fechas, tablas y métricas reales.
+- **Paleta de Color Refinada (Azul Celeste, Blanco, Negro y Slate):**
+  - **Superficie Principal:** Negro neutro profundo (`#090a0f`) y pizarra profunda (`#0d111a`).
+  - **Superficies Secundarias (Cards, Modales):** Slate oscuro (`#131722`) y grafito (`#171d2b`).
+  - **Bordes:** Nítidos de 1px con bajo contraste (`border-white/10` o `border-slate-800`).
+  - **Color Primario Interactivo (Azul Celeste / Azure):** `sky-500` (`#0ea5e9`), `sky-600` (`#0284c7`), con toques sutiles de celeste claro (`#38bdf8`) para indicadores técnicos.
+  - **Texto:** Blanco puro (`#ffffff`) para titulares principales; `slate-300` / `slate-400` para cuerpo de texto y descripciones.
+- **Bordes y Radios Arquitectónicos (Precision Radius):**
+  - Botones, inputs y chips: `rounded-md` (6px) o `rounded-lg` (8px).
+  - Tarjetas y ventanas técnicas: `rounded-lg` (8px) o `rounded-xl` (12px máximo).
+  - Sin esquinas infladas ni curvaturas excesivas que resten seriedad corporativa.
+- **Ley de Sustracción:** Cada nodo del DOM debe justificar su existencia. Si un elemento decorativo se elimina y el usuario aún puede comprender la vista y completar su flujo, ese elemento debe ser eliminado.
 
-Estilizado: Tailwind CSS v4 (Nativo, sin tailwind.config.js).
+## 3. Reglas de Integridad para Arquitectura Astro + Svelte (CRÍTICO)
+1. **Hidratación de Islas Intocable:** En archivos `.astro`, NUNCA elimines ni alteres las directivas de cliente (`client:load`, `client:visible`, `client:idle`, `client:only`, `client:media`) ni las directivas de `ViewTransitions` / `ClientRouter` (`transition:name`, `transition:animate`).
+2. **Respeto Estricto a la Versión de Svelte:** Svelte 5 Runes exclusivamente (`$state`, `$derived`, `$effect`, `$props`, `{@render}`). Prohibido código legacy (`export let`, `$:`) o mezclar sintaxis.
+3. **Preservación de Bindings y Stores:** En archivos `.svelte`, prohibido romper `bind:*`, `use:*` (actions), `on:*` / `onclick`, lecturas de Svelte Stores (`$store`) o el paso de `<slot />`.
+4. **Frontera Astro vs. Svelte:** No rompas las props de entrada entre `.astro` y `.svelte`. Limpia cualquier bloque `<style>` scoped que quede con selectores huérfanos tras borrar nodos HTML (evita warnings `css-unused-selector` de Svelte).
 
-Primitivas UI: Bits UI v2 / shadcn-svelte (Componentes headless accesibles).
+## 4. Protocolo de Verificación con Playwright y Chrome DevTools
+Ninguna ruta se considera terminada sin pasar estas pruebas en el navegador:
+1. **Verificación de Hidratación de Astro (`astro-island`):** Esperar a que las islas visibles se hayan hidratado correctamente y que no queden atributos `data-astro-cid-*` huérfanos.
+2. **Integridad de Estado Reactivo en Svelte:** Dispara todos los cambios de estado en componentes `.svelte` (tabs, filtros, sliders, formularios, modales). Verifica que el DOM reaccione exactamente igual.
+3. **Inspección Visual y Consola:** Cero errores en `console.error`, cero warnings de compilación de Svelte/Astro, cero clases prohibidas en el DOM renderizado y cero desbordamiento horizontal (`scrollWidth > clientWidth`).
 
-Animaciones: svelte/transition, svelte/motion, y opcionalmente Anime.js v4 para secuenciación compleja.
+## 5. Compatibilidad Multi-Motor (Firefox / Gecko, WebKit / Safari, Chromium)
+Para garantizar una experiencia idéntica en Firefox, Safari y navegadores basados en Chromium, deben cumplirse estrictamente estas directivas:
+1. **Regla de Oro de `position: sticky` y `overflow`:**
+   - Queda terminantemente prohibido usar `overflow-x: hidden` o `overflow: hidden` en `html`, `body` o cualquier contenedor ancestro de elementos con `position: sticky`. En Gecko (Firefox) y WebKit, `overflow-x: hidden` fuerza `overflow-y: auto`, lo que convierte al contenedor en un scroll container falso y rompe el comportamiento pegajoso.
+   - Usar en su lugar `overflow-x: clip; overflow-y: visible;` en `html, body` junto con `max-width: 100vw;` para prevenir desbordamientos horizontales sin romper `position: sticky`.
+2. **Robustez en Canvas y Renderizado WebP (Firefox Gecko Strictness):**
+   - En Gecko, invocar `ctx.drawImage()` sobre una imagen con `naturalWidth === 0`, `naturalHeight === 0` o valores numéricos no finitos (`NaN`, `Infinity`) arroja una excepción fatal no capturada (`NS_ERROR_NOT_AVAILABLE` o `IndexSizeError`), lo que congela el loop de animación.
+   - Todo llamado a `ctx.drawImage()` debe validar previamente `img.naturalWidth > 0 && img.naturalHeight > 0`, verificar `Number.isFinite()` en todas las dimensiones y coordenadas, y envolverse en un bloque `try / catch` defensivo.
+   - Forzar la decodificación en memoria vía `await img.decode().catch(() => {})` antes de la asignación y disponer de una imagen `<img class="canvas-fallback" ...>` renderizada en el DOM como seguro contra caídas de red o demoras en la caché de decodificación.
+3. **Manejo de Video y Media Autoplay:**
+   - En Firefox y navegadores móviles con políticas estrictas de ahorro de datos, los elementos `<video>` deben incluir obligatoriamente los atributos `muted playsinline autoplay loop preload="auto"` y un atributo `poster` estático de alta fidelidad.
+   - La llamada `.play()` debe ser siempre gestionada de forma segura mediante promesa (`playPromise.catch(() => {})`) para evitar excepciones por políticas de autoplay del navegador.
 
-🎭 Roles del Agente
-Al interactuar con este repositorio, asume simultáneamente los siguientes roles:
-
-1. Arquitecto de Rendimiento (Astro)
-Utiliza archivos .astro para la estructura estática, el enrutamiento y la orquestación del layout.
-
-Mantén el cliente ligero. Instancia componentes .svelte interactivos utilizando las directivas de hidratación correctas (client:load, client:visible, client:idle) solo en las "islas" que realmente necesiten JavaScript.
-
-Configura siempre <ClientRouter /> en el layout principal para manejar las transiciones de vista (View Transitions) de forma nativa.
-
-2. Ingeniero Reactivo (Svelte 5)
-Regla Estricta: Queda terminantemente prohibido el uso de la sintaxis antigua de Svelte 3/4 (declaraciones con let reactivas en el nivel superior, etiquetas $: o métodos del ciclo de vida como onMount si pueden evitarse).
-
-Utiliza EXCLUSIVAMENTE las Runas de Svelte 5: $state, $derived, $effect, y $props.
-
-Extrae la lógica de estado complejo a archivos .svelte.ts independientes para mantener los componentes limpios.
-
-Bibliotecas de Snippets Compartidos: Cuando definas múltiples `{#snippet Nombre(props)}` en un archivo `.svelte` compartido (como `Icons.svelte`), SIEMPRE debes exportarlos explícitamente dentro de `<script module lang="ts">` (`export { Logo, ... };`) para evitar errores de empaquetado en Vite/Rollup durante `astro build`.
-
-Hidratación Segura de `<video>` Locales: Cuando un video local se precarga con `<link rel="preload" as="video">`, el evento `oncanplay` puede dispararse antes de que Svelte 5 hidrate el componente. Dentro de `$effect`, fuerza siempre `videoRef.muted = true`, verifica `if (videoRef.readyState >= 2) ready = true`, resuelve la promesa de `videoRef.play().then(() => (ready = true)).catch(() => (ready = true))`, y escucha simultáneamente `onloadeddata`, `oncanplay` y `onplaying`.
-
-3. Especialista en UI y Estilizado (Tailwind v4)
-No busques ni generes archivos tailwind.config.js. Toda la configuración (@theme, variables, fuentes) debe ir directamente en el archivo CSS global.
-
-Aplica Container Queries (@container, @md:, cqw) en los componentes aislados en lugar de Media Queries de viewport tradicionales. Esto garantiza que el componente sea 100% portable a cualquier sección de la landing page sin romperse.
-
-4. Maestro de la Animación y Accesibilidad
-Sin React: Nunca utilices Framer Motion, GSAP (a menos que se pida explícitamente para WebGL/Scrollytelling pesado) ni bibliotecas de React.
-
-Prioriza los módulos integrados de Svelte (svelte/transition para entradas/salidas y svelte/motion para físicas de resortes/seguimiento del ratón).
-
-Accesibilidad Obligatoria: Todo componente animado debe interceptar la preferencia del usuario mediante window.matchMedia('(prefers-reduced-motion: reduce)') (gestionado reactivamente con un $effect o un Store global). Si es verdadero, las animaciones complejas deben pausarse, reducirse a un simple fade, o deshabilitarse por completo (duración 0).
-
-Protege el Interaction to Next Paint (INP): Anima exclusivamente propiedades compuestas por la GPU (como transform y opacity). Nunca animes anchos, altos, márgenes o propiedades que fuercen el recálculo del layout (layout thrashing).
-
-5. Arquitecto de Scrollytelling de Video y WebGL2 (Showrooms Interactivos)
-Pipeline FFmpeg de Alta Definición: Para experiencias interactivas basadas en secuencias de cuadros (`.webp`) desde un archivo `.mp4` (`public/audi-source.mp4`), mantén los FPS nativos del video (ej. 24 FPS) y utiliza `-q:v 95` junto con los filtros `-vf "fps=24,deband,cas=0.45"` (eliminación de bandeado en fondos oscuros + AMD FidelityFX Contrast Adaptive Sharpening) mediante el script `npm run extract:audi` (`scripts/extract-audi-frames.mjs`).
-
-Canvas HiDPI y Nitidez en GPU: Nunca dejes el `<canvas>` con dimensiones fijas bajas en monitores FullHD/Retina. Escala dinámicamente `canvas.width = clientWidth * Math.min(2, window.devicePixelRatio)` y aplica un paso de nitidez (*5-tap unsharp mask*) directamente en el Fragment Shader.
-
-Cambio de Color Selectivo en Tiempo Real (WebGL2 HSV Mask): Para cambiar el color de un vehículo u objeto en video sin teñir el escenario, utiliza un video con entorno acromático (`S ≈ 0.00`) y un Fragment Shader WebGL2 que convierta `RGB -> HSV`, aísle mediante `smoothstep` el matiz y saturación base de la carrocería, e interpole suavemente (`lerp`) el desplazamiento de tono (`u_hueShift`) y saturación (`u_satScale`) a 60 FPS.
-
-Estándares de la Industria vs. Shaders sobre Video: Ten en cuenta que alterar el color de un video pre-grabado mediante shaders HSV es una técnica creativa para prototipos/demos, pero tiene limitaciones físicas (reflejos especulares blancos, halos de bordes y dependencia estricta del color nativo grabado). Para configuradores comerciales de grado de producción, la arquitectura recomendada es **3D en tiempo real con materiales físicos PBR (Three.js/WebGPU)** o **múltiples secuencias de cuadros pre-renderizadas con transición de opacidad (Crossfade)**.
-
-Doble Modo de Reproducción Reactiva: Soporta tanto el modo **Auto-Play + Scroll Time-Warp** (el video avanza solo continuamente y acelera su velocidad `dt * (baseSpeed + scrollBoost)` mientras cambia de color al hacer scroll) como el modo **Solo Scroll (Scrubbing)** con física de amortiguación (`smoothProgress += (target - smooth) * 0.11`).
-
-🛠️ Skills y Servidores MCP Predeterminados
-Al interactuar y desarrollar en este proyecto, activa y utiliza prioritariamente las siguientes capacidades instaladas:
-
-- **`svelte-code-writer` & `svelte-core-bestpractices`**: Consulta obligatoria al redactar o refactorizar componentes `.svelte` para garantizar el uso 100% canónico de Runas ($state, $derived, $effect) y Snippets.
-- **`web-design-guidelines`**: Ejecución para auditar contraste, consistencia de diseño, estados interactivos y micro-animaciones.
-- **`chrome-devtools` / `puppeteer`**: Herramientas MCP para inspección de consola, validación de carga de video y verificación visual del canvas en tiempo de ejecución.
-
-🚫 Restricciones Críticas (No hacer)
-NO asumas que este es un proyecto de React, Next.js o Vue.
-
-NO utilices useState, useEffect ni dependencias como lucide-react (usa lucide-svelte).
-
-NO agregues bibliotecas de terceros para resolver problemas que Svelte 5 o Astro 5 ya resuelven de forma nativa.
-
-NO uses URLs externas o CDNs para videos, imágenes o fuentes locales (descarga y sirve desde la carpeta public/).
-
-💡 Formato de Salida Esperado
-Cuando se te pida generar un componente:
-
-Analiza brevemente cómo dividirás el componente entre Astro (para el cascarón estático) y Svelte (para la interactividad).
-
-Proporciona el código de Svelte utilizando Snippets si es necesario agrupar sub-elementos o íconos en el mismo archivo.
-
-Asegúrate de que el código esté tipado con TypeScript y listo para producción.
+## 6. Protocolo Obligatorio de Despliegue CI/CD y Push a GitHub (Dokploy)
+Queda estrictamente establecido que cada vez que el usuario ordene realizar un `push` a GitHub, el agente DEBE ejecutar rigurosamente este flujo sin excepción:
+1. **Verificación Pre-vuelo (Preflight Build):** Ejecutar `npm run build` localmente y verificar 0 errores de compilación y tipado antes de cualquier commit.
+2. **Integridad de Contenedorización:** Asegurar que `Dockerfile` (multi-stage Node 20 Builder + Nginx Alpine Runner), `.dockerignore` y `nginx.conf` estén presentes, actualizados y sin rutas rotas.
+3. **Prueba de Build Docker Local:** Si el Docker daemon está activo en el entorno, ejecutar `docker build -t <project>:test .` para garantizar que la imagen compilará sin fallos en el servidor Dokploy.
+4. **Staging y Commit Semántico:** Preparar los archivos (`git add .`), verificar el árbol (`git status`) y generar un commit convencional descriptivo (`feat:`, `fix:`, `refactor:`, `chore:`).
+5. **Push a la Rama Principal:** Ejecutar `git push origin main` para disparar el Webhook de Dokploy, iniciando el despliegue automático continuo con cero downtime.

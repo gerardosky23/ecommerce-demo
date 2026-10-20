@@ -1,0 +1,630 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+import FaqAccordion from '../../components/common/FaqAccordion.svelte';
+
+const detraccionesFaqs = [
+  {
+    question: '¿Odoo calcula las detracciones automáticamente?',
+    answer: 'Sí. Cada servicio o bien tiene su tasa del SPOT, y al registrar la factura el sistema revisa si supera el monto mínimo y calcula la detracción en soles enteros.'
+  },
+  {
+    question: '¿Se puede hacer el pago masivo de detracciones?',
+    answer: 'Sí. Seleccionas las facturas pendientes de pago de detracción y el sistema genera el archivo de texto estructurado según las especificaciones del Banco de la Nación para subirlo a su plataforma en una sola operación.'
+  },
+  {
+    question: '¿Qué pasa si la detracción se deposita tarde?',
+    answer: 'El crédito fiscal del IGV de esa factura no puede utilizarse en el periodo tributario hasta que se efectúe el depósito en el Banco de la Nación. Odoo controla la fecha de la constancia para incluirla en el mes que corresponda según la norma.'
+  },
+  {
+    question: '¿Cómo sabe el sistema a qué proveedor retener?',
+    answer: 'Odoo consulta el padrón oficial de la SUNAT mediante el RUC del proveedor. Si es agente de retención o buen contribuyente, queda exonerado automáticamente de la retención del 3%.'
+  },
+  {
+    question: '¿Una factura puede tener detracción y retención a la vez?',
+    answer: 'No. La normativa de la SUNAT prohíbe aplicar ambos regímenes simultáneamente sobre la misma operación. El sistema valida esta regla y bloquea la duplicidad de descuentos.'
+  }
+];
+
+const casos = [
+  {
+    iconPath: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
+    title: 'Un servicio con detracción que nadie marcó',
+    desc: 'El sistema lo reconoce por el servicio que se compra y lo calcula igual, sin depender de la memoria de nadie.'
+  },
+  {
+    iconPath: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+    title: 'Una factura en dólares con detracción',
+    desc: 'La detracción sale en soles enteros, al tipo de cambio del día, como lo pide el banco.'
+  },
+  {
+    iconPath: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+    title: 'Veinte detracciones en el mes',
+    desc: 'Se pagan todas en un solo depósito, dentro del plazo, en lugar de veinte operaciones.'
+  },
+  {
+    iconPath: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+    title: 'Un cliente que pagó menos de lo facturado',
+    desc: 'El cobro se reparte entre el banco y la cuenta de detracciones, y la factura queda saldada.'
+  },
+  {
+    iconPath: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+    title: 'Un proveedor al que no se le retiene',
+    desc: 'Si es buen contribuyente o agente, el sistema lo sabe por su RUC y no le retiene.'
+  },
+  {
+    iconPath: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+    title: 'Un proveedor grande que cobra percepción',
+    desc: 'La percepción queda registrada con su factura y se descuenta del IGV del mes que corresponde.'
+  }
+];
+---
+
+<BaseLayout
+  title="Detracciones, retenciones y percepciones en Odoo · Flexone"
+  description="Lo que se descuenta para la SUNAT, sin cuentas a mano. Detracciones SPOT, archivo Banco de la Nación, retenciones y percepciones en Odoo."
+>
+  <Navbar />
+
+  <main id="main">
+    <!-- Hero Section (Dark #161618) -->
+    <section class="bg-[#161618] text-white pt-44 sm:pt-44 lg:pt-48 pb-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+      <div class="max-w-4xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-medium mb-6">
+          <span>Localización Perú · Detracciones, retenciones y percepciones</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-light text-white tracking-tight mb-6 leading-tight">
+          Lo que se descuenta <br class="hidden sm:inline" />
+          para la SUNAT, <span class="font-normal text-brand-magenta">sin cuentas a mano</span>
+        </h1>
+
+        <p class="text-white/70 text-base sm:text-lg max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+          Una parte de muchos pagos no va al proveedor sino a la SUNAT o al Banco de la Nación. El sistema reconoce cuándo corresponde, calcula cuánto y deja el depósito y su constancia amarrados a la factura, para que el impuesto no se pierda ni llegue una multa.
+        </p>
+
+        <div class="mb-12">
+          <a
+            href="/contacto"
+            class="inline-block px-6 py-3 rounded-full bg-brand-cyan text-[#06222b] text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-colors shadow-lg"
+          >
+            Revisar mi caso con un especialista ›
+          </a>
+        </div>
+
+        <!-- Dashboard Table Mockup -->
+        <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#202124] text-left p-4 sm:p-6 text-xs text-white/80">
+          <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <span class="font-medium text-white">Detracciones y retenciones · Periodo actual</span>
+            </div>
+            <span class="text-white/40">SUNAT / Banco de la Nación</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="text-white/40 text-[11px] border-b border-white/10">
+                  <th class="pb-2">Comprobante</th>
+                  <th class="pb-2">Proveedor / Cliente</th>
+                  <th class="pb-2">Régimen</th>
+                  <th class="pb-2">Tasa</th>
+                  <th class="pb-2 text-right">Importe</th>
+                  <th class="pb-2 text-right">Descuento</th>
+                  <th class="pb-2 text-center">Estado SPOT</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5 font-mono text-[11px]">
+                <tr>
+                  <td class="py-2.5 text-white">F001-0004812</td>
+                  <td class="py-2.5 text-white/80 font-sans">Transportes del Sur SAC</td>
+                  <td class="py-2.5 text-brand-cyan font-sans">Detracción SPOT</td>
+                  <td class="py-2.5">4%</td>
+                  <td class="py-2.5 text-right">S/ 4,500.00</td>
+                  <td class="py-2.5 text-right text-brand-magenta">S/ 180.00</td>
+                  <td class="py-2.5 text-center"><span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px]">Depositado BN</span></td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 text-white">F001-0005190</td>
+                  <td class="py-2.5 text-white/80 font-sans">Servicios de Ingeniería Integral</td>
+                  <td class="py-2.5 text-brand-cyan font-sans">Detracción SPOT</td>
+                  <td class="py-2.5">12%</td>
+                  <td class="py-2.5 text-right">S/ 12,800.00</td>
+                  <td class="py-2.5 text-right text-brand-magenta">S/ 1,536.00</td>
+                  <td class="py-2.5 text-center"><span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[10px]">Por depositar</span></td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 text-white">F003-0001044</td>
+                  <td class="py-2.5 text-white/80 font-sans">Comercializadora Pacífico SAC</td>
+                  <td class="py-2.5 text-brand-cyan font-sans">Retención 3%</td>
+                  <td class="py-2.5">3%</td>
+                  <td class="py-2.5 text-right">S/ 8,400.00</td>
+                  <td class="py-2.5 text-right text-brand-magenta">S/ 252.00</td>
+                  <td class="py-2.5 text-center"><span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px]">Comprobante emitido</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Casos Cubiertos Section (Light bg #ffffff) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <span class="text-xs font-semibold uppercase tracking-wider text-brand-magenta mb-2 block">
+            Casos cubiertos
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Lo que pasa cada mes, <span class="font-normal text-brand-magenta">resuelto</span>
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {casos.map((item) => (
+            <div class="p-6 rounded-2xl border border-neutral-200/80 bg-neutral-50/50 hover:bg-white hover:shadow-lg hover:border-neutral-300 transition-all flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-4">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d={item.iconPath}></path>
+                  </svg>
+                </div>
+                <h3 class="font-medium text-base text-brand-dark mb-2">{item.title}</h3>
+                <p class="text-xs text-brand-muted leading-relaxed font-light">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-12 text-center">
+          <p class="text-xs text-brand-muted bg-neutral-100/70 inline-flex items-center gap-2 px-4 py-2 rounded-full font-light">
+            <svg class="w-4 h-4 text-brand-magenta shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span><strong class="font-medium text-brand-dark">Dato curioso:</strong> La detracción no es un gasto. Es dinero de la empresa que queda en el Banco de la Nación y solo sirve para pagar impuestos.</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cada Régimen, Resuelto Donde Ocurre Section (Light bg #f8f8f8) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#f8f8f8] text-brand-dark border-t border-neutral-200/60">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <span class="text-xs font-semibold uppercase tracking-wider text-brand-magenta mb-2 block">
+            Cada régimen, resuelto donde ocurre
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            En la compra, en el pago y en la venta
+          </h2>
+        </div>
+
+        <div class="space-y-16">
+          <!-- 01: Detracciones -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-4">
+              <span class="text-sm font-bold text-neutral-400">01</span>
+              <h3 class="text-2xl sm:text-3xl font-light text-brand-dark">
+                Detracciones que se <span class="font-normal text-brand-magenta">detectan solas</span>
+              </h3>
+              <p class="text-sm text-brand-muted leading-relaxed font-light">
+                Olvidar una detracción cuesta dos veces: una multa y un IGV que no se puede usar hasta regularizarlo. La detracción se reconoce por el servicio que se compra, y la factura ya muestra cuánto va al Banco de la Nación y cuánto al proveedor.
+              </p>
+              <ul class="space-y-2 text-xs text-brand-muted pt-2 font-light">
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>Tasa según el servicio o bien (SPOT)</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>Monto mínimo por tipo de operación</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>Redondeo a soles enteros, aunque la factura sea en dólares</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>También en las ventas: la factura electrónica lleva la leyenda</span>
+                </li>
+              </ul>
+            </div>
+            <div class="rounded-2xl p-6 bg-white border border-neutral-200/80 shadow-md">
+              <div class="p-4 rounded-xl bg-pink-50 border border-pink-100 mb-4">
+                <div class="flex justify-between items-center text-xs mb-2">
+                  <span class="font-medium text-brand-dark">Servicio de transporte interprovincial</span>
+                  <span class="px-2 py-0.5 rounded bg-brand-magenta text-white text-[10px] font-medium">SPOT 4%</span>
+                </div>
+                <div class="flex justify-between text-xs text-brand-muted">
+                  <span>Base Imponible: S/ 4,500.00</span>
+                  <span class="font-bold text-brand-magenta">Detracción: S/ 180.00</span>
+                </div>
+              </div>
+              <p class="text-[11px] text-brand-muted font-light">
+                Monto neto al proveedor: <strong>S/ 4,320.00</strong> · Depósito al BN: <strong>S/ 180.00</strong>
+              </p>
+            </div>
+          </div>
+
+          <!-- 02: Retenciones -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="order-2 lg:order-1 rounded-2xl p-6 bg-white border border-neutral-200/80 shadow-md">
+              <div class="p-4 rounded-xl bg-neutral-50 border border-neutral-200 mb-4">
+                <div class="flex justify-between items-center text-xs mb-2">
+                  <span class="font-medium text-brand-dark">Comprobante de Retención Electrónica</span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-medium">Retención 3%</span>
+                </div>
+                <div class="flex justify-between text-xs text-brand-muted">
+                  <span>Total facturado: S/ 12,000.00</span>
+                  <span class="font-bold text-emerald-700">Monto retenido: S/ 360.00</span>
+                </div>
+              </div>
+              <p class="text-[11px] text-brand-muted font-light">
+                Comprobante electrónico emitido con validación de padrón SUNAT y archivo PDT 626.
+              </p>
+            </div>
+            <div class="order-1 lg:order-2 space-y-4">
+              <span class="text-sm font-bold text-neutral-400">02</span>
+              <h3 class="text-2xl sm:text-3xl font-light text-brand-dark">
+                Retenciones al pagar, <span class="font-normal text-brand-magenta">sin revisar listas</span>
+              </h3>
+              <p class="text-sm text-brand-muted leading-relaxed font-light">
+                Un agente de retención debe quedarse con el 3% al pagar, pero no a todos: hay excepciones que cambian cada año. Al preparar el pago se decide proveedor por proveedor, y sale el comprobante con su número.
+              </p>
+              <ul class="space-y-2 text-xs text-brand-muted pt-2 font-light">
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>Retención de IGV del 3% desde S/ 700 por proveedor</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>Excluye a buenos contribuyentes, agentes y facturas con detracción</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>Lista de agentes de la SUNAT consultada con el RUC</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>Registro de retenciones y archivo para la declaración</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 03: Percepciones -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-4">
+              <span class="text-sm font-bold text-neutral-400">03</span>
+              <h3 class="text-2xl sm:text-3xl font-light text-brand-dark">
+                Percepciones que <span class="font-normal text-brand-magenta">no se quedan en un cajón</span>
+              </h3>
+              <p class="text-sm text-brand-muted leading-relaxed font-light">
+                La percepción que cobra un proveedor grande es IGV ya pagado, pero si su comprobante se archiva y se olvida, ese dinero se pierde. Queda registrada con la factura y se descuenta en el mes que corresponde.
+              </p>
+              <ul class="space-y-2 text-xs text-brand-muted pt-2 font-light">
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>Percepciones del 2 %, 1 % o 0.5 %</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>Un comprobante de percepción para varias facturas</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>Mes en que se usa contra el IGV</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                  <span>Registro de percepciones para declarar</span>
+                </li>
+              </ul>
+            </div>
+            <div class="rounded-2xl p-6 bg-white border border-neutral-200/80 shadow-md">
+              <div class="p-4 rounded-xl bg-cyan-50 border border-cyan-100 mb-4">
+                <div class="flex justify-between items-center text-xs mb-2">
+                  <span class="font-medium text-brand-dark">Comprobante de Percepción 001/0129</span>
+                  <span class="px-2 py-0.5 rounded bg-cyan-600 text-white text-[10px] font-medium">Percepción 2%</span>
+                </div>
+                <div class="flex justify-between text-xs text-brand-muted">
+                  <span>Factura F001-849: S/ 8,200.00</span>
+                  <span class="font-bold text-cyan-800">Percepción: S/ 164.00</span>
+                </div>
+              </div>
+              <p class="text-[11px] text-brand-muted font-light">
+                Aplicado directamente al crédito fiscal del periodo en el Registro de Compras.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fin de Mes Section (Dark bg #202124) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#202124] text-white">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <!-- Columna Izquierda -->
+          <div class="lg:col-span-5 space-y-6">
+            <h2 class="text-3xl sm:text-4xl font-light text-white leading-tight">
+              Lo que antes tomaba <br />
+              <span class="font-normal text-brand-magenta">días de fin de mes</span>
+            </h2>
+            <p class="text-white/70 text-sm font-light leading-relaxed">
+              Depositar detracciones una por una, copiar constancias al registro de compras y averiguar por qué un cliente pagó menos. Son tareas que no aportan nada y que, cuando fallan, terminan en una multa o en un IGV que no se puede usar.
+            </p>
+            <div class="p-5 rounded-2xl bg-white/5 border border-brand-cyan/30 text-xs text-white/80 space-y-2">
+              <div class="flex items-center gap-2 text-brand-cyan font-medium">
+                <span>🛡️</span>
+                <span>Sin detracción y retención a la vez</span>
+              </div>
+              <p class="font-light text-white/60 text-[11px] leading-relaxed">
+                Una misma factura nunca queda con las dos: el sistema lo impide, como exige la norma.
+              </p>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: 3 Pasos -->
+          <div class="lg:col-span-7 space-y-8">
+            <!-- 01 -->
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-full bg-brand-cyan text-[#06222b] font-bold text-xs flex items-center justify-center">01</span>
+                <h3 class="text-lg font-medium text-white">Todas las detracciones en un solo depósito</h3>
+              </div>
+              <p class="text-xs text-white/70 font-light leading-relaxed">
+                En lugar de pagar cada detracción por separado, se eligen las del mes y sale el archivo que recibe el Banco de la Nación (<strong>pago masivo de detracciones</strong>). Se paga en una operación, dentro del plazo.
+              </p>
+              <div class="p-3 rounded-lg bg-black/40 border border-white/10 font-mono text-[11px] text-white/70 flex justify-between items-center">
+                <span>Archivo TXT: D01-2026-BN.txt (14 facturas · S/ 3,572.00)</span>
+                <span class="text-emerald-400">✓ Listo para BN</span>
+              </div>
+            </div>
+
+            <!-- 02 -->
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-full bg-brand-cyan text-[#06222b] font-bold text-xs flex items-center justify-center">02</span>
+                <h3 class="text-lg font-medium text-white">Constancias que llegan solas al registro</h3>
+              </div>
+              <p class="text-xs text-white/70 font-light leading-relaxed">
+                Sin la <strong>constancia de depósito</strong> en el registro de compras, el IGV de esa factura no se puede usar. Las constancias se cargan de una vez desde el archivo del banco, y las que no coinciden quedan marcadas antes de declarar.
+              </p>
+              <div class="p-3 rounded-lg bg-black/40 border border-white/10 font-mono text-[11px] text-white/70 flex justify-between items-center">
+                <span>14 constancias asociadas a facturas de compras</span>
+                <span class="text-emerald-400">100% conciliado</span>
+              </div>
+            </div>
+
+            <!-- 03 -->
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-full bg-brand-cyan text-[#06222b] font-bold text-xs flex items-center justify-center">03</span>
+                <h3 class="text-lg font-medium text-white">Clientes que pagan "menos"</h3>
+              </div>
+              <p class="text-xs text-white/70 font-light leading-relaxed">
+                Cuando un cliente deposita la detracción, al banco llega menos de lo facturado y la cobranza parece incompleta. El cobro se reparte en dos partes y la cuenta del Banco de la Nación muestra cuánto hay disponible para pagar impuestos.
+              </p>
+              <div class="p-3 rounded-lg bg-black/40 border border-white/10 font-mono text-[11px] text-white/70 flex justify-between items-center">
+                <span>Cobro: S/ 10,384 (Banco) + S/ 1,416 (Cta SPOT)</span>
+                <span class="text-emerald-400">Factura cancelada</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Qué cubre la localización (Light bg #ffffff) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div class="lg:col-span-6 space-y-6">
+            <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+              Qué cubre la <span class="font-normal text-brand-magenta">localización</span>
+            </h2>
+            <p class="text-sm text-brand-muted leading-relaxed font-light">
+              Un ERP básico no sabe qué es una detracción ni a quién se le retiene. La localización peruana de Flexone lo resuelve desde la factura hasta el registro que se presenta a la SUNAT, con un solo lugar donde se configuran tasas, cuentas y diarios.
+            </p>
+            <p class="text-sm text-brand-muted leading-relaxed font-light">
+              Si la empresa es agente de retención o de percepción, se activa lo que le corresponde; si no lo es, esas opciones no estorban.
+            </p>
+          </div>
+
+          <div class="lg:col-span-6 p-8 rounded-2xl bg-neutral-50 border border-neutral-200">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-brand-dark mb-6">Incluye</h3>
+            <ul class="space-y-3 text-xs text-brand-muted font-light">
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span><strong>Detracciones</strong> de compras y ventas, con tabla de tasas</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span><strong>Pago masivo de detracciones</strong> al Banco de la Nación</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Carga masiva de <strong>constancias de depósito</strong></span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span><strong>Retención de IGV</strong> en pagos a proveedores</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Retenciones que aplican los clientes en la cobranza</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span><strong>Percepciones</strong> en compras e importaciones</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Registros de retenciones y percepciones en Excel y PDF</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Archivos para las declaraciones mensuales</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ciclo Completo Section (Light bg #f8f8f8) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#f8f8f8] text-brand-dark border-t border-neutral-200/60">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <span class="text-xs font-semibold uppercase tracking-wider text-brand-magenta mb-2 block">
+            Ciclo completo
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Cada descuento, en su cuenta
+          </h2>
+          <p class="text-sm text-brand-muted max-w-2xl mx-auto mt-4 font-light">
+            La detracción, la retención y la percepción no son gastos: son impuesto adelantado. Por eso cada uno queda registrado aparte y se descuenta en el momento correcto.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200 text-center">
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Factura con detracción</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">
+              La deuda con el proveedor se separa en lo que va al banco y lo que va a su cuenta de detracciones.
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200 text-center">
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Pago con retención</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">
+              El 3% queda como deuda con la SUNAT hasta declararlo.
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200 text-center">
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Compra con percepción</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">
+              Queda como IGV a favor para el mes en que se usó.
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200 text-center">
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Cobro con detracción</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">
+              El saldo del Banco de la Nación se usa para pagar impuestos.
+            </p>
+          </div>
+        </div>
+
+        <!-- Se conecta con -->
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-brand-muted mb-6 block text-center">
+            Se conecta con
+          </span>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
+            <a href="/localizacion/facturacion-electronica" class="p-4 rounded-xl bg-white border border-neutral-200 hover:border-brand-magenta transition-colors flex flex-col items-center">
+              <div class="w-8 h-8 rounded-lg bg-brand-cyan/20 text-cyan-800 flex items-center justify-center mb-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+              <span class="text-xs font-medium text-brand-dark block">Facturación electrónica</span>
+            </a>
+            <a href="/funcionalidades/tesoreria" class="p-4 rounded-xl bg-white border border-neutral-200 hover:border-brand-magenta transition-colors flex flex-col items-center">
+              <div class="w-8 h-8 rounded-lg bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+              </div>
+              <span class="text-xs font-medium text-brand-dark block">Tesorería</span>
+            </a>
+            <a href="/funcionalidades/compras-inventario" class="p-4 rounded-xl bg-white border border-neutral-200 hover:border-brand-magenta transition-colors flex flex-col items-center">
+              <div class="w-8 h-8 rounded-lg bg-brand-cyan/20 text-cyan-800 flex items-center justify-center mb-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+              </div>
+              <span class="text-xs font-medium text-brand-dark block">Compras e inventario</span>
+            </a>
+            <a href="/localizacion/importaciones" class="p-4 rounded-xl bg-white border border-neutral-200 hover:border-brand-magenta transition-colors flex flex-col items-center">
+              <div class="w-8 h-8 rounded-lg bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+              </div>
+              <span class="text-xs font-medium text-brand-dark block">Importaciones</span>
+            </a>
+            <a href="/localizacion/contabilidad" class="p-4 rounded-xl bg-white border border-neutral-200 hover:border-brand-magenta transition-colors flex flex-col items-center">
+              <div class="w-8 h-8 rounded-lg bg-brand-cyan/20 text-cyan-800 flex items-center justify-center mb-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+              </div>
+              <span class="text-xs font-medium text-brand-dark block">Contabilidad que cuadra</span>
+            </a>
+            <a href="/funcionalidades/ventas" class="p-4 rounded-xl bg-white border border-neutral-200 hover:border-brand-magenta transition-colors flex flex-col items-center">
+              <div class="w-8 h-8 rounded-lg bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              </div>
+              <span class="text-xs font-medium text-brand-dark block">Ventas y CRM</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQs Section (Light bg #ffffff) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Preguntas sobre detracciones, <span class="font-normal text-brand-magenta">retenciones y percepciones</span>
+          </h2>
+        </div>
+
+        <FaqAccordion items={detraccionesFaqs} client:visible />
+      </div>
+    </section>
+
+    <!-- Bottom CTA Banner (Dark #161618) -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-[#161618] text-white">
+      <div class="max-w-6xl mx-auto rounded-3xl bg-[#202124] border border-white/10 p-8 sm:p-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div class="lg:col-span-7 space-y-4">
+            <h2 class="text-2xl sm:text-3xl font-light text-white">
+              Revisamos las detracciones pendientes <span class="font-normal text-brand-magenta">antes de migrar</span>
+            </h2>
+            <p class="text-white/70 text-sm font-light leading-relaxed">
+              Al pasar a Odoo es común encontrar detracciones sin depositar, constancias que nunca llegaron al registro o retenciones sin declarar. Las encontramos antes del arranque, cuando todavía se corrigen sin multa.
+            </p>
+            <div class="pt-2">
+              <a
+                href="/contacto"
+                class="inline-block px-6 py-3 rounded-full bg-brand-cyan text-[#06222b] text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-colors shadow-lg"
+              >
+                Pedir la revisión ›
+              </a>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 p-6 rounded-2xl bg-black/30 border border-white/10 space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-brand-cyan mb-2">Qué se revisa</div>
+            <ul class="space-y-2 text-xs text-white/70 font-light">
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Detracciones sin depositar o atrasadas</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Constancias que faltan en el registro de compras</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Retenciones y percepciones sin declarar</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Saldo de la cuenta del Banco de la Nación</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Tasas y proveedores mal configurados</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

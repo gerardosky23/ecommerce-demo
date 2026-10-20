@@ -1,0 +1,67 @@
+---
+const steps = [
+  {
+    num: '01',
+    title: 'Diagnóstico & Gap Analysis',
+    desc: 'Analizamos tus flujos de trabajo actuales (compras, ventas, inventarios, planillas) para definir el alcance exacto y la arquitectura de la solución.',
+    duration: 'Semana 1-2'
+  },
+  {
+    num: '02',
+    title: 'Parametrización & SUNAT',
+    desc: 'Configuración de catálogo de cuentas, regímenes tributarios, libros electrónicos, series de facturación y plan de cuentas conforme a normativa peruana.',
+    duration: 'Semana 3-4'
+  },
+  {
+    num: '03',
+    title: 'Desarrollo & Migración',
+    desc: 'Personalización de vistas, flujos de aprobación específicos y migración segura de datos maestros (clientes, proveedores, productos, saldos iniciales).',
+    duration: 'Semana 5-7'
+  },
+  {
+    num: '04',
+    title: 'Capacitación & Pruebas UAT',
+    desc: 'Entrenamiento guiado por roles para tus colaboradores y simulación de operaciones reales antes de la salida a producción.',
+    duration: 'Semana 8-9'
+  },
+  {
+    num: '05',
+    title: 'Go-Live & Mesa de Ayuda',
+    desc: 'Lanzamiento oficial con acompañamiento presencial/remoto de consultores senior y soporte continuo bajo acuerdos de nivel de servicio (SLA).',
+    duration: 'Semana 10+'
+  }
+];
+---
+
+<section class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+  <div class="text-center max-w-3xl mx-auto mb-16">
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/20 text-xs font-semibold text-brand-cyan mb-4">
+      Metodología Comprobada
+    </div>
+    <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight mb-4">
+      Implementaciones ágiles, sin sorpresas ni sobrecostos
+    </h2>
+    <p class="text-ink-muted text-base leading-relaxed">
+      Nuestra metodología por fases garantiza entregas de valor tempranas, reduciendo la curva de aprendizaje y mitigando cualquier riesgo operativo.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+    {steps.map((s) => (
+      <div class="p-6 rounded-2xl bg-surface-card/60 border border-white/10 hover:border-brand-cyan/40 transition-all duration-300 flex flex-col justify-between relative group">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-display font-extrabold text-3xl text-brand-cyan/80 group-hover:text-brand-cyan transition-colors">
+              {s.num}
+            </span>
+            <span class="text-[11px] font-mono text-ink-muted bg-white/5 px-2 py-0.5 rounded border border-white/5">
+              {s.duration}
+            </span>
+          </div>
+          <h3 class="font-display font-bold text-lg text-white mb-2">{s.title}</h3>
+          <p class="text-ink-muted text-xs sm:text-sm leading-relaxed">{s.desc}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>

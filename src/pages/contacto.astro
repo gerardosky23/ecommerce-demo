@@ -1,0 +1,134 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/common/Navbar.astro';
+import Footer from '../components/common/Footer.astro';
+import SubpageHero from '../components/common/SubpageHero.astro';
+import ContactFormIsland from '../components/common/ContactFormIsland.svelte';
+import FaqAccordion from '../components/common/FaqAccordion.svelte';
+
+const contactFaqs = [
+  {
+    question: '¿La evaluación o diagnóstico inicial tiene algún costo?',
+    answer: 'No. La primera sesión de diagnóstico y levantamiento preliminar de requerimientos es 100% gratuita y sin compromiso comercial.'
+  },
+  {
+    question: '¿Ofrecen demostraciones con datos de nuestro sector industrial?',
+    answer: 'Sí. Personalizamos la demo de Odoo con casos de uso, catálogos y flujos propios de tu industria (distribución, manufactura, retail, servicios profesionales o agroindustria).'
+  },
+  {
+    question: '¿Cómo coordinamos una reunión presencial en Lima?',
+    answer: 'Puedes visitarnos en nuestra sede en Lima o coordinamos la visita de un consultor senior a tus oficinas comerciales o planta de producción.'
+  },
+  {
+    question: '¿Qué garantía técnica ofrecen en los proyectos?',
+    answer: 'Todos nuestros proyectos incluyen un periodo de garantía post salida a producción (hypercare) y soporte continuo bajo acuerdos de nivel de servicio (SLA).'
+  }
+];
+---
+
+<BaseLayout
+  title="Contacto — Demostración y Diagnóstico Odoo · Flexone"
+  description="Contáctanos para solicitar una consultoría sin costo sobre Odoo ERP, Localización SUNAT o Planiflex en Lima, Perú."
+>
+  <Navbar />
+
+  <main id="main">
+    <SubpageHero
+      title="Hablemos de tu proyecto"
+      subtitle="Diagnóstico estratégico y demostración en vivo de Odoo adaptado a tu empresa en Perú."
+      icon="compass"
+    />
+
+    <!-- Main Grid: Contact info & Form Island -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-white text-brand-dark">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <!-- Direct Contact Info (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="p-8 rounded-2xl bg-neutral-50 border border-brand-border space-y-6">
+            <h2 class="text-xl font-medium text-brand-dark">Canales de atención directa</h2>
+
+            <div class="space-y-4 text-sm">
+              <a
+                href="https://wa.me/51955479055"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-start gap-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors group"
+              >
+                <div class="w-10 h-10 rounded-lg bg-[#25d366] text-white flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.79 14.07c-.24.68-1.4 1.34-1.92 1.42-.48.08-1.07.12-3.15-.75-2.22-.92-3.66-3.18-3.77-3.33-.11-.15-.9-1.2-1.01-1.6-.11-.4-.01-.76.12-.97.13-.2.29-.42.43-.58.14-.17.18-.28.27-.47.09-.18.05-.35-.02-.49-.08-.14-.73-1.76-1-2.41-.27-.63-.54-.54-.74-.55l-.63-.01c-.22 0-.57.08-.87.41-.3.33-1.15 1.13-1.15 2.75 0 1.62 1.18 3.19 1.34 3.41.17.22 2.32 3.55 5.63 4.98 2.34 1.01 3.25.99 3.86.91.73-.09 1.66-.68 1.9-1.33.24-.65.24-1.21.17-1.33-.07-.12-.25-.19-.49-.31z"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-medium text-brand-dark">WhatsApp Comercial</div>
+                  <div class="text-emerald-700 font-mono text-sm">+51 955 479 055</div>
+                  <div class="text-xs text-brand-muted mt-0.5 font-light">Atención de lunes a viernes de 8:30 a 18:30</div>
+                </div>
+              </a>
+
+              <a
+                href="mailto:info@flexone.pe"
+                class="flex items-start gap-4 p-4 rounded-xl bg-white border border-neutral-200 hover:border-neutral-300 transition-colors"
+              >
+                <div class="w-10 h-10 rounded-lg bg-neutral-100 text-brand-dark flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5">
+                    <rect width="20" height="16" x="2" y="4" rx="2" />
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-medium text-brand-dark">Correo Electrónico</div>
+                  <div class="text-brand-magenta text-sm">info@flexone.pe</div>
+                  <div class="text-xs text-brand-muted mt-0.5 font-light">Envíanos tus pliegos o requerimientos</div>
+                </div>
+              </a>
+
+              <div class="flex items-start gap-4 p-4 rounded-xl bg-white border border-neutral-200">
+                <div class="w-10 h-10 rounded-lg bg-neutral-100 text-brand-dark flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5">
+                    <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-medium text-brand-dark">Oficina Principal</div>
+                  <div class="text-brand-muted text-xs leading-relaxed font-light">
+                    Jr. César Vallejo Nro. 441, Dpto. 301, Lima, Perú
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-neutral-200 text-xs text-brand-muted leading-relaxed font-light">
+              <strong>FLEXXOONE S.A.C.</strong> — RUC 20600995805<br />
+              Silver Partner Oficial de Odoo en el Perú.
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Svelte Island (7 cols) -->
+        <div class="lg:col-span-7">
+          <ContactFormIsland client:load />
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50 border-t border-brand-border text-brand-dark">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark mb-3">
+            Preguntas sobre la <span class="font-normal text-brand-magenta">consultoría inicial</span>
+          </h2>
+          <p class="text-brand-muted text-sm font-light">
+            Respuestas a las dudas más comunes antes de iniciar un proyecto.
+          </p>
+        </div>
+
+        <FaqAccordion client:visible items={contactFaqs} />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

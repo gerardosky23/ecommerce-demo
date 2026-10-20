@@ -1,0 +1,68 @@
+---
+const pillars = [
+  'Silver Partner oficial de Odoo',
+  'Soporte local con mesa de ayuda y SLA',
+  'Especialistas contables propios en el equipo',
+  'Desarrollo a medida con ingenieros certificados',
+  'Especialistas en planillas peruanas y RR. HH.',
+  'Experiencia comprobada en más de 9 industrias',
+  'Metodología ágil de implementación probada'
+];
+---
+
+<section id="a-medida" class="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50 border-y border-brand-border">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <!-- Left Column: Graphical Preview -->
+    <div class="lg:col-span-6">
+      <div class="relative rounded-2xl overflow-hidden border border-brand-border bg-white p-3 shadow-lg">
+        <img
+          src="/secciones/por-que-flexone.webp"
+          alt="Equipo y metodología de implementación Flexone"
+          width="600"
+          height="450"
+          class="w-full h-auto rounded-xl object-contain"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    <!-- Right Column: Content & Pillars -->
+    <div class="lg:col-span-6 space-y-6">
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-light text-brand-dark tracking-tight">
+        Por qué elegir a <span class="font-normal text-brand-magenta">Flexone</span>
+      </h2>
+
+      <p class="text-brand-muted text-base sm:text-lg leading-relaxed font-light">
+        Una implementación se mide después del arranque: cuando el cierre del mes cuadra, la planilla sale a tiempo y el equipo ya no vuelve al Excel.
+      </p>
+
+      <p class="text-brand-dark text-sm sm:text-base font-medium">
+        Somos Silver Partner de Odoo y trabajamos con especialistas propios en contabilidad y en recursos humanos.
+      </p>
+
+      <!-- 7 Pillars Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+        {pillars.map((pillar) => (
+          <div class="flex items-center gap-2.5 p-3 rounded-lg bg-white border border-brand-border text-xs sm:text-sm font-medium text-brand-dark">
+            <span class="w-5 h-5 rounded-full bg-brand-magenta/10 text-brand-magenta flex items-center justify-center font-bold text-xs shrink-0">
+              ✓
+            </span>
+            <span>{pillar}</span>
+          </div>
+        ))}
+      </div>
+
+      <div class="pt-4">
+        <a
+          href="/contacto"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded bg-brand-dark text-white text-xs font-semibold uppercase tracking-wider hover:bg-black transition-colors shadow-md"
+        >
+          <span>¿Trabajamos juntos? Hablemos</span>
+          <svg class="w-4 h-4 text-brand-magenta" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

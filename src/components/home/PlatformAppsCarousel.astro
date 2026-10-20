@@ -1,0 +1,102 @@
+---
+const areas = [
+  {
+    name: 'Finanzas',
+    color: 'bg-emerald-600',
+    img: '/areas/finanzas.webp',
+    desc: 'Facturación electrónica, contabilidad PCGE, cobranzas y estados financieros en tiempo real.'
+  },
+  {
+    name: 'Ventas',
+    color: 'bg-amber-500',
+    img: '/areas/ventas.webp',
+    desc: 'CRM, cotizaciones, listas de precios multimoneda, comisiones y portal de clientes.'
+  },
+  {
+    name: 'Cadena de suministro',
+    color: 'bg-purple-600',
+    img: '/areas/suministro.webp',
+    desc: 'Compras, control de inventario multialmacén, kardex valorizado y trazabilidad por lote.'
+  },
+  {
+    name: 'Recursos humanos',
+    color: 'bg-yellow-500',
+    img: '/areas/recursos-humanos.webp',
+    desc: 'Planillas Planiflex, control de asistencias, vacaciones, legajos y exportación PLAME.'
+  },
+  {
+    name: 'Servicios',
+    color: 'bg-blue-600',
+    img: '/areas/servicios.webp',
+    desc: 'Gestión de proyectos, partes de horas (timesheet), mesa de ayuda y facturación por hito.'
+  },
+  {
+    name: 'Sitio web',
+    color: 'bg-pink-600',
+    img: '/areas/sitio-web.webp',
+    desc: 'Constructor web, portal de autoservicio y tienda e-commerce conectada a stock y SUNAT.'
+  }
+];
+---
+
+<section id="soluciones" class="py-24 px-4 sm:px-6 lg:px-8 bg-[#202124] text-white overflow-hidden">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="max-w-3xl mb-16">
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight mb-4">
+        Todo tu negocio en una <span class="font-normal text-brand-magenta">sola plataforma</span>
+      </h2>
+      <p class="text-white/70 text-base sm:text-lg leading-relaxed font-light">
+        Queremos que tu gente deje de perder tiempo buscando datos y empiece a tomar decisiones con información real. ¿Qué gestionarás con nuestro ERP?
+      </p>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      {areas.map((area) => (
+        <article class="rounded-2xl overflow-hidden bg-[#292a2d] border border-white/10 flex flex-col justify-between group hover:border-brand-magenta/40 transition-all shadow-xl">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span class={`px-3 py-1 rounded text-xs font-semibold text-white ${area.color}`}>
+                {area.name}
+              </span>
+              <span class="text-xs font-bold text-white/40 tracking-wider">Odoo</span>
+            </div>
+            <p class="text-xs text-white/70 leading-relaxed font-light mb-4">
+              {area.desc}
+            </p>
+          </div>
+
+          <div class="px-6 pb-6 pt-2">
+            <div class="rounded-xl overflow-hidden border border-white/5 bg-[#161618] aspect-[16/10]">
+              <img
+                src={area.img}
+                alt={`Módulo de ${area.name} en Odoo`}
+                width="400"
+                height="250"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- Bottom Contact Bar -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-white/5 border border-white/10">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">💬</span>
+        <span class="text-sm text-white/80 font-light">
+          ¿Tienes un proceso que no encaja en ninguna de estas áreas?
+        </span>
+      </div>
+      <a
+        href="/contacto"
+        class="px-5 py-2.5 rounded bg-brand-cyan text-[#06222b] text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-colors"
+      >
+        Cuéntanos tu requerimiento
+      </a>
+    </div>
+  </div>
+</section>

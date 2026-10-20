@@ -1,0 +1,540 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+import FaqAccordion from '../../components/common/FaqAccordion.svelte';
+
+const faqs = [
+  {
+    question: '¿Cuánto tarda una implementación de Odoo?',
+    answer: 'Entre 10 y 15 semanas en un proyecto típico. El plazo depende sobre todo del alcance y de la calidad de los datos; un solo módulo, como facturación, puede estar listo antes.'
+  },
+  {
+    question: '¿Cuánto cuesta?',
+    answer: 'Lo principal es la implementación, que se cotiza tras el diagnóstico, y el soporte posterior. Las licencias son opcionales: con Odoo Community no hay costo de licencia, y Enterprise se paga por usuario solo si hacen falta sus aplicaciones. Usuarios, módulos y migración de datos son lo que más mueve el precio.'
+  },
+  {
+    question: '¿Community o Enterprise?',
+    answer: 'Community es gratuita y cubre lo esencial; Enterprise suma aplicaciones, la versión móvil y el soporte de Odoo. En el diagnóstico se recomienda la que conviene según los módulos y el presupuesto.'
+  },
+  {
+    question: '¿Se puede empezar por un solo módulo?',
+    answer: 'Sí. Muchas empresas empiezan por contabilidad y facturación, y suman inventario, ventas o planilla después, en el mismo sistema.'
+  },
+  {
+    question: '¿Qué pasa con los datos actuales?',
+    answer: 'Clientes, proveedores, productos, saldos contables y personal se migran desde Excel u otro sistema, para que el primer mes ya se trabaje en Odoo.'
+  },
+  {
+    question: '¿Y la facturación electrónica que ya se usa?',
+    answer: 'Odoo emite comprobantes electrónicos a través de un OSE o PSE. El cambio se coordina para que la emisión no se interrumpa.'
+  },
+  {
+    question: '¿Dónde queda instalado Odoo?',
+    answer: 'En la nube de Odoo (Odoo Online u Odoo.sh) o en un servidor propio. Se elige según los módulos, los desarrollos y la política de la empresa.'
+  },
+  {
+    question: '¿Hay soporte después del arranque?',
+    answer: 'Sí. El primer mes en vivo se acompaña de cerca y después hay una mesa de ayuda en Lima.'
+  },
+  {
+    question: '¿Atienden empresas fuera de Lima?',
+    answer: 'Sí. Reuniones, configuración y capacitaciones pueden hacerse en línea, así que la ubicación no frena el proyecto.'
+  },
+  {
+    question: '¿Y si se necesita algo que Odoo no trae?',
+    answer: 'Se desarrolla a medida sobre Odoo: reportes, aprobaciones, integraciones o apps móviles, con el equipo propio de Flexone.'
+  }
+];
+
+const painPoints = [
+  {
+    title: 'El cierre del mes tarda semanas',
+    desc: 'Los números se cuadran a mano cruzando hojas de cálculo. Con Odoo, cada operación genera su asiento y el balance sale al día.',
+    icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
+  },
+  {
+    title: 'El inventario no cuadra',
+    desc: 'Kardex desfasado y diferencias físicas sin explicar. Odoo valoriza por promedio ponderado o PEPS con trazabilidad por lote y serie.',
+    icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'
+  },
+  {
+    title: 'Cada área tiene su sistema',
+    desc: 'Ventas en un software, almacén en otro y contabilidad en hojas sueltas. La información se digita dos o tres veces con riesgo de error.',
+    icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z'
+  },
+  {
+    title: 'La gerencia decide tarde',
+    desc: 'Los reportes llegan a fin de mes y armados a mano. Con Odoo, ventas, cobranzas y márgenes se ven al día en tableros en tiempo real.',
+    icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
+  },
+  {
+    title: 'La planilla depende de una persona',
+    desc: 'Asistencias, horas extra y beneficios se calculan en hojas que solo alguien entiende. El cálculo pasa al sistema, con las reglas vigentes.',
+    icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z'
+  },
+  {
+    title: 'La SUNAT preocupa cada mes',
+    desc: 'Libros atrasados, comprobantes rechazados o detracciones mal aplicadas. La localización peruana lleva esas reglas por dentro.',
+    icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'
+  }
+];
+
+const scopeItems = [
+  { title: 'Diagnóstico de procesos', desc: 'Cómo trabaja hoy cada área y qué conviene optimizar.' },
+  { title: 'Localización peruana', desc: 'Facturación electrónica, libros PLE, SIRE, detracciones, retenciones y planilla.' },
+  { title: 'Migración de datos', desc: 'Clientes, proveedores, productos, saldos y personal desde Excel u otros ERPs.' },
+  { title: 'Usuarios y permisos', desc: 'Cada persona ve y aprueba estrictamente lo que le corresponde por rol.' },
+  { title: 'Capacitación por roles', desc: 'Talleres prácticos con usuarios clave, jefes y gerencia con datos reales.' },
+  { title: 'Acompañamiento del primer cierre', desc: 'Soporte presencial/remoto durante el primer mes en vivo.' },
+  { title: 'Reportes para la gerencia', desc: 'Márgenes de rentabilidad, cobranzas, inventario y costos al día.' },
+  { title: 'Soporte después del arranque', desc: 'Mesa de ayuda local en Lima con SLA de respuesta garantizado.' },
+  { title: 'Desarrollos a medida', desc: 'Módulos y reportes específicos desarrollados sobre la arquitectura Odoo.' },
+  { title: 'Apps móviles', desc: 'Conectores para personal de campo, despachos, ventas y rendiciones.' }
+];
+
+const phases = [
+  {
+    phase: 'Fase 1',
+    name: 'Diagnóstico',
+    duration: '1-2 semanas',
+    desc: 'Levantamiento de procesos, documentos y datos actuales. Se define el alcance por módulos y el cronograma del proyecto.'
+  },
+  {
+    phase: 'Fase 2',
+    name: 'Configuración',
+    duration: '3-6 semanas',
+    desc: 'Parametrización de Odoo con la localización peruana, reglas contables y flujos aprobados de la empresa.'
+  },
+  {
+    phase: 'Fase 3',
+    name: 'Datos y pruebas',
+    duration: '2-3 semanas',
+    desc: 'Migración de catálogos maestros y saldos. El equipo prueba casos reales en entorno sandbox antes del despliegue.'
+  },
+  {
+    phase: 'Fase 4',
+    name: 'Arranque y soporte',
+    duration: '4 semanas',
+    desc: 'Salida en vivo (Go-Live), capacitación final y acompañamiento intensivo hasta culminar el primer cierre mensual.'
+  }
+];
+
+const modulesList = [
+  { title: 'Finanzas y contabilidad', desc: 'PCGE, estados financieros, libros PLE y SIRE automatizados.' },
+  { title: 'Tesorería y bancos', desc: 'Cobros, pagos a proveedores, conciliación bancaria, letras y flujo de caja.' },
+  { title: 'Ventas y CRM', desc: 'Cotizaciones, embudo comercial, listas de precios y comisiones.' },
+  { title: 'Compras e inventario', desc: 'Órdenes de compra, multialmacén, lotes, series y Kardex valorizado SUNAT.' },
+  { title: 'Manufactura (MRP)', desc: 'Listas de materiales (BOM), órdenes de producción y costeo real.' },
+  { title: 'RR. HH. y Planillas', desc: 'Marcaciones, cálculo de beneficios, boletas digitales, PLAME y AFPnet.' },
+  { title: 'Comercio electrónico y Web', desc: 'Tienda virtual integrada con pasarelas de pago y stock en tiempo real.' },
+  { title: 'Proyectos y Servicios', desc: 'Control de horas hombre, diagramas de Gantt y facturación por hito.' }
+];
+
+const industries = [
+  'Turismo receptivo y transporte',
+  'Supervisión de obras públicas',
+  'Manufactura y plásticos',
+  'Minería y contratistas',
+  'Salud y dispositivos médicos',
+  'Logística y flotas',
+  'Laboratorios y servicios técnicos',
+  'Sector público',
+  'Retail y comercio electrónico'
+];
+---
+
+<BaseLayout
+  title="Implementación de Odoo en Perú · Flexone"
+  description="Implementación integral de Odoo ERP en Perú: localización SUNAT, facturación electrónica, contabilidad, inventarios y planillas con equipo especializado."
+>
+  <Navbar />
+
+  <main id="main">
+    <!-- Hero Section -->
+    <section class="bg-[#161618] text-white pt-44 sm:pt-44 lg:pt-48 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <!-- Left Column: Copy -->
+        <div class="lg:col-span-7">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-medium mb-6">
+            <span>Odoo Silver Partner · Perú</span>
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight mb-6 leading-tight">
+            Implementación de <br />
+            <span class="font-normal text-brand-magenta">Odoo en Perú</span>
+          </h1>
+
+          <p class="text-white/80 text-base sm:text-lg mb-8 font-light leading-relaxed max-w-2xl">
+            Odoo arranca con la SUNAT resuelta: facturación electrónica, libros electrónicos, detracciones y planilla, configurados por un equipo con contadores y especialistas en planillas. Un solo sistema para finanzas, ventas, inventario, producción y personal.
+          </p>
+
+          <div class="flex flex-wrap gap-3 mb-10">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white/90">
+              <svg class="w-4 h-4 text-brand-magenta" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Silver Partner Odoo
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white/90">
+              <svg class="w-4 h-4 text-brand-cyan" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Contadores en el equipo
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white/90">
+              <svg class="w-4 h-4 text-brand-magenta" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Especialistas en Planillas
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white/90">
+              <svg class="w-4 h-4 text-brand-cyan" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Soporte peruano directo
+            </span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-6 pt-6 border-t border-white/10">
+            <div>
+              <div class="text-2xl sm:text-3xl font-medium text-white">10-15</div>
+              <div class="text-xs text-white/60 font-light mt-1">Semanas de despliegue</div>
+            </div>
+            <div>
+              <div class="text-2xl sm:text-3xl font-medium text-white">100%</div>
+              <div class="text-xs text-white/60 font-light mt-1">Normativa SUNAT</div>
+            </div>
+            <div>
+              <div class="text-2xl sm:text-3xl font-medium text-white">9+</div>
+              <div class="text-xs text-white/60 font-light mt-1">Sectores industriales</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Demo Form Card -->
+        <div class="lg:col-span-5">
+          <div class="bg-white rounded-2xl p-6 sm:p-8 text-brand-dark shadow-2xl border border-neutral-100">
+            <h2 class="text-xl font-medium text-brand-dark mb-2">
+              Una demostración con datos del rubro
+            </h2>
+            <p class="text-xs text-brand-muted mb-6 font-light">
+              Sin costo ni compromiso comercial. Evaluamos la arquitectura ideal para tu operación.
+            </p>
+
+            <form class="space-y-4" action="/contacto" method="GET">
+              <div>
+                <label for="lead-name" class="block text-xs font-medium text-brand-dark mb-1">Nombre completo *</label>
+                <input
+                  id="lead-name"
+                  type="text"
+                  required
+                  placeholder="Ej. Juan Pérez"
+                  class="w-full px-3 py-2.5 rounded-lg border border-neutral-300 text-xs focus:outline-none focus:border-brand-magenta transition-colors"
+                />
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label for="lead-email" class="block text-xs font-medium text-brand-dark mb-1">Correo corporativo *</label>
+                  <input
+                    id="lead-email"
+                    type="email"
+                    required
+                    placeholder="juan@empresa.pe"
+                    class="w-full px-3 py-2.5 rounded-lg border border-neutral-300 text-xs focus:outline-none focus:border-brand-magenta transition-colors"
+                  />
+                </div>
+                <div>
+                  <label for="lead-phone" class="block text-xs font-medium text-brand-dark mb-1">Teléfono / WhatsApp *</label>
+                  <input
+                    id="lead-phone"
+                    type="tel"
+                    required
+                    placeholder="+51 987 654 321"
+                    class="w-full px-3 py-2.5 rounded-lg border border-neutral-300 text-xs focus:outline-none focus:border-brand-magenta transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label for="lead-company" class="block text-xs font-medium text-brand-dark mb-1">Empresa y rubro *</label>
+                <input
+                  id="lead-company"
+                  type="text"
+                  required
+                  placeholder="Ej. Distribuidora del Sur SAC"
+                  class="w-full px-3 py-2.5 rounded-lg border border-neutral-300 text-xs focus:outline-none focus:border-brand-magenta transition-colors"
+                />
+              </div>
+
+              <button
+                type="submit"
+                class="w-full py-3 px-4 rounded-full bg-brand-magenta text-white font-medium text-xs uppercase tracking-wider hover:bg-brand-magenta-hover transition-colors shadow-md mt-2"
+              >
+                Solicitar Demostración Guiada ›
+              </button>
+
+              <p class="text-[11px] text-center text-neutral-400 font-light mt-2">
+                Tus datos están protegidos bajo política de confidencialidad estricta.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Pain Points (Excel Limits) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50 text-brand-dark border-b border-neutral-200">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="text-xs font-semibold text-brand-magenta uppercase tracking-wider mb-2">Diagnóstico de Madurez</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Señales de que la empresa <span class="font-normal text-brand-magenta">ya no cabe en el Excel</span>
+          </h2>
+          <p class="text-brand-muted text-sm mt-3 font-light">
+            Cuando la operación crece, las hojas de cálculo se convierten en cuellos de botella invisibles.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {painPoints.map((item) => (
+            <div class="p-6 rounded-2xl bg-white border border-neutral-200 hover:border-brand-magenta/40 hover:shadow-md transition-all flex flex-col">
+              <div class="w-10 h-10 rounded-xl bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d={item.icon}></path>
+                </svg>
+              </div>
+              <h3 class="text-base font-medium text-brand-dark mb-2">{item.title}</h3>
+              <p class="text-xs text-brand-muted font-light leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Scope Checklist -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="text-xs font-semibold text-brand-cyan uppercase tracking-wider mb-2">Alcance Integral</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Todo lo que incluye una implementación con <span class="font-normal text-brand-magenta">Flexone</span>
+          </h2>
+          <p class="text-brand-muted text-sm mt-3 font-light">
+            No es instalar un sistema y entregar una clave: el proyecto concluye cuando tu equipo opera con autonomía y el primer cierre contable cuadra en el sistema.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {scopeItems.map((item, idx) => (
+            <div class="p-5 rounded-xl bg-neutral-50 border border-neutral-200 flex flex-col justify-between">
+              <div>
+                <span class="text-xs font-mono text-brand-magenta font-semibold mb-2 block">0{idx + 1}.</span>
+                <h3 class="text-sm font-medium text-brand-dark mb-1.5">{item.title}</h3>
+                <p class="text-xs text-brand-muted font-light leading-relaxed">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: 4 Phases Timeline -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#161618] text-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="text-xs font-semibold text-brand-magenta uppercase tracking-wider mb-2">Metodología Comprobada</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-white">
+            De la primera reunión al primer cierre, <span class="font-normal text-brand-magenta">en 4 fases</span>
+          </h2>
+          <p class="text-white/70 text-sm mt-3 font-light">
+            Cada fase tiene un objetivo y un plazo conocidos desde el inicio, evitando desviaciones presupuestales o retrasos.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {phases.map((p) => (
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-magenta/50 transition-all flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <span class="text-xs font-mono uppercase tracking-wider text-brand-cyan font-bold">{p.phase}</span>
+                  <span class="text-[11px] px-2.5 py-1 rounded bg-white/10 text-white/80">{p.duration}</span>
+                </div>
+                <h3 class="text-lg font-medium text-white mb-2">{p.name}</h3>
+                <p class="text-xs text-white/70 font-light leading-relaxed">{p.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: SUNAT Localized -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-6">
+          <div class="text-xs font-semibold text-brand-magenta uppercase tracking-wider mb-2">Localización Tributaria</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark mb-6">
+            La SUNAT, <span class="font-normal text-brand-magenta">resuelta dentro del sistema</span>
+          </h2>
+          <p class="text-brand-muted text-sm leading-relaxed font-light mb-6">
+            Un ERP estándar del exterior factura, pero no conoce las detracciones, el SIRE ni la PLAME. La localización que implementa Flexone trae esas reglas nativas por dentro: lo que se registra en la operación diaria es exactamente lo que se declara ante el fisco.
+          </p>
+
+          <ul class="space-y-3">
+            <li class="flex items-center gap-3 text-xs sm:text-sm text-brand-dark">
+              <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <span>Comprobantes electrónicos (facturas, boletas, notas y guías de remisión remitente/transportista)</span>
+            </li>
+            <li class="flex items-center gap-3 text-xs sm:text-sm text-brand-dark">
+              <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <span>Libros electrónicos PLE y generación de estructuras SIRE (RVIE y RCE)</span>
+            </li>
+            <li class="flex items-center gap-3 text-xs sm:text-sm text-brand-dark">
+              <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <span>Detracciones (SPOT), retenciones y percepciones con cuentas de control</span>
+            </li>
+            <li class="flex items-center gap-3 text-xs sm:text-sm text-brand-dark">
+              <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <span>Kardex valorizado permanente SUNAT (Método Promedio Ponderado / PEPS)</span>
+            </li>
+            <li class="flex items-center gap-3 text-xs sm:text-sm text-brand-dark">
+              <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <span>Planilla electrónica con generación de macros PLAME y AFPnet</span>
+            </li>
+            <li class="flex items-center gap-3 text-xs sm:text-sm text-brand-dark">
+              <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <span>Multimoneda con tipo de cambio automático diario de la SBS / SUNAT</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="lg:col-span-6">
+          <div class="rounded-2xl overflow-hidden border border-neutral-200 shadow-xl bg-neutral-100">
+            <img
+              src="/secciones/factura-electronica-pdf-qr-odoo.webp"
+              alt="Localización SUNAT Odoo Perú"
+              width="600"
+              height="400"
+              class="w-full h-auto object-cover"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Modular Implementation -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50 text-brand-dark">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="text-xs font-semibold text-brand-magenta uppercase tracking-wider mb-2">Escalabilidad</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Se implementa por módulos, <span class="font-normal text-brand-magenta">a la medida de la empresa</span>
+          </h2>
+          <p class="text-brand-muted text-sm mt-3 font-light">
+            Se puede empezar por lo urgente e incorporar módulos subsecuentes sin migrar de base de datos ni cambiar de software.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {modulesList.map((m) => (
+            <div class="p-6 rounded-2xl bg-white border border-neutral-200 hover:border-brand-magenta/30 hover:shadow-sm transition-all">
+              <h3 class="text-base font-medium text-brand-dark mb-2">{m.title}</h3>
+              <p class="text-xs text-brand-muted font-light leading-relaxed">{m.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Proyectos en 9 Industrias -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="text-xs font-semibold text-brand-cyan uppercase tracking-wider mb-2">Experiencia Multisectorial</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Proyectos reales en <span class="font-normal text-brand-magenta">9 industrias</span>
+          </h2>
+          <p class="text-brand-muted text-sm mt-3 font-light">
+            Cada sector de la economía peruana tiene dinámicas particulares; adaptamos Odoo a tu modelo operativo.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {industries.map((ind) => (
+            <div class="p-6 rounded-2xl bg-neutral-50 border border-neutral-200 flex items-center gap-4 hover:border-neutral-300 transition-colors">
+              <div class="w-8 h-8 rounded-lg bg-brand-magenta/10 text-brand-magenta flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm4 0h2v2h-2V5zm-4 4h2v2H7V9zm4 0h2v2h-2V9zm-4 4h2v2H7v-2zm4 0h2v2h-2v-2z" clip-rule="evenodd"/></svg>
+              </div>
+              <span class="text-sm font-medium text-brand-dark">{ind}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 8: ProInnóvate Banner -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-neutral-900 to-[#1e1b2e] text-white">
+      <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 p-8 rounded-3xl border border-white/10">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-brand-magenta mb-2 block">Cofinanciamiento del Estado</span>
+          <h2 class="text-2xl sm:text-3xl font-light text-white mb-2">
+            Hasta <span class="font-normal text-brand-cyan">S/ 50,000 no reembolsables</span> para digitalizar tu empresa
+          </h2>
+          <p class="text-xs sm:text-sm text-white/70 max-w-2xl font-light leading-relaxed">
+            ProInnóvate cofinancia proyectos de transformación digital en MIPYMEs peruanas. Te acompañamos en el diagnóstico, la formulación y la implementación.
+          </p>
+        </div>
+        <div class="shrink-0">
+          <a
+            href="/contacto"
+            class="inline-block px-6 py-3 rounded-full bg-brand-cyan text-[#06222b] text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-colors shadow-lg"
+          >
+            Evaluar mi Empresa ›
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: FAQ Accordion -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <div class="text-xs font-semibold text-brand-magenta uppercase tracking-wider mb-2">Respuestas Claras</div>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Preguntas <span class="font-normal text-brand-magenta">frecuentes</span>
+          </h2>
+          <p class="text-brand-muted text-sm mt-3 font-light">
+            Todo lo que necesitas saber antes de iniciar el proyecto de implementación.
+          </p>
+        </div>
+
+        <FaqAccordion client:visible items={faqs} />
+      </div>
+    </section>
+
+    <!-- Section 10: Final CTA -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#161618] text-white text-center">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl sm:text-4xl font-light text-white mb-4">
+          El primer paso es una <span class="font-normal text-brand-magenta">reunión de 30 minutos</span>
+        </h2>
+        <p class="text-white/70 text-sm font-light leading-relaxed mb-8 max-w-xl mx-auto">
+          Para entender la dinámica de tu negocio y mostrarte Odoo operando con datos y reportes de tu sector.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href="/contacto"
+            class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-brand-magenta text-white text-xs font-medium uppercase tracking-wider hover:bg-brand-magenta-hover transition-colors shadow-lg"
+          >
+            Agendar Reunión Técnica ›
+          </a>
+          <a
+            href="https://wa.me/51917573821"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/10 text-white text-xs font-medium uppercase tracking-wider hover:bg-white/20 transition-colors border border-white/20"
+          >
+            Consultar por WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

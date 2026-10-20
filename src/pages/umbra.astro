@@ -1,0 +1,42 @@
+---
+import UmbraHero from '../components/umbra/UmbraHero.svelte';
+---
+
+<!doctype html>
+<html lang="es" class="bg-[#1a4028]">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>AURA AUDIO — SILENCIO TOTAL. SONIDO VIVO.</title>
+    <meta name="description" content="Audífonos premium con cancelación activa de ruido y control cinemático por scroll." />
+    <meta name="theme-color" content="#1a4028" />
+
+    <!-- Google Fonts for Barlow Condensed & DM Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100%;
+        background-color: #1a4028;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-[#1a4028] text-white antialiased">
+    <main id="main">
+      <UmbraHero client:load />
+    </main>
+  </body>
+</html>

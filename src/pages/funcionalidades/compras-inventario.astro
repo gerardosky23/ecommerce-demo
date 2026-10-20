@@ -1,0 +1,385 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+import FaqAccordion from '../../components/common/FaqAccordion.svelte';
+
+const comprasFaqs = [
+  {
+    question: '¿El kardex sale en el formato de la SUNAT?',
+    answer: 'Sí. El kardex valorizado sale en Excel y en el archivo que pide la SUNAT para el PLE (formato 13.1), con el tipo de operación de cada movimiento.'
+  },
+  {
+    question: '¿Cómo se registra el costo de una importación?',
+    answer: 'Se vinculan las facturas de flete, seguro, aduana y arancel a la DUA en una liquidación de importación, prorrateando el costo real a cada producto.'
+  },
+  {
+    question: '¿Podemos arrancar con el stock que tenemos hoy?',
+    answer: 'Sí. Realizamos una carga inicial de saldos por almacén y lote con inventario físico validado para que arranques sin descuadres de stock.'
+  },
+  {
+    question: '¿Funciona con varios almacenes o sucursales?',
+    answer: 'Sí. Puedes gestionar múltiples almacenes centrales, sucursales y ubicaciones internas con transferencias entre depósitos y control de mercadería en tránsito.'
+  },
+  {
+    question: '¿Se puede controlar el vencimiento de productos?',
+    answer: 'Sí. Mediante trazabilidad por lotes y números de serie con alertas automáticas de fechas de vencimiento y remoción FIFO.'
+  }
+];
+
+const modules = [
+  { name: 'Compras', desc: 'Solicitudes, cotizaciones, órdenes de compra y control de lo recibido y facturado.', iconPath: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z' },
+  { name: 'Inventario', desc: 'Almacenes, ubicaciones, lotes, series, reglas de reposición y valorización del stock.', iconPath: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+  { name: 'Código de barras', desc: 'Recepciones, despachos y conteos con lector o con el celular, sin papel.', iconPath: 'M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z' },
+  { name: 'Calidad', desc: 'Controles en la recepción y en el despacho, con alertas cuando algo no cumple.', iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+  { name: 'Contabilidad', desc: 'Kardex valorizado, costo de ventas y asientos de inventario sin cuadres manuales.', iconPath: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+  { name: 'Flota', desc: 'Vehículos propios, mantenimientos y consumo de combustible ligados a los despachos.', iconPath: 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0' },
+  { name: 'Documentos', desc: 'DUA, certificados y registros sanitarios guardados junto a la compra.', iconPath: 'M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20' },
+  { name: 'Tableros', desc: 'Rotación, cobertura, compras por proveedor y valor del inventario por almacén.', iconPath: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' }
+];
+---
+
+<BaseLayout
+  title="Compras e inventario en Odoo · Flexone"
+  description="El kardex que cuadra con la contabilidad. Compras, importaciones, almacenes multisede y formato 13.1 SUNAT en Odoo ERP."
+>
+  <Navbar />
+
+  <main id="main">
+    <!-- Hero Section (Dark #161618) -->
+    <section class="bg-[#161618] text-white pt-44 sm:pt-44 lg:pt-48 pb-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+      <div class="max-w-4xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-medium mb-6">
+          <span>Compras e inventario</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-light text-white tracking-tight mb-6 leading-tight">
+          El kardex que cuadra <br class="hidden sm:inline" />
+          <span class="font-normal text-brand-magenta">con la contabilidad</span>
+        </h1>
+
+        <p class="text-white/70 text-base sm:text-lg max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+          Compras, importaciones y almacenes en el mismo sistema que la contabilidad. Cada movimiento valoriza el stock y el kardex sale en el formato que pide la SUNAT.
+        </p>
+
+        <div class="mb-12">
+          <a
+            href="/contacto"
+            class="inline-block px-6 py-3 rounded-full bg-brand-cyan text-[#06222b] text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-colors shadow-lg"
+          >
+            Pedir una demostración ›
+          </a>
+        </div>
+
+        <!-- Kardex Table Mockup -->
+        <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#202124] text-left p-4 sm:p-6 text-xs text-white/80">
+          <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <span class="font-medium text-white">Inventario permanente valorizado · PLE 13.1</span>
+            </div>
+            <span class="text-white/40">Almacén Central Lurín</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-[11px]">
+              <thead>
+                <tr class="text-white/40 border-b border-white/10">
+                  <th class="pb-2 font-sans">Producto</th>
+                  <th class="pb-2 text-right font-sans">Entradas</th>
+                  <th class="pb-2 text-right font-sans">Salidas</th>
+                  <th class="pb-2 text-right font-sans">Saldo</th>
+                  <th class="pb-2 text-right font-sans">Costo Medio</th>
+                  <th class="pb-2 text-right font-sans">Total</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                <tr>
+                  <td class="py-2 text-white font-sans">Cemento Portland Tipo I</td>
+                  <td class="py-2 text-right text-brand-cyan">1,500 bol</td>
+                  <td class="py-2 text-right text-brand-magenta">900 bol</td>
+                  <td class="py-2 text-right font-bold text-white">600 bol</td>
+                  <td class="py-2 text-right">S/ 26.50</td>
+                  <td class="py-2 text-right text-emerald-400 font-bold">S/ 15,900.00</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-white font-sans">Fierro corrugado 1/2" x 9m</td>
+                  <td class="py-2 text-right text-brand-cyan">600 var</td>
+                  <td class="py-2 text-right text-brand-magenta">350 var</td>
+                  <td class="py-2 text-right font-bold text-white">250 var</td>
+                  <td class="py-2 text-right">S/ 34.90</td>
+                  <td class="py-2 text-right text-emerald-400 font-bold">S/ 8,725.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- De la compra al kardex Section (Light bg #ffffff) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <span class="text-xs font-semibold uppercase tracking-wider text-brand-magenta mb-2 block">
+            De la compra al kardex
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Cada área trabaja en su parte, <span class="font-normal text-brand-magenta">los números salen solos</span>
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div class="lg:col-span-6 space-y-6">
+            <span class="px-2.5 py-1 rounded bg-brand-magenta/10 text-brand-magenta text-xs font-semibold tracking-wide uppercase inline-block">
+              Compras
+            </span>
+            <h3 class="text-2xl sm:text-3xl font-light text-brand-dark">
+              Compras con aprobación y sustento
+            </h3>
+            <p class="text-sm text-brand-muted leading-relaxed font-light">
+              Comprar sin comparar ni aprobar cuesta más de lo que parece. Cada compra queda justificada: quién la pidió, quién la aprobó y a qué precio frente a las otras ofertas.
+            </p>
+            <ul class="space-y-2 text-xs text-brand-muted font-light">
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Solicitudes, cotizaciones y órdenes de compra</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Aprobaciones por monto o por área</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Homologación de proveedores con vencimiento de documentos</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Factura del proveedor desde el XML</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="lg:col-span-6 rounded-2xl bg-neutral-50 border border-neutral-200 p-6 shadow-md">
+            <div class="flex justify-between items-center text-xs font-medium text-brand-dark pb-3 border-b border-neutral-200 mb-3">
+              <span>OC/2026/0142 · Distribuidora Ferretera del Centro</span>
+              <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px]">¡Aprobada!</span>
+            </div>
+            <div class="text-xs text-brand-muted space-y-1 font-light">
+              <div>Aprobador: Gerencia General (monto mayor a S/ 20,000)</div>
+              <div>Total con IGV: <strong>S/ 76,616.20</strong></div>
+              <div class="pt-2 text-[11px] text-emerald-700 font-medium">✓ Mejor precio entre 3 cotizaciones recibidas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comprar lo justo, con datos del propio consumo (Light bg #f8f8f8) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#f8f8f8] text-brand-dark border-t border-neutral-200/60">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Comprar lo justo, con datos del <span class="font-normal text-brand-magenta">propio consumo</span>
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200">
+            <div class="w-10 h-10 rounded-xl bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+            </div>
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Mínimos y máximos reales</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">
+              Calculados a partir del consumo de cada producto, no de un número puesto a mano hace años.
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200">
+            <div class="w-10 h-10 rounded-xl bg-brand-cyan/20 text-cyan-800 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            </div>
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Clasificación ABC y XYZ</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">
+              Qué productos pesan más en el valor y cuáles tienen demanda estable o errática.
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200">
+            <div class="w-10 h-10 rounded-xl bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Alertas de quiebre y sobrestock</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">
+              Aviso antes de quedarse sin stock y de los productos que llevan meses sin moverse.
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200">
+            <div class="w-10 h-10 rounded-xl bg-brand-cyan/20 text-cyan-800 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            </div>
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Sugerencias de compra o importación</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">
+              Con la cobertura en días y el tiempo de entrega del proveedor, la orden sale sugerida.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Módulos de Odoo para compras e inventario (Light bg #ffffff) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Módulos de Odoo para <span class="font-normal text-brand-magenta">compras e inventario</span>
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {modules.map((m) => (
+            <div class="p-6 rounded-2xl bg-neutral-50/50 border border-neutral-200 hover:border-brand-magenta/40 hover:shadow-lg transition-all flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-4">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d={m.iconPath}></path>
+                  </svg>
+                </div>
+                <h3 class="font-medium text-base text-brand-dark mb-2">{m.name}</h3>
+                <p class="text-xs text-brand-muted leading-relaxed font-light">{m.desc}</p>
+              </div>
+              <div class="mt-6 pt-4 border-t border-neutral-100">
+                <a href="/contacto" class="text-xs font-medium text-brand-magenta hover:underline inline-flex items-center gap-1">
+                  Preguntar al asistente →
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Del almacén a los libros (Light bg #f8f8f8) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#f8f8f8] text-brand-dark border-t border-neutral-200/60">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <span class="text-xs font-semibold uppercase tracking-wider text-brand-magenta mb-2 block">
+            Ciclo completo
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Del almacén a los libros, sin cuadres manuales
+          </h2>
+          <p class="text-sm text-brand-muted max-w-2xl mx-auto mt-4 font-light">
+            Cada factura de proveedor, cada ingreso al almacén y cada salida mueve la contabilidad en el momento. El kardex y el mayor cuentan la misma historia.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200 text-center">
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Factura de proveedor</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">Queda la compra, el impuesto y la deuda con el proveedor.</p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200 text-center">
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Ingreso al almacén</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">El stock sube con su valor.</p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200 text-center">
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Importaciones</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">Flete, seguro y aduana se suman al costo del producto.</p>
+          </div>
+          <div class="p-6 rounded-2xl bg-white border border-neutral-200 text-center">
+            <h4 class="font-medium text-sm text-brand-dark mb-2">Salidas del almacén</h4>
+            <p class="text-xs text-brand-muted font-light leading-relaxed">El costo de lo vendido o consumido sale del kardex.</p>
+          </div>
+        </div>
+
+        <!-- Se conecta con -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+          <a href="/funcionalidades/finanzas" class="p-4 rounded-xl bg-white border border-neutral-200 hover:border-brand-magenta transition-colors flex flex-col items-center">
+            <div class="w-8 h-8 rounded-lg bg-brand-cyan/20 text-cyan-800 flex items-center justify-center mb-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            </div>
+            <span class="text-xs font-medium text-brand-dark block">Finanzas y contabilidad</span>
+          </a>
+          <a href="/funcionalidades/tesoreria" class="p-4 rounded-xl bg-white border border-neutral-200 hover:border-brand-magenta transition-colors flex flex-col items-center">
+            <div class="w-8 h-8 rounded-lg bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+            </div>
+            <span class="text-xs font-medium text-brand-dark block">Tesorería</span>
+          </a>
+          <a href="/funcionalidades/ventas" class="p-4 rounded-xl bg-white border border-neutral-200 hover:border-brand-magenta transition-colors flex flex-col items-center">
+            <div class="w-8 h-8 rounded-lg bg-brand-cyan/20 text-cyan-800 flex items-center justify-center mb-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <span class="text-xs font-medium text-brand-dark block">Ventas y CRM</span>
+          </a>
+          <a href="/funcionalidades/manufactura" class="p-4 rounded-xl bg-white border border-neutral-200 hover:border-brand-magenta transition-colors flex flex-col items-center">
+            <div class="w-8 h-8 rounded-lg bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            </div>
+            <span class="text-xs font-medium text-brand-dark block">Manufactura</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQs Section (Light bg #ffffff) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Preguntas sobre <span class="font-normal text-brand-magenta">compras e inventario</span>
+          </h2>
+        </div>
+
+        <FaqAccordion items={comprasFaqs} client:visible />
+      </div>
+    </section>
+
+    <!-- Bottom Migration CTA (Dark #161618) -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-[#161618] text-white">
+      <div class="max-w-6xl mx-auto rounded-3xl bg-[#202124] border border-white/10 p-8 sm:p-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div class="lg:col-span-7 space-y-4">
+            <h2 class="text-2xl sm:text-3xl font-light text-white">
+              El stock de hoy, cargado <br />
+              <span class="font-normal text-brand-magenta">desde el primer día</span>
+            </h2>
+            <p class="text-white/70 text-sm font-light leading-relaxed">
+              El arranque depende de los datos. Revisamos y cargamos productos, stock y costos para que el kardex empiece cuadrado y no arrastre diferencias del sistema anterior.
+            </p>
+            <div class="pt-2">
+              <a
+                href="/contacto"
+                class="inline-block px-6 py-3 rounded-full bg-brand-cyan text-[#06222b] text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-colors shadow-lg"
+              >
+                Hablar de la migración ›
+              </a>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 p-6 rounded-2xl bg-black/30 border border-white/10 space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-brand-cyan mb-2">Qué se carga</div>
+            <ul class="space-y-2 text-xs text-white/70 font-light">
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Productos con códigos y unidades</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Stock inicial por almacén y lote</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Costos iniciales para el kardex</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Proveedores con RUC validado</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

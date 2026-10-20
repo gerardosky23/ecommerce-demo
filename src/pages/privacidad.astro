@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/common/Navbar.astro';
+import Footer from '../components/common/Footer.astro';
+import SubpageHero from '../components/common/SubpageHero.astro';
+---
+
+<BaseLayout
+  title="Política de privacidad y datos personales · Flexone"
+  description="Política de privacidad y tratamiento de datos personales de FLEXXOONE S.A.C. conforme a la Ley N° 29733 de la República del Perú."
+>
+  <Navbar />
+
+  <main id="main">
+    <SubpageHero
+      title="Política de Privacidad"
+      subtitle="Tratamiento de datos personales de FLEXXOONE S.A.C. conforme a la Ley N° 29733 del Perú."
+      icon="compass"
+    />
+
+    <section class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto bg-white text-brand-dark">
+      <div class="p-8 sm:p-12 rounded-2xl bg-neutral-50 border border-brand-border space-y-8 text-sm text-brand-muted leading-relaxed font-light">
+        <div>
+          <h2 class="text-xl font-medium text-brand-dark mb-3">1. Marco Legal Aplicable</h2>
+          <p>
+            En cumplimiento de la <strong>Ley N° 29733</strong> (Ley de Protección de Datos Personales) y su Reglamento aprobado por <strong>Decreto Supremo N° 003-2013-JUS</strong> en la República del Perú, <strong>FLEXXOONE S.A.C.</strong> informa a los usuarios sobre las condiciones aplicables al tratamiento de sus datos personales a través de este sitio web.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-medium text-brand-dark mb-3">2. Identidad del Titular del Banco de Datos</h2>
+          <ul class="space-y-1">
+            <li><strong>Razón Social:</strong> FLEXXOONE S.A.C.</li>
+            <li><strong>RUC:</strong> 20600995805</li>
+            <li><strong>Domicilio Legal:</strong> Jr. César Vallejo Nro. 441, Dpto. 301, Lima, Perú</li>
+            <li><strong>Correo de Contacto:</strong> info@flexone.pe</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-medium text-brand-dark mb-3">3. Finalidades del Tratamiento</h2>
+          <p class="mb-2">Los datos personales recabados mediante nuestros formularios de contacto, cotizadores interactivos y canales de WhatsApp son utilizados exclusivamente para:</p>
+          <ul class="list-disc pl-5 space-y-1">
+            <li>Atender solicitudes de información, cotizaciones y demostraciones de Odoo ERP y Planiflex.</li>
+            <li>Coordinar reuniones técnicas y diagnósticos de procesos de negocio.</li>
+            <li>Remitir propuestas comerciales y acuerdos de nivel de servicio (SLA).</li>
+            <li>Enviar boletines informativos sobre normativas SUNAT cuando el usuario lo haya autorizado explícitamente.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-medium text-brand-dark mb-3">4. Derechos ARCO</h2>
+          <p>
+            El titular de los datos personales puede ejercer en cualquier momento sus derechos de <strong>Acceso, Rectificación, Cancelación y Oposición (ARCO)</strong> dirigiendo una comunicación escrita al correo electrónico <a href="mailto:info@flexone.pe" class="text-brand-magenta underline font-medium">info@flexone.pe</a> con el asunto "Derechos ARCO - Datos Personales".
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-medium text-brand-dark mb-3">5. Seguridad de la Información</h2>
+          <p>
+            FLEXXOONE S.A.C. adopta las medidas técnicas, organizativas y legales necesarias para garantizar la seguridad y confidencialidad de los datos personales, evitando su alteración, pérdida, tratamiento o acceso no autorizado.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

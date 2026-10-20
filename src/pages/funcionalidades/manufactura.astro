@@ -1,0 +1,293 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+import FaqAccordion from '../../components/common/FaqAccordion.svelte';
+
+const manufacturaFaqs = [
+  {
+    question: '¿Los operarios necesitan computadora?',
+    answer: 'No. La vista de planta funciona en tablet o en una pantalla táctil junto a la máquina. El operario ve su orden, sigue los pasos y registra lo producido con un toque.'
+  },
+  {
+    question: '¿Sirve si fabricamos a pedido y no para stock?',
+    answer: 'Sí. Una orden de venta puede disparar automáticamente la orden de fabricación y las compras de insumos faltantes según las listas de materiales.'
+  },
+  {
+    question: '¿Cómo se controla la calidad de cada lote?',
+    answer: 'Se definen puntos de control en etapas intermedias o finales. Si una prueba no cumple la tolerancia definida, el lote queda retenido hasta su subsanación.'
+  },
+  {
+    question: '¿Se puede conocer el costo real por producto?',
+    answer: 'Sí. El sistema calcula los materiales consumidos al costo del kardex más las horas de mano de obra y máquina reportadas en la orden.'
+  },
+  {
+    question: '¿Odoo calcula qué materiales comprar para un pedido?',
+    answer: 'Sí. El MRP revisa las listas de materiales, el stock disponible y las órdenes en curso, generando las solicitudes de compra sugeridas.'
+  },
+  {
+    question: '¿Qué pasa con los procesos que hace un tercero?',
+    answer: 'Maneja órdenes de subcontratación donde se envía la materia prima al taller externo y se recibe el semielaborado con su guía y factura asociada.'
+  }
+];
+
+const modules = [
+  { name: 'Fabricación', desc: 'Listas de materiales, rutas, órdenes de fabricación, subcontratación y planificación por capacidad.', iconPath: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
+  { name: 'Planta', desc: 'Órdenes de trabajo por máquina en tablet, con instrucciones, tiempos y registro de lo producido.', iconPath: 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z' },
+  { name: 'Ciclo de vida del producto', desc: 'Cambios de ingeniería con versión, aprobación e historial de cada lista de materiales.', iconPath: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' },
+  { name: 'Calidad', desc: 'Puntos de control en proceso y en producto terminado, alertas y acciones correctivas.', iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+  { name: 'Mantenimiento', desc: 'Mantenimientos preventivos y correctivos de cada máquina, con su calendario y su historial.', iconPath: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
+  { name: 'Inventario', desc: 'Consumo de materia prima, lotes de producto terminado, mermas y despacho con guía.', iconPath: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+  { name: 'Compras', desc: 'Materia prima pedida según las órdenes planificadas y el stock mínimo.', iconPath: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z' },
+  { name: 'Tableros', desc: 'Eficiencia por máquina, mermas, cumplimiento de plan y costo por producto.', iconPath: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' }
+];
+
+const steps = [
+  { num: '1', title: 'Definir', desc: 'Qué lleva cada producto, en qué máquinas se hace y cuánto tarda cada operación.' },
+  { num: '2', title: 'Planificar', desc: 'Qué fabricar, qué comprar y cuándo, según pedidos, stock y capacidad del taller.' },
+  { num: '3', title: 'Producir', desc: 'Cada operario registra en la planta lo que hace, con instrucciones y tiempos reales.' },
+  { num: '4', title: 'Controlar y despachar', desc: 'Calidad por lote, costo real de la orden y despacho con su guía de remisión.' }
+];
+---
+
+<BaseLayout
+  title="Manufactura y producción MRP en Odoo · Flexone"
+  description="La planta registra, la oficina ya lo sabe. Listas de materiales, control de planta en tablet, costos reales y trazabilidad por lote en Odoo ERP."
+>
+  <Navbar />
+
+  <main id="main">
+    <!-- Hero Section (Dark #161618) -->
+    <section class="bg-[#161618] text-white pt-44 sm:pt-44 lg:pt-48 pb-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+      <div class="max-w-4xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-medium mb-6">
+          <span>Manufactura</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-light text-white tracking-tight mb-6 leading-tight">
+          La planta registra, <br class="hidden sm:inline" />
+          <span class="font-normal text-brand-magenta">la oficina ya lo sabe</span>
+        </h1>
+
+        <p class="text-white/70 text-base sm:text-lg max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+          Cada operario ve sus órdenes en la tablet y registra lo producido al momento. Stock, calidad y costo se actualizan sin partes de papel ni digitación al final del turno.
+        </p>
+
+        <div class="mb-12">
+          <a
+            href="/contacto"
+            class="inline-block px-6 py-3 rounded-full bg-brand-cyan text-[#06222b] text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-colors shadow-lg"
+          >
+            Pedir una demostración ›
+          </a>
+        </div>
+
+        <!-- Dashboard preview frame -->
+        <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#202124] text-left p-4 sm:p-6 text-xs text-white/80">
+          <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <span class="font-medium text-white">Centro de Producción · Estaciones de trabajo activas</span>
+            </div>
+            <span class="text-white/40">Odoo MRP</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="p-3 rounded-xl bg-white/5 border border-white/5 space-y-2">
+              <div class="flex justify-between items-center text-xs text-white/60">
+                <span>Corte y Habilitado</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px]">En proceso</span>
+              </div>
+              <div class="text-white font-medium">OF-2026/089 · Silla ergonómica</div>
+              <div class="text-[11px] text-brand-cyan">Operario: Jorge Díaz · 45/50 un.</div>
+            </div>
+            <div class="p-3 rounded-xl bg-white/5 border border-white/5 space-y-2">
+              <div class="flex justify-between items-center text-xs text-white/60">
+                <span>Soldadura y Estructura</span>
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px]">Preparación</span>
+              </div>
+              <div class="text-white font-medium">OF-2026/090 · Escritorio elevable</div>
+              <div class="text-[11px] text-white/50">Esperando insumos cortados</div>
+            </div>
+            <div class="p-3 rounded-xl bg-white/5 border border-white/5 space-y-2">
+              <div class="flex justify-between items-center text-xs text-white/60">
+                <span>Control de Calidad</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px]">Conforme</span>
+              </div>
+              <div class="text-white font-medium">Lote LT-2603 · Aprobado</div>
+              <div class="text-[11px] text-emerald-400">Listo para almacén de PT</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Del pedido al despacho en 4 pasos (Light bg #ffffff) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Del pedido al despacho en <span class="font-normal text-brand-magenta">4 pasos</span>
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+          {steps.map((s) => (
+            <div class="space-y-3">
+              <div class="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-sm font-bold text-brand-magenta">
+                {s.num}
+              </div>
+              <h3 class="font-medium text-base text-brand-dark">{s.title}</h3>
+              <p class="text-xs text-brand-muted leading-relaxed font-light">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Módulos de Odoo para fabricar (Light bg #f8f8f8) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#f8f8f8] text-brand-dark border-t border-neutral-200/60">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Módulos de Odoo para <span class="font-normal text-brand-magenta">fabricar</span>
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {modules.map((m) => (
+            <div class="p-6 rounded-2xl bg-white border border-neutral-200 hover:border-brand-magenta/40 hover:shadow-lg transition-all flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mb-4">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d={m.iconPath}></path>
+                  </svg>
+                </div>
+                <h3 class="font-medium text-base text-brand-dark mb-2">{m.name}</h3>
+                <p class="text-xs text-brand-muted leading-relaxed font-light">{m.desc}</p>
+              </div>
+              <div class="mt-6 pt-4 border-t border-neutral-100">
+                <a href="/contacto" class="text-xs font-medium text-brand-magenta hover:underline inline-flex items-center gap-1">
+                  Preguntar al asistente →
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Costos que llegan a la contabilidad (Light bg #ffffff) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div class="lg:col-span-6 space-y-4">
+            <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+              Costos que llegan a la <span class="font-normal text-brand-magenta">contabilidad</span>
+            </h2>
+            <p class="text-sm text-brand-muted leading-relaxed font-light">
+              En muchas fábricas el costo de producción se arma a fin de mes en una hoja de cálculo, con datos que ya no coinciden con el almacén. En Odoo cada orden valoriza lo que consume y lo que produce en el momento.
+            </p>
+            <p class="text-sm text-brand-muted leading-relaxed font-light">
+              El producto terminado entra al kardex con su costo real, y el costo de ventas y los asientos de producción se generan sin intervención. Si una parte del proceso se subcontrata, también entra al costo.
+            </p>
+          </div>
+
+          <div class="lg:col-span-6 p-8 rounded-2xl bg-neutral-50 border border-neutral-200">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-brand-dark mb-6">Qué cubre</h3>
+            <ul class="space-y-3 text-xs text-brand-muted font-light">
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Costo de materiales, mano de obra y máquina por orden</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Gastos indirectos de fabricación prorrateados</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Costo estándar contra costo real</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Mermas y subproductos registrados</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Subcontratación con su costo en el kardex</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Kardex valorizado del producto terminado</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-magenta"></span>
+                <span>Costos en soles y en dólares</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQs Section (Light bg #ffffff) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Preguntas sobre <span class="font-normal text-brand-magenta">manufactura</span>
+          </h2>
+        </div>
+
+        <FaqAccordion items={manufacturaFaqs} client:visible />
+      </div>
+    </section>
+
+    <!-- Bottom Planta Visit Banner (Dark #161618) -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-[#161618] text-white">
+      <div class="max-w-6xl mx-auto rounded-3xl bg-[#202124] border border-white/10 p-8 sm:p-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div class="lg:col-span-7 space-y-4">
+            <h2 class="text-2xl sm:text-3xl font-light text-white">
+              Empecemos por <span class="font-normal text-brand-magenta">recorrer la planta</span>
+            </h2>
+            <p class="text-white/70 text-sm font-light leading-relaxed">
+              Antes de proponer módulos conviene ver cómo se produce hoy: qué se anota, dónde se pierde información y qué reportes se arman a mano.
+            </p>
+            <div class="pt-2">
+              <a
+                href="/contacto"
+                class="inline-block px-6 py-3 rounded-full bg-brand-cyan text-[#06222b] text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-colors shadow-lg"
+              >
+                Coordinar una visita ›
+              </a>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 p-6 rounded-2xl bg-black/30 border border-white/10 space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-brand-cyan mb-2">Qué revisamos</div>
+            <ul class="space-y-2 text-xs text-white/70 font-light">
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Recorrido con el jefe de producción</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Fichas, partes y reportes actuales</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Cómo se calcula hoy el costo</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-brand-magenta">✓</span>
+                <span>Módulos y tiempos propuestos</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

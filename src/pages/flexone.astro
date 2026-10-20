@@ -1,0 +1,104 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/common/Navbar.astro';
+import Footer from '../components/common/Footer.astro';
+import Hero from '../components/home/Hero.astro';
+import SolutionsBento from '../components/home/SolutionsBento.astro';
+import NormativaCarousel from '../components/home/NormativaCarousel.svelte';
+import PlatformAppsCarousel from '../components/home/PlatformAppsCarousel.svelte';
+import ComparisonTable from '../components/home/ComparisonTable.astro';
+import WhyFlexone from '../components/home/WhyFlexone.astro';
+import WhyOdoo from '../components/home/WhyOdoo.astro';
+import LaptopShowcase from '../components/home/LaptopShowcase.astro';
+import ProInnovateSection from '../components/home/ProInnovateSection.astro';
+import NextStepsSection from '../components/home/NextStepsSection.astro';
+import FaqAccordion from '../components/common/FaqAccordion.svelte';
+import LatestBlogCarousel from '../components/home/LatestBlogCarousel.svelte';
+
+const homeFaqs = [
+  {
+    question: '¿Odoo cumple con la normativa peruana?',
+    answer: 'Sí. Con la localización que implementamos, Odoo emite comprobantes electrónicos UBL 2.1, lleva los libros electrónicos (PLE y SIRE), el kardex valorizado y las planillas con Planiflex, y cubre detracciones, retenciones y percepciones. El contador y el equipo administrativo trabajan directamente dentro del sistema, sin hojas de cálculo aparte.'
+  },
+  {
+    question: '¿Se puede adaptar Odoo a nuestros procesos?',
+    answer: 'Totalmente. Odoo es una plataforma de arquitectura modular y código abierto. En Flexone adaptamos flujos de trabajo, permisos, reportes personalizados y desarrollamos módulos específicos a la medida de tu operación sin romper la compatibilidad con futuras versiones.'
+  },
+  {
+    question: '¿Cuánto tarda una implementación?',
+    answer: 'Una implementación estándar para una pyme (contabilidad, facturación, ventas, compras e inventario) suele durar entre 6 y 10 semanas mediante sprints quincenales. Proyectos que incluyen manufactura o desarrollos avanzados se planifican en fases modulares con entregables graduales.'
+  },
+  {
+    question: '¿Pueden migrar la información de nuestro sistema actual?',
+    answer: 'Sí. Realizamos procesos seguros de extracción, validación y carga de datos maestros (clientes, proveedores, catálogo de productos con precios y cuentas contables) y saldos iniciales desde sistemas como Concar, SISCONT, Starsoft, SAP Business One o archivos Excel.'
+  },
+  {
+    question: '¿Cuánto cuesta?',
+    answer: 'El costo se compone de las licencias oficiales de Odoo (por usuario activo) y el servicio de consultoría, parametrización y capacitación de Flexone. Además, asesoramos a tu empresa para postular al cofinanciamiento no reembolsable de ProInnóvate del Ministerio de la Producción de hasta S/ 50,000.'
+  },
+  {
+    question: '¿Qué pasa después del arranque?',
+    answer: 'No te dejamos solo. Incluimos acompañamiento presencial y remoto durante el primer cierre contable y mensual, capacitación continua para nuevos colaboradores y acceso a nuestra mesa de ayuda local con acuerdos de nivel de servicio (SLA).'
+  }
+];
+---
+
+<BaseLayout
+  title="Implementación de Odoo en el Perú · Flexone"
+  description="Flexone (Flexxoone S.A.C.) es Silver Partner de Odoo en Perú. Especialistas en localización SUNAT, facturación electrónica, libros SIRE, planillas con Planiflex y desarrollo a medida."
+>
+  <Navbar />
+
+  <main id="main">
+    <!-- 0. Hero Section -->
+    <Hero />
+
+    <!-- 1. Odoo, implementado para la empresa peruana -->
+    <SolutionsBento />
+
+    <!-- 2. La normativa peruana, resuelta dentro del sistema -->
+    <NormativaCarousel client:visible />
+
+    <!-- 3. Todo tu negocio en una sola plataforma (Dark Section) -->
+    <PlatformAppsCarousel client:visible />
+
+    <!-- 4. Tu empresa no debería adaptarse al sistema (Comparison Table) -->
+    <ComparisonTable />
+
+    <!-- 5. Por qué elegir a Flexone -->
+    <WhyFlexone />
+
+    <!-- 6. ¿Por qué odoo es el mejor ERP para tu empresa? -->
+    <WhyOdoo />
+
+    <!-- 7. "Porque las cosas bien hechas, bien parecen" (Laptop Showcase) -->
+    <LaptopShowcase />
+
+    <!-- 8. ¿El presupuesto frena la digitalización? (ProInnóvate S/ 50,000) -->
+    <ProInnovateSection />
+
+    <!-- 9. ok… suena bien, ¿y ahora qué hago? -->
+    <NextStepsSection />
+
+    <!-- 10. Preguntas frecuentes -->
+    <section id="preguntas" class="py-24 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark border-t border-brand-border">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-light text-brand-dark tracking-tight mb-4">
+            Preguntas <span class="font-normal text-brand-magenta">frecuentes</span>
+          </h2>
+          <p class="text-brand-muted text-base sm:text-lg leading-relaxed font-light">
+            Resolvemos las dudas más comunes sobre la implementación de Odoo y la normativa peruana.
+          </p>
+        </div>
+
+        <FaqAccordion client:visible items={homeFaqs} />
+      </div>
+    </section>
+
+    <!-- 11. Lo último del blog -->
+    <LatestBlogCarousel client:visible />
+  </main>
+
+  <Footer />
+</BaseLayout>

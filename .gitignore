@@ -22,3 +22,15 @@ pnpm-debug.log*
 # macOS / Windows
 .DS_Store
 Thumbs.db
+
+# Toolchains and binaries
+go-toolchain/
+server/*.exe
+terrebleu-spec/
+demo-verification/
+spec_data/
+*.png
+*.mp4
+gorilla*
+scroll*
+verify*

@@ -1,0 +1,191 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/common/Navbar.astro';
+import Footer from '../../components/common/Footer.astro';
+import FaqAccordion from '../../components/common/FaqAccordion.svelte';
+
+const contabilidadFaqs = [
+  {
+    question: '¿Odoo genera los libros electrónicos para el PLE?',
+    answer: 'Sí. Los libros diario, mayor, de compras, de ventas, de caja y bancos y el de inventarios salen en el archivo que pide la SUNAT, listos para presentar.'
+  },
+  {
+    question: '¿Cómo se maneja el SIRE?',
+    answer: 'Generamos las estructuras de propuesta, reemplazo y ajustes posteriores para el Registro de Ventas e Ingresos Electrónico (RVIE) y el Registro de Compras Electrónico (RCE).'
+  },
+  {
+    question: '¿Qué pasa con una factura que llega de un mes anterior?',
+    answer: 'Odoo permite registrar el comprobante respetando su fecha de emisión y asignarle el periodo tributario correspondiente para su anotación en el registro de compras.'
+  },
+  {
+    question: '¿El estudio contable externo puede trabajar en Odoo?',
+    answer: 'Sí. Puedes crearle un usuario con permisos de contador para que revise asientos, concilie bancos y exporte reportes directamente desde su navegador.'
+  },
+  {
+    question: '¿Podemos empezar a mitad de año?',
+    answer: 'Sí. Migramos tus asientos de apertura o balance de comprobación mensual a la fecha de corte para que arranques sin esperar al inicio del ejercicio.'
+  }
+];
+---
+
+<BaseLayout
+  title="Contabilidad que cuadra, con la SUNAT al día · Flexone"
+  description="Localización contable peruana para Odoo: PCGE, libros electrónicos PLE, SIRE, detracciones, multimoneda y estados financieros en tiempo real."
+>
+  <Navbar />
+
+  <main id="main">
+    <!-- Hero Section -->
+    <section class="bg-[#161618] text-white pt-44 sm:pt-44 lg:pt-48 pb-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+      <div class="max-w-4xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-medium mb-6">
+          <span>Localización Perú · Contabilidad</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-light text-white tracking-tight mb-6 leading-tight">
+          Contabilidad que cuadra, <br class="hidden sm:inline" />
+          <span class="font-normal text-brand-magenta">con la SUNAT al día</span>
+        </h1>
+
+        <p class="text-white/70 text-base sm:text-lg max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+          Un sistema contable básico registra, pero no conoce las reglas de la SUNAT. Con la localización peruana, los libros electrónicos, las declaraciones y los estados financieros salen del mismo sistema donde trabaja toda la empresa.
+        </p>
+
+        <div class="mb-12">
+          <a
+            href="/contacto"
+            class="inline-block px-6 py-3 rounded-full bg-brand-cyan text-[#06222b] text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-colors shadow-lg"
+          >
+            Hablar con un especialista contable ›
+          </a>
+        </div>
+
+        <!-- Dashboard preview frame -->
+        <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#202124]">
+          <img
+            src="/secciones/modulos-contabilidad.webp"
+            alt="Contabilidad Odoo Perú"
+            width="1000"
+            height="550"
+            class="w-full h-auto object-cover"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Steps Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            El mes contable en <span class="font-normal text-brand-magenta">4 pasos</span>
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+          <div class="space-y-3">
+            <div class="w-14 h-14 rounded-full bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mx-auto">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            </div>
+            <h3 class="font-medium text-base text-brand-dark">1. Registrar</h3>
+            <p class="text-xs text-brand-muted leading-relaxed font-light">
+              Cada compra, venta, planilla o producción queda registrada en el momento en que ocurre.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="w-14 h-14 rounded-full bg-brand-cyan/10 text-brand-cyan flex items-center justify-center mx-auto">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </div>
+            <h3 class="font-medium text-base text-brand-dark">2. Conciliar</h3>
+            <p class="text-xs text-brand-muted leading-relaxed font-light">
+              El banco cuadra con la registración (conciliación bancaria), igual que clientes, proveedores y SUNAT.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="w-14 h-14 rounded-full bg-brand-magenta/10 text-brand-magenta flex items-center justify-center mx-auto">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <h3 class="font-medium text-base text-brand-dark">3. Cerrar</h3>
+            <p class="text-xs text-brand-muted leading-relaxed font-light">
+              Los ajustes del mes (cierre contable) siguen pasos definidos y el periodo se bloquea para evitar cambios.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="w-14 h-14 rounded-full bg-brand-cyan/10 text-brand-cyan flex items-center justify-center mx-auto">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            </div>
+            <h3 class="font-medium text-base text-brand-dark">4. Presentar</h3>
+            <p class="text-xs text-brand-muted leading-relaxed font-light">
+              Libros electrónicos para el PLE, registros del SIRE y estados financieros para la gerencia.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Deep Dive: Lo que un sistema básico no resuelve (Dark Section) -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-[#202124] text-white">
+      <div class="max-w-5xl mx-auto space-y-12">
+        <div class="max-w-2xl">
+          <h2 class="text-3xl sm:text-4xl font-light text-white mb-4">
+            Lo que un sistema básico <span class="font-normal text-brand-magenta">no resuelve</span>
+          </h2>
+          <p class="text-white/70 text-sm sm:text-base leading-relaxed font-light">
+            La contabilidad peruana tiene reglas que un sistema hecho para cualquier país no conoce. Cuando el sistema no las resuelve, se resuelven en Excel, a mano y a fin de mes.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="p-6 rounded-2xl bg-[#292a2d] border border-white/10 space-y-4">
+            <span class="px-2.5 py-1 rounded bg-brand-cyan/20 text-brand-cyan font-mono text-xs">01</span>
+            <h3 class="text-xl font-light text-white">Gastos que no esperan al impuesto</h3>
+            <p class="text-xs text-white/70 leading-relaxed font-light">
+              Hay facturas cuyo IGV todavía no se puede usar como crédito fiscal (por ejemplo mientras no se pague la detracción). Odoo controla la exigibilidad tributaria mes a mes.
+            </p>
+          </div>
+
+          <div id="multimoneda" class="p-6 rounded-2xl bg-[#292a2d] border border-white/10 space-y-4 scroll-mt-24">
+            <span class="px-2.5 py-1 rounded bg-brand-cyan/20 text-brand-cyan font-mono text-xs">02</span>
+            <h3 class="text-xl font-light text-white">El cierre del mes automatizado</h3>
+            <p class="text-xs text-white/70 leading-relaxed font-light">
+              La depreciación de activos fijos, los seguros pagados por adelantado y la diferencia de cambio se calculan de manera asistida en minutos.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-[#292a2d] border border-white/10 space-y-4">
+            <span class="px-2.5 py-1 rounded bg-brand-cyan/20 text-brand-cyan font-mono text-xs">03</span>
+            <h3 class="text-xl font-light text-white">Cuánto cuesta cada sede y cada área</h3>
+            <p class="text-xs text-white/70 leading-relaxed font-light">
+              Los gastos se reparten por sede y por área (centros de costo y cuentas de destino clase 9) sin descuidar los libros oficiales.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-[#292a2d] border border-white/10 space-y-4">
+            <span class="px-2.5 py-1 rounded bg-brand-cyan/20 text-brand-cyan font-mono text-xs">04</span>
+            <h3 class="text-xl font-light text-white">Lo que la SUNAT tiene, contra lo registrado</h3>
+            <p class="text-xs text-white/70 leading-relaxed font-light">
+              La SUNAT propone sus registros en el SIRE. Odoo concilia los comprobantes de compra y venta detectando diferencias antes de enviar la declaración.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Accordion -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white text-brand-dark">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-light text-brand-dark">
+            Preguntas sobre la <span class="font-normal text-brand-magenta">contabilidad en Odoo</span>
+          </h2>
+        </div>
+        <FaqAccordion client:visible items={contabilidadFaqs} />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
