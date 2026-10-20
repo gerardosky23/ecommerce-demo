@@ -260,20 +260,56 @@ async function runVerification() {
 
   // Probar selector interactivo de vehículo (Moto Reparto)
   console.log('🛵 Probando selector dinámico de vehículo (Moto Reparto)...');
-  const motoBtn = page.locator('button:has-text("Moto")').first();
+  const motoBtn = page.locator('#btn-tracking-v-moto');
   await motoBtn.click();
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(300);
 
-  // Probar selector de velocidad 5x
-  console.log('⚡ Probando selector de velocidad de simulación 5x...');
-  const speed5xBtn = page.locator('button:has-text("5x")').first();
+  // Probar cambio a Camión
+  console.log('🚛 Probando selector de transporte a Camión Logístico...');
+  const camionBtn = page.locator('#btn-tracking-v-camion');
+  await camionBtn.click();
+  await page.waitForTimeout(300);
+
+  // Probar cambio a Auto
+  const autoBtn = page.locator('#btn-tracking-v-auto');
+  await autoBtn.click();
+  await page.waitForTimeout(300);
+
+  // Probar control Pausar / Reanudar
+  console.log('⏸️ Probando control Pausar...');
+  const pauseBtn = page.locator('#btn-tracking-pause');
+  await pauseBtn.click();
+  await page.waitForTimeout(300);
+  const reanudarBtn = page.locator('#btn-tracking-pause:has-text("Reanudar")');
+  if (!(await reanudarBtn.isVisible())) {
+    throw new Error('El botón Pausar no cambió a Reanudar');
+  }
+  console.log('▶️ Probando control Reanudar...');
+  await reanudarBtn.click();
+  await page.waitForTimeout(300);
+
+  // Probar Reiniciar Ruta
+  console.log('🔄 Probando botón Reiniciar Ruta...');
+  const restartBtn = page.locator('#btn-tracking-restart');
+  await restartBtn.click();
+  await page.waitForTimeout(300);
+
+  // Probar selector de velocidad 5x y esperar entrega completa
+  console.log('⚡ Probando selector de velocidad de simulación 5x para completar entrega...');
+  const speed5xBtn = page.locator('#btn-tracking-speed-5');
   await speed5xBtn.click();
   await page.waitForTimeout(1000);
 
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '06c-tracking-simulation-active.png'), fullPage: false });
   console.log('📸 06c-tracking-simulation-active.png capturado con telemetría en vivo');
 
-  console.log('✅ Modal de Seguimiento con mapa Leaflet, selector de vehículo y telemetría verificado.');
+  // Esperar a que la simulación a 5x complete la entrega (máximo 20 segundos)
+  console.log('⏳ Esperando confirmación de entrega en destino...');
+  await page.waitForSelector('text=¡Pedido Entregado con Éxito!', { timeout: 20000 });
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '06d-tracking-delivered.png'), fullPage: false });
+  console.log('📸 06d-tracking-delivered.png capturado con confirmación de entrega');
+
+  console.log('✅ Modal de Seguimiento con mapa Leaflet, selector de vehículo, telemetría y entrega confirmada.');
 
   // Cerrar modal de seguimiento
   const closeTrackingBtn = page.locator('button:has-text("Cerrar Seguimiento")');

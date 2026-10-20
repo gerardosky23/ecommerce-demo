@@ -295,6 +295,7 @@
         <!-- Navigation Menu -->
         <nav class="p-3 space-y-1">
           <button
+            id="tab-inventory"
             onclick={() => activeTab = 'inventory'}
             class="w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer {activeTab === 'inventory' ? 'bg-slate-100 text-slate-900 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
           >
@@ -308,6 +309,7 @@
           </button>
 
           <button
+            id="tab-sales"
             onclick={() => activeTab = 'sales'}
             class="w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer {activeTab === 'sales' ? 'bg-slate-100 text-slate-900 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
           >
@@ -321,6 +323,7 @@
           </button>
 
           <button
+            id="tab-customers"
             onclick={() => activeTab = 'customers'}
             class="w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer {activeTab === 'customers' ? 'bg-slate-100 text-slate-900 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
           >

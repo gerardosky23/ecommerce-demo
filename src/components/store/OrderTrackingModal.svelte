@@ -58,21 +58,33 @@
   let animFrameId: number | null = null;
   let lastTimestamp = 0;
   let resizeTimeout: any = null;
+  let initSessionId = 0;
+
+  // HTML sanitization helper for marker popups and tooltips
+  function escapeHtml(str: string): string {
+    return (str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
 
   // Derived telemetry
   let currentVehicle = $derived(VEHICLES[selectedVehicle]);
   let speedKmH = $derived(currentVehicle.speed);
   let remainingMeters = $derived(Math.max(0, totalDistanceM * (1 - progress)));
-  let remainingKmStr = $derived((remainingMeters / 1000).toFixed(1));
-  let progressPct = $derived(Math.min(100, Math.round(progress * 100)));
+  let remainingKmStr = $derived(isLoadingRoute ? '--' : (remainingMeters / 1000).toFixed(1));
+  let progressPct = $derived(isLoadingRoute ? 0 : Math.min(100, Math.round(progress * 100)));
 
   let etaSeconds = $derived.by(() => {
-    if (isDelivered || remainingMeters <= 0) return 0;
+    if (isLoadingRoute || isDelivered || remainingMeters <= 0) return 0;
     const speedMps = (speedKmH * 1000) / 3600;
     return Math.round(remainingMeters / speedMps);
   });
 
   let etaStr = $derived.by(() => {
+    if (isLoadingRoute) return '--';
     if (isDelivered || progress >= 1) return '0 min 00 s';
     const m = Math.floor(etaSeconds / 60);
     const s = etaSeconds % 60;
@@ -114,8 +126,9 @@
   }
 
   // Deterministic realistic fallback for Lima Metropolitan area
-  function getFallbackCoordinates(address: string): [number, number] {
-    const norm = (address || '').toLowerCase();
+  function getFallbackCoordinates(address?: string | null): [number, number] {
+    const safe = address || 'Lima';
+    const norm = safe.toLowerCase();
     if (norm.includes('miraflor')) return [-12.121, -77.029];
     if (norm.includes('borja')) return [-12.086, -77.001];
     if (norm.includes('surco')) return [-12.138, -76.993];
@@ -130,8 +143,8 @@
       [-12.092, -77.032], // San Isidro Begonias
     ];
     let hash = 0;
-    for (let i = 0; i < address.length; i++) {
-      hash = (hash << 5) - hash + address.charCodeAt(i);
+    for (let i = 0; i < safe.length; i++) {
+      hash = (hash << 5) - hash + safe.charCodeAt(i);
       hash |= 0;
     }
     const idx = Math.abs(hash) % fallbackList.length;
@@ -340,7 +353,9 @@
   }
 
   function createDestIcon(leaflet: any, address: string) {
-    const clean = address && address.length > 20 ? address.slice(0, 18) + '...' : address || 'Destino';
+    const raw = address || 'Destino';
+    const clean = raw.length > 20 ? raw.slice(0, 18) + '...' : raw;
+    const escaped = escapeHtml(clean);
     return leaflet.divIcon({
       className: 'tb-dest-marker',
       html: `
@@ -351,7 +366,7 @@
             </svg>
           </div>
           <div style="background:#059669; color:#ffffff; font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; margin-top:2px; white-space:nowrap; box-shadow:0 1px 4px rgba(0,0,0,0.25);">
-            ${clean}
+            ${escaped}
           </div>
         </div>
       `,
@@ -363,12 +378,12 @@
   // Animation Step Loop
   function stepAnimation(timestamp: number) {
     if (!lastTimestamp) lastTimestamp = timestamp;
-    const deltaSec = Math.min((timestamp - lastTimestamp) / 1000, 0.1);
+    const deltaSec = Math.min((timestamp - lastTimestamp) / 1000, 0.5);
     lastTimestamp = timestamp;
 
     if (!isPaused && !isDelivered && routeCoords.length > 0) {
-      // Base duration: 38s at 1x; adjusted by vehicle speed and multiplier
-      const baseDurationSec = 38;
+      // Base duration: 20s at 1x; adjusted by vehicle speed and multiplier
+      const baseDurationSec = 20;
       const vehicleFactor = speedKmH / 35;
       const step = (deltaSec / baseDurationSec) * vehicleFactor * simMultiplier;
 
@@ -382,11 +397,15 @@
       if (progress >= 1) {
         progress = 1;
         isDelivered = true;
+        animFrameId = null;
+        return; // Complete animation and release frame loop
       }
     }
 
-    if (store.isTrackingOpen) {
+    if (store.isTrackingOpen && !isDelivered && !isPaused) {
       animFrameId = requestAnimationFrame(stepAnimation);
+    } else {
+      animFrameId = null;
     }
   }
 
@@ -394,15 +413,18 @@
   async function initializeMap() {
     if (typeof window === 'undefined' || !mapContainerEl) return;
 
+    // Clean up previous instance if any and invalidate old sessions
+    cleanupMap();
+
+    const sessionId = ++initSessionId;
+
     try {
       // Dynamic import of Leaflet for SSR compatibility
       const leafletModule = await import('leaflet');
+      if (sessionId !== initSessionId || !store.isTrackingOpen) return;
       L = leafletModule.default || leafletModule;
 
       if (!L || !mapContainerEl) return;
-
-      // Clean up previous instance if any
-      cleanupMap();
 
       // Reset animation state
       progress = 0;
@@ -443,15 +465,18 @@
       resolvedAddress = address;
 
       const destCoords = await geocodeAddress(address, order?.shippingCity || 'Lima');
+      if (sessionId !== initSessionId || !mapInstance || !store.isTrackingOpen) return;
 
       // Add Destination Marker
       destMarker = L.marker(destCoords, {
         icon: createDestIcon(L, address),
       }).addTo(mapInstance);
-      destMarker.bindPopup(`<strong>Destino de Entrega</strong><br>${address}`);
+      destMarker.bindPopup(`<strong>Destino de Entrega</strong><br>${escapeHtml(address)}`);
 
       // Fetch Real Street Route via OSRM
       const routeResult = await fetchRoute(WAREHOUSE_COORDS, destCoords);
+      if (sessionId !== initSessionId || !mapInstance || !store.isTrackingOpen) return;
+
       routeCoords = routeResult.coords;
       totalDistanceM = routeResult.distance;
       cumulativeDistances = computeCumulativeDistances(routeCoords);
@@ -471,7 +496,7 @@
       }).addTo(mapInstance);
 
       // Auto-fit bounds
-      if (routeCoords.length > 0) {
+      if (routeCoords.length > 0 && mapInstance) {
         mapInstance.fitBounds(polylineLayer.getBounds(), {
           padding: [36, 36],
           maxZoom: 16,
@@ -482,21 +507,25 @@
 
       // Invalidate size to guarantee tile display after modal rendering
       resizeTimeout = setTimeout(() => {
-        if (mapInstance) {
+        if (mapInstance && sessionId === initSessionId) {
           mapInstance.invalidateSize();
         }
       }, 250);
 
       // Start animation loop
       if (animFrameId) cancelAnimationFrame(animFrameId);
+      lastTimestamp = 0;
       animFrameId = requestAnimationFrame(stepAnimation);
     } catch (err) {
-      console.error('Error initializing Leaflet map in OrderTrackingModal:', err);
-      isLoadingRoute = false;
+      if (sessionId === initSessionId) {
+        console.error('Error initializing Leaflet map in OrderTrackingModal:', err);
+        isLoadingRoute = false;
+      }
     }
   }
 
   function cleanupMap() {
+    initSessionId++;
     if (animFrameId) {
       cancelAnimationFrame(animFrameId);
       animFrameId = null;
@@ -510,6 +539,11 @@
         mapInstance.remove();
       } catch {}
       mapInstance = null;
+    }
+    if (mapContainerEl) {
+      try {
+        delete (mapContainerEl as any)._leaflet_id;
+      } catch {}
     }
     vehicleMarker = null;
     polylineLayer = null;
@@ -528,6 +562,12 @@
 
   function togglePause() {
     isPaused = !isPaused;
+    if (!isPaused && !isDelivered && store.isTrackingOpen) {
+      lastTimestamp = 0;
+      if (!animFrameId) {
+        animFrameId = requestAnimationFrame(stepAnimation);
+      }
+    }
   }
 
   function restartRoute() {
@@ -538,11 +578,41 @@
     if (vehicleMarker && routeCoords.length > 0) {
       vehicleMarker.setLatLng(routeCoords[0]);
     }
+    if (store.isTrackingOpen && !animFrameId) {
+      animFrameId = requestAnimationFrame(stepAnimation);
+    }
   }
 
   function setMultiplier(m: 1 | 2 | 5) {
     simMultiplier = m;
   }
+
+  function handleKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Escape' && store.isTrackingOpen) {
+      close();
+    }
+  }
+
+  function handleWindowResize() {
+    if (mapInstance && store.isTrackingOpen) {
+      mapInstance.invalidateSize();
+    }
+  }
+
+  onMount(() => {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('resize', handleWindowResize);
+    }
+  });
+
+  onDestroy(() => {
+    cleanupMap();
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', handleWindowResize);
+    }
+  });
 
   // Reactive Effect: Initialize map whenever modal opens
   $effect(() => {
@@ -552,10 +622,6 @@
       cleanupMap();
     }
   });
-
-  onDestroy(() => {
-    cleanupMap();
-  });
 </script>
 
 <svelte:head>
@@ -564,7 +630,7 @@
 
 {#if store.isTrackingOpen && store.trackingOrder}
   {@const order = store.trackingOrder}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-2xs">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60">
     <button
       type="button"
       aria-label="Cerrar seguimiento"
@@ -669,9 +735,10 @@
           <!-- Moto -->
           <button
             type="button"
+            id="btn-tracking-v-moto"
             onclick={() => selectVehicle('moto')}
             class="flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-medium border transition-colors cursor-pointer {selectedVehicle === 'moto'
-              ? 'bg-sky-50 text-sky-900 border-sky-400 ring-1 ring-sky-300 font-semibold'
+              ? 'bg-sky-50 text-sky-900 border-sky-500 font-semibold'
               : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}"
           >
             <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -688,9 +755,10 @@
           <!-- Auto -->
           <button
             type="button"
+            id="btn-tracking-v-auto"
             onclick={() => selectVehicle('auto')}
             class="flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-medium border transition-colors cursor-pointer {selectedVehicle === 'auto'
-              ? 'bg-sky-50 text-sky-900 border-sky-400 ring-1 ring-sky-300 font-semibold'
+              ? 'bg-sky-50 text-sky-900 border-sky-500 font-semibold'
               : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}"
           >
             <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -707,9 +775,10 @@
           <!-- Camión -->
           <button
             type="button"
+            id="btn-tracking-v-camion"
             onclick={() => selectVehicle('camion')}
             class="flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-medium border transition-colors cursor-pointer {selectedVehicle === 'camion'
-              ? 'bg-sky-50 text-sky-900 border-sky-400 ring-1 ring-sky-300 font-semibold'
+              ? 'bg-sky-50 text-sky-900 border-sky-500 font-semibold'
               : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}"
           >
             <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -730,7 +799,7 @@
         <div id="leaflet-order-map" bind:this={mapContainerEl} class="w-full h-full z-0"></div>
 
         {#if isLoadingRoute}
-          <div class="absolute inset-0 bg-white/80 backdrop-blur-2xs flex flex-col items-center justify-center space-y-2 z-10">
+          <div class="absolute inset-0 bg-white/95 flex flex-col items-center justify-center space-y-2 z-10">
             <div class="w-6 h-6 border-2 border-sky-600 border-t-transparent rounded-full animate-spin"></div>
             <span class="text-xs font-mono text-slate-600">Calculando ruteo vial por calles reales (OSRM)...</span>
           </div>
@@ -794,6 +863,7 @@
           <!-- Play / Pause -->
           <button
             type="button"
+            id="btn-tracking-pause"
             onclick={togglePause}
             class="px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 hover:bg-slate-100 text-slate-800 transition-colors cursor-pointer flex items-center space-x-1.5"
           >
@@ -813,6 +883,7 @@
           <!-- Restart Route -->
           <button
             type="button"
+            id="btn-tracking-restart"
             onclick={restartRoute}
             class="px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 hover:bg-slate-100 text-slate-800 transition-colors cursor-pointer flex items-center space-x-1.5"
           >
@@ -829,6 +900,7 @@
           {#each [1, 2, 5] as const as mul}
             <button
               type="button"
+              id="btn-tracking-speed-{mul}"
               onclick={() => setMultiplier(mul)}
               class="px-2.5 py-1 rounded text-xs font-semibold transition-colors cursor-pointer {simMultiplier === mul
                 ? 'bg-slate-900 text-white'

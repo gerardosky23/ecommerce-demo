@@ -351,6 +351,7 @@
           fetch('/api/customers').then(r => r.json()).catch(() => []),
           fetch('/api/stats').then(r => r.json()).catch(() => ({}))
         ]);
+        window.currentOrders = orders;
 
         if (stats) {
           document.getElementById('kpi-revenue').innerText = fmt.format(stats.totalRevenue || 0);
@@ -503,12 +504,23 @@
     let gpsProgress = 0;
     let gpsIsPaused = false;
     let gpsIsDelivered = false;
+    let gpsIsLoading = false;
     let gpsMultiplier = 1;
     let gpsSelectedVehicle = 'auto';
     let gpsRouteCoords = [];
     let gpsCumulativeDistances = [];
     let gpsTotalDistM = 0;
     let currentTrackingOrder = null;
+    let gpsSessionId = 0;
+
+    function escapeHtml(str) {
+      return (str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
 
     function haversineM(p1, p2) {
       const R = 6371000;
@@ -522,7 +534,8 @@
     }
 
     function getFallbackCoords(address) {
-      const norm = (address || '').toLowerCase();
+      const safe = address || 'Lima';
+      const norm = safe.toLowerCase();
       if (norm.includes('miraflor')) return [-12.121, -77.029];
       if (norm.includes('borja')) return [-12.086, -77.001];
       if (norm.includes('surco')) return [-12.138, -76.993];
@@ -537,8 +550,8 @@
         [-12.092, -77.032]
       ];
       let hash = 0;
-      for (let i = 0; i < (address || '').length; i++) {
-        hash = (hash << 5) - hash + address.charCodeAt(i);
+      for (let i = 0; i < safe.length; i++) {
+        hash = (hash << 5) - hash + safe.charCodeAt(i);
         hash |= 0;
       }
       return list[Math.abs(hash) % list.length];
@@ -667,7 +680,9 @@
     }
 
     function createDestDivIcon(address) {
-      const clean = address && address.length > 20 ? address.slice(0, 18) + '...' : address || 'Destino';
+      const raw = address || 'Destino';
+      const clean = raw.length > 20 ? raw.slice(0, 18) + '...' : raw;
+      const escaped = escapeHtml(clean);
       return L.divIcon({
         className: 'admin-dest-marker',
         html: `
@@ -678,7 +693,7 @@
               </svg>
             </div>
             <div style="background:#059669; color:#ffffff; font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; margin-top:2px; white-space:nowrap; box-shadow:0 1px 4px rgba(0,0,0,0.25);">
-              ${clean}
+              ${escaped}
             </div>
           </div>
         `,
@@ -712,11 +727,11 @@
     function updateTelemetryUI() {
       const spd = VEHICLES_CFG[gpsSelectedVehicle].speed;
       const remMeters = Math.max(0, gpsTotalDistM * (1 - gpsProgress));
-      const remKm = (remMeters / 1000).toFixed(1);
-      const progPct = Math.min(100, Math.round(gpsProgress * 100));
+      const remKm = gpsIsLoading ? '--' : (remMeters / 1000).toFixed(1);
+      const progPct = gpsIsLoading ? 0 : Math.min(100, Math.round(gpsProgress * 100));
 
-      let etaStr = '0 min 00 s';
-      if (!gpsIsDelivered && remMeters > 0) {
+      let etaStr = gpsIsLoading ? '--' : '0 min 00 s';
+      if (!gpsIsLoading && !gpsIsDelivered && remMeters > 0) {
         const speedMps = (spd * 1000) / 3600;
         const etaSec = Math.round(remMeters / speedMps);
         const m = Math.floor(etaSec / 60);
@@ -734,7 +749,7 @@
       const stepDelivEl = document.getElementById('admin-gps-step-deliv');
       const delivOverlay = document.getElementById('admin-gps-delivered-overlay');
 
-      if (distEl) distEl.innerText = `${remKm} km`;
+      if (distEl) distEl.innerText = gpsIsLoading ? '--' : `${remKm} km`;
       if (etaEl) etaEl.innerText = etaStr;
       if (speedEl) speedEl.innerText = `${spd} km/h`;
       if (progEl) progEl.innerText = `${progPct}%`;
@@ -761,12 +776,12 @@
 
     function animLoop(timestamp) {
       if (!gpsLastTimestamp) gpsLastTimestamp = timestamp;
-      const deltaSec = Math.min((timestamp - gpsLastTimestamp) / 1000, 0.1);
+      const deltaSec = Math.min((timestamp - gpsLastTimestamp) / 1000, 0.5);
       gpsLastTimestamp = timestamp;
 
       if (!gpsIsPaused && !gpsIsDelivered && gpsRouteCoords.length > 0) {
         const spd = VEHICLES_CFG[gpsSelectedVehicle].speed;
-        const baseDurationSec = 38;
+        const baseDurationSec = 20;
         const vehicleFactor = spd / 35;
         const step = (deltaSec / baseDurationSec) * vehicleFactor * gpsMultiplier;
 
@@ -780,31 +795,46 @@
         if (gpsProgress >= 1) {
           gpsProgress = 1;
           gpsIsDelivered = true;
+          gpsAnimFrame = null;
+          updateTelemetryUI();
+          return; // Stop loop on delivery
         }
 
         updateTelemetryUI();
       }
 
       const modal = document.getElementById('admin-gps-modal');
-      if (modal && !modal.classList.contains('hidden')) {
+      if (modal && !modal.classList.contains('hidden') && !gpsIsDelivered && !gpsIsPaused) {
         gpsAnimFrame = requestAnimationFrame(animLoop);
+      } else {
+        gpsAnimFrame = null;
       }
     }
 
     window.openGpsTracking = async (orderId) => {
-      // Find order in current list
-      const res = await fetch('/api/orders');
-      if (!res.ok) return;
-      const orders = await res.json();
-      const order = orders.find(o => o.id === orderId);
+      const mySessionId = ++gpsSessionId;
+
+      // Find order in current list or fetch
+      let order = (window.currentOrders || []).find(o => o.id === orderId);
+      if (!order) {
+        try {
+          const res = await fetch('/api/orders');
+          if (res.ok) {
+            const orders = await res.json();
+            order = orders.find(o => o.id === orderId);
+          }
+        } catch(e) {}
+      }
       if (!order) return;
+      if (mySessionId !== gpsSessionId) return;
+
       currentTrackingOrder = order;
 
       const modal = document.getElementById('admin-gps-modal');
       modal.classList.remove('hidden');
 
       document.getElementById('admin-gps-order-id').innerText = `#${order.id}`;
-      document.getElementById('admin-gps-customer').innerText = order.customerName;
+      document.getElementById('admin-gps-customer').innerText = order.customerName || 'Cliente';
       document.getElementById('admin-gps-created').innerText = new Date(order.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       document.getElementById('admin-gps-address').innerText = order.shippingAddress || 'Dirección de Entrega Registrada';
       document.getElementById('admin-gps-city').innerText = order.shippingCity || 'Lima';
@@ -816,6 +846,7 @@
       gpsLastTimestamp = 0;
       gpsSelectedVehicle = 'auto';
       gpsMultiplier = 1;
+      gpsIsLoading = true;
 
       window.updateVehicleButtons();
       window.updateSpeedButtons();
@@ -829,6 +860,9 @@
       if (gpsMap) {
         try { gpsMap.remove(); } catch(e) {}
         gpsMap = null;
+      }
+      if (mapContainer) {
+        try { delete mapContainer._leaflet_id; } catch(e) {}
       }
 
       gpsMap = L.map(mapContainer, {
@@ -852,10 +886,14 @@
       gpsWarehouseMarker.bindPopup('<strong>Almacén Central Terre Bleu</strong><br>San Isidro, Lima, Perú');
 
       const destCoords = await geocodeAddr(order.shippingAddress, order.shippingCity);
+      if (mySessionId !== gpsSessionId || !gpsMap) return;
+
       gpsDestMarker = L.marker(destCoords, { icon: createDestDivIcon(order.shippingAddress) }).addTo(gpsMap);
-      gpsDestMarker.bindPopup(`<strong>Destino de Entrega</strong><br>${order.shippingAddress || 'Lima'}`);
+      gpsDestMarker.bindPopup(`<strong>Destino de Entrega</strong><br>${escapeHtml(order.shippingAddress || 'Lima')}`);
 
       const routeResult = await fetchOsrmRoute(WAREHOUSE_COORDS, destCoords);
+      if (mySessionId !== gpsSessionId || !gpsMap) return;
+
       gpsRouteCoords = routeResult.coords;
       gpsTotalDistM = routeResult.distance;
 
@@ -876,18 +914,21 @@
         zIndexOffset: 1000
       }).addTo(gpsMap);
 
-      if (gpsRouteCoords.length > 0) {
+      if (gpsRouteCoords.length > 0 && gpsMap) {
         gpsMap.fitBounds(gpsPolyline.getBounds(), { padding: [36, 36], maxZoom: 16 });
       }
 
+      gpsIsLoading = false;
       if (loadingEl) loadingEl.classList.add('hidden');
-      setTimeout(() => { if (gpsMap) gpsMap.invalidateSize(); }, 250);
+      setTimeout(() => { if (gpsMap && mySessionId === gpsSessionId) gpsMap.invalidateSize(); }, 250);
 
       if (gpsAnimFrame) cancelAnimationFrame(gpsAnimFrame);
+      gpsLastTimestamp = 0;
       gpsAnimFrame = requestAnimationFrame(animLoop);
     };
 
     window.closeGpsTracking = () => {
+      gpsSessionId++;
       if (gpsAnimFrame) {
         cancelAnimationFrame(gpsAnimFrame);
         gpsAnimFrame = null;
@@ -895,6 +936,10 @@
       if (gpsMap) {
         try { gpsMap.remove(); } catch(e) {}
         gpsMap = null;
+      }
+      const mapContainer = document.getElementById('admin-leaflet-order-map');
+      if (mapContainer) {
+        try { delete mapContainer._leaflet_id; } catch(e) {}
       }
       document.getElementById('admin-gps-modal').classList.add('hidden');
     };
@@ -913,7 +958,7 @@
         const btn = document.getElementById(`btn-v-${v}`);
         if (btn) {
           if (v === gpsSelectedVehicle) {
-            btn.className = 'flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-semibold border transition-colors cursor-pointer bg-sky-50 text-sky-900 border-sky-400 ring-1 ring-sky-300';
+            btn.className = 'flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-semibold border transition-colors cursor-pointer bg-sky-50 text-sky-900 border-sky-500';
           } else {
             btn.className = 'flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-medium border transition-colors cursor-pointer bg-white text-slate-700 border-slate-200 hover:bg-slate-50';
           }
@@ -927,6 +972,10 @@
       gpsIsPaused = !gpsIsPaused;
       const pauseText = document.getElementById('admin-gps-pause-text');
       if (pauseText) pauseText.innerText = gpsIsPaused ? 'Reanudar' : 'Pausar';
+      if (!gpsIsPaused && !gpsIsDelivered && !gpsAnimFrame) {
+        gpsLastTimestamp = 0;
+        gpsAnimFrame = requestAnimationFrame(animLoop);
+      }
     };
 
     window.restartRouteGps = () => {
@@ -940,6 +989,9 @@
       const pauseText = document.getElementById('admin-gps-pause-text');
       if (pauseText) pauseText.innerText = 'Pausar';
       updateTelemetryUI();
+      if (!gpsAnimFrame) {
+        gpsAnimFrame = requestAnimationFrame(animLoop);
+      }
     };
 
     window.setMultiplierGps = (m) => {
@@ -959,10 +1011,25 @@
         }
       });
     };
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('admin-gps-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+          window.closeGpsTracking();
+        }
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (gpsMap) {
+        gpsMap.invalidateSize();
+      }
+    });
   </script>
 
   <!-- GPS SATELLITE TRACKING MODAL (BACKOFFICE) -->
-  <div id="admin-gps-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-2xs">
+  <div id="admin-gps-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60">
     <div class="absolute inset-0 bg-transparent w-full h-full cursor-default" onclick="window.closeGpsTracking()"></div>
 
     <div class="relative bg-white border border-slate-200 rounded-lg max-w-2xl w-full overflow-hidden shadow-sm z-10 p-5 sm:p-7 space-y-5 text-slate-900 max-h-[94vh] overflow-y-auto">
@@ -1065,7 +1132,7 @@
             type="button"
             id="btn-v-auto"
             onclick="window.selectVehicleGps('auto')"
-            class="flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-semibold border transition-colors cursor-pointer bg-sky-50 text-sky-900 border-sky-400 ring-1 ring-sky-300"
+            class="flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-semibold border transition-colors cursor-pointer bg-sky-50 text-sky-900 border-sky-500"
           >
             <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <circle cx="7" cy="17" r="2" stroke-width="2" />
@@ -1102,7 +1169,7 @@
       <div class="relative w-full h-72 sm:h-80 rounded-lg overflow-hidden border border-slate-200 bg-slate-100">
         <div id="admin-leaflet-order-map" class="w-full h-full z-0"></div>
 
-        <div id="admin-gps-loading" class="absolute inset-0 bg-white/80 backdrop-blur-2xs flex flex-col items-center justify-center space-y-2 z-10">
+        <div id="admin-gps-loading" class="absolute inset-0 bg-white/95 flex flex-col items-center justify-center space-y-2 z-10">
           <div class="w-6 h-6 border-2 border-sky-600 border-t-transparent rounded-full animate-spin"></div>
           <span class="text-xs font-mono text-slate-600">Calculando ruteo vial por calles reales (OSRM)...</span>
         </div>
