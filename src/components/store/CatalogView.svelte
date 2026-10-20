@@ -54,7 +54,44 @@
   }
 
   let eventSource: EventSource | null = null;
-  let pollInterval: any = null;
+  let reconnectTimer: any = null;
+  let isDestroyed = false;
+
+  function connectSSE() {
+    if (isDestroyed || typeof window === 'undefined') return;
+
+    try {
+      if (eventSource) {
+        eventSource.close();
+      }
+      eventSource = new EventSource(`${getApiBaseUrl()}/events`);
+
+      eventSource.onmessage = (evt) => {
+        try {
+          const data = JSON.parse(evt.data);
+          if (data.action === 'order_created' || data.action === 'stock_updated' || data.action === 'demo_reset') {
+            store.fetchProducts();
+          }
+        } catch (e) {}
+      };
+
+      eventSource.onerror = () => {
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+        }
+        if (!isDestroyed) {
+          clearTimeout(reconnectTimer);
+          reconnectTimer = setTimeout(connectSSE, 3000);
+        }
+      };
+    } catch (e) {
+      if (!isDestroyed) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(connectSSE, 3000);
+      }
+    }
+  }
 
   onMount(() => {
     store.fetchProducts();
@@ -67,26 +104,13 @@
       selectedCategory = catParam;
     }
 
-    try {
-      eventSource = new EventSource(`${getApiBaseUrl()}/events`);
-      eventSource.onmessage = (evt) => {
-        try {
-          const data = JSON.parse(evt.data);
-          if (data.action === 'order_created' || data.action === 'demo_reset') {
-            store.fetchProducts();
-          }
-        } catch (e) {}
-      };
-    } catch (e) {}
-
-    pollInterval = setInterval(() => {
-      store.fetchProducts();
-    }, 4000);
+    connectSSE();
   });
 
   onDestroy(() => {
+    isDestroyed = true;
+    if (reconnectTimer) clearTimeout(reconnectTimer);
     if (eventSource) eventSource.close();
-    if (pollInterval) clearInterval(pollInterval);
   });
 </script>
 

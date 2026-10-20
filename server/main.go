@@ -244,6 +244,15 @@ func main() {
 	mux.HandleFunc("/api/reset", enableCORS(handleReset))
 	mux.HandleFunc("/api/events", enableCORS(handleSSEEvents))
 
+	// Static Images handler (serves local /images/ from public directory)
+	imgDir := "../public/images"
+	if _, err := os.Stat(imgDir); os.IsNotExist(err) {
+		imgDir = "./public/images"
+	}
+	if _, err := os.Stat(imgDir); err == nil {
+		mux.Handle("/images/", http.StripPrefix("/images", http.FileServer(http.Dir(imgDir))))
+	}
+
 	// Static Admin Dashboard
 	adminDir := "./admin"
 	if _, err := os.Stat(adminDir); os.IsNotExist(err) {

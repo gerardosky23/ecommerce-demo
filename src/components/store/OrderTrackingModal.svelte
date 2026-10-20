@@ -420,6 +420,15 @@
     const sessionId = ++initSessionId;
 
     try {
+      // Lazy-load Leaflet CSS only when tracking modal opens
+      if (typeof document !== 'undefined' && !document.getElementById('leaflet-css')) {
+        const link = document.createElement('link');
+        link.id = 'leaflet-css';
+        link.rel = 'stylesheet';
+        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        document.head.appendChild(link);
+      }
+
       // Dynamic import of Leaflet for SSR compatibility
       const leafletModule = await import('leaflet');
       if (sessionId !== initSessionId || !store.isTrackingOpen) return;

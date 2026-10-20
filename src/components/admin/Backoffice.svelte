@@ -78,7 +78,8 @@
   let showResetModal = $state(false);
   let notification = $state<string | null>(null);
   let eventSource: EventSource | null = null;
-  let pollInterval: any = null;
+  let reconnectTimer: any = null;
+  let isDestroyed = false;
 
   const isLocalAstro = typeof window !== 'undefined' && 
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && 
@@ -177,15 +178,15 @@
            d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
-  onMount(() => {
-    if (typeof window !== 'undefined' && sessionStorage.getItem('tb_admin_session') === 'true') {
-      isAuthenticated = true;
-    }
-
-    fetchData();
+  function connectSSE() {
+    if (isDestroyed || typeof window === 'undefined') return;
 
     try {
+      if (eventSource) {
+        eventSource.close();
+      }
       eventSource = new EventSource(`${API_BASE}/events`);
+
       eventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
@@ -194,14 +195,38 @@
           }
         } catch (e) {}
       };
-    } catch (e) {}
 
-    pollInterval = setInterval(fetchData, 3000);
+      eventSource.onerror = () => {
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+        }
+        if (!isDestroyed) {
+          clearTimeout(reconnectTimer);
+          reconnectTimer = setTimeout(connectSSE, 3000);
+        }
+      };
+    } catch (e) {
+      if (!isDestroyed) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(connectSSE, 3000);
+      }
+    }
+  }
+
+  onMount(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('tb_admin_session') === 'true') {
+      isAuthenticated = true;
+    }
+
+    fetchData();
+    connectSSE();
   });
 
   onDestroy(() => {
+    isDestroyed = true;
+    if (reconnectTimer) clearTimeout(reconnectTimer);
     if (eventSource) eventSource.close();
-    if (pollInterval) clearInterval(pollInterval);
   });
 </script>
 

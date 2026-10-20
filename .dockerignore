@@ -11,6 +11,7 @@ scripts/crawl-*.mjs
 scripts/inspect-*.mjs
 *.png
 *.mp4
-*.webp
+/*.webp
+!public/images/**
 spec_data
 npm-debug.log*

@@ -13,35 +13,58 @@
   import Footer from './Footer.svelte';
 
   let eventSource: EventSource | null = null;
-  let pollInterval: any = null;
+  let reconnectTimer: any = null;
+  let isDestroyed = false;
 
-  onMount(() => {
-    store.fetchProducts();
-    store.fetchOrders();
+  function connectSSE() {
+    if (isDestroyed || typeof window === 'undefined') return;
 
-    // SSE connection with Go backend
     try {
+      if (eventSource) {
+        eventSource.close();
+      }
       eventSource = new EventSource(`${getApiBaseUrl()}/events`);
+
       eventSource.onmessage = (evt) => {
         try {
           const data = JSON.parse(evt.data);
-          if (data.action === 'order_created' || data.action === 'demo_reset') {
+          if (data.action === 'order_created' || data.action === 'stock_updated' || data.action === 'demo_reset') {
             store.fetchProducts();
             store.fetchOrders();
           }
         } catch (e) {}
       };
-    } catch (e) {}
 
-    pollInterval = setInterval(() => {
-      store.fetchProducts();
-      store.fetchOrders();
-    }, 4000);
+      eventSource.onerror = () => {
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+        }
+        if (!isDestroyed) {
+          clearTimeout(reconnectTimer);
+          reconnectTimer = setTimeout(connectSSE, 3000);
+        }
+      };
+    } catch (e) {
+      if (!isDestroyed) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(connectSSE, 3000);
+      }
+    }
+  }
+
+  onMount(() => {
+    // Initial fetch on mount only
+    store.fetchProducts();
+    store.fetchOrders();
+    // 100% event-driven updates via SSE (Zero polling)
+    connectSSE();
   });
 
   onDestroy(() => {
+    isDestroyed = true;
+    if (reconnectTimer) clearTimeout(reconnectTimer);
     if (eventSource) eventSource.close();
-    if (pollInterval) clearInterval(pollInterval);
   });
 </script>
 

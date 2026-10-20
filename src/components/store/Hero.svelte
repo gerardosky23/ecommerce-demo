@@ -25,9 +25,12 @@
       <div class="relative">
         <div class="aspect-4/3 rounded-lg overflow-hidden border border-slate-200 bg-white">
           <img
-            src="https://www.terrebleu.ca/cdn/shop/files/TerreBleuLavenderSpaCollection.png?v=1792113654&width=1080"
+            src="/images/products/spa-collection.webp"
             alt="Colección Botánica Terre Bleu"
             class="w-full h-full object-cover"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
           />
         </div>
       </div>
