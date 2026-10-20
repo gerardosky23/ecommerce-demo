@@ -46,7 +46,7 @@
       onclick={closeModal}
     ></button>
 
-    <div class="relative bg-white border border-slate-200 rounded-lg max-w-lg w-full overflow-hidden shadow-md z-10 p-6 sm:p-8 space-y-6 text-slate-900">
+    <div class="relative bg-white border border-slate-200 rounded-lg max-w-lg w-full overflow-hidden shadow-sm z-10 p-6 sm:p-8 space-y-6 text-slate-900">
       <!-- Close button -->
       <button
         type="button"
@@ -71,7 +71,7 @@
           <div class="space-y-1">
             <h3 class="text-xl font-serif font-bold text-slate-950">¡Compra Demo Confirmada!</h3>
             <p class="text-xs text-slate-600">
-              Orden registrada exitosamente con el ID: <strong class="text-indigo-600 font-mono">{completedOrder.id}</strong>
+              Orden registrada exitosamente con el ID: <strong class="text-sky-600 font-mono">{completedOrder.id}</strong>
             </p>
           </div>
 
@@ -82,7 +82,7 @@
             </div>
             <div class="flex justify-between">
               <span class="text-slate-500">Total Facturado:</span>
-              <span class="font-bold text-indigo-600 tabular-nums">${completedOrder.total.toFixed(2)} CAD</span>
+              <span class="font-bold text-sky-600 tabular-nums">${completedOrder.total.toFixed(2)} CAD</span>
             </div>
             <div class="flex justify-between">
               <span class="text-slate-500">Artículos Comprados:</span>
@@ -130,14 +130,14 @@
           <!-- Customer Name Input -->
           <div class="space-y-1.5">
             <label for="cust-name" class="block text-xs font-medium text-slate-700">
-              Nombre Completo del Comprador <span class="text-indigo-600">*</span>
+              Nombre Completo del Comprador <span class="text-sky-600">*</span>
             </label>
             <input
               id="cust-name"
               type="text"
               bind:value={customerName}
               placeholder="Ej: Carlos Medina o Valeria Gómez"
-              class="w-full bg-white border border-slate-300 rounded-md px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-indigo-600 shadow-2xs"
+              class="w-full bg-white border border-slate-300 rounded-md px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-sky-600 shadow-2xs"
               autocomplete="name"
             />
           </div>

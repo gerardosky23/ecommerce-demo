@@ -24,7 +24,7 @@
 
       <a
         href="/tienda"
-        class="text-xs font-semibold uppercase tracking-wider text-slate-900 hover:text-indigo-600 flex items-center space-x-1.5 transition-colors"
+        class="text-xs font-semibold uppercase tracking-wider text-slate-900 hover:text-sky-600 flex items-center space-x-1.5 transition-colors"
       >
         <span>Ver todos los productos ({store.products.length})</span>
         <span>→</span>
@@ -60,7 +60,7 @@
           <div class="p-4 flex flex-col flex-1 justify-between space-y-3">
             <div class="space-y-1">
               <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">{product.category}</span>
-              <h3 class="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug">
+              <h3 class="text-sm font-semibold text-slate-900 group-hover:text-sky-600 transition-colors leading-snug">
                 {product.title}
               </h3>
             </div>

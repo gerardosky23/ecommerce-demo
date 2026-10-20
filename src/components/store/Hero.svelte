@@ -1,14 +1,3 @@
-<script lang="ts">
-  import { store } from '../../lib/store.svelte';
-
-  function openFeaturedPDP() {
-    const comfort = store.products.find(p => p.id === 'prod-comfort-edit');
-    if (comfort) {
-      store.selectedProduct = comfort;
-    }
-  }
-</script>
-
 <section id="hero" class="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden bg-[#faf9f6] text-slate-900 border-b border-slate-200 max-w-full">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -29,29 +18,6 @@
           >
             Ver Catálogo de Tienda →
           </a>
-
-          <button
-            onclick={openFeaturedPDP}
-            class="px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-800 bg-white hover:bg-slate-100 rounded-md border border-slate-300 transition-colors cursor-pointer flex items-center space-x-2 shadow-2xs"
-          >
-            <span>The Comfort Edit</span>
-            <span class="text-indigo-600 font-mono font-bold tabular-nums">$45 CAD</span>
-          </button>
-        </div>
-
-        <div class="pt-8 border-t border-slate-200 grid grid-cols-3 gap-6 text-slate-600 text-xs">
-          <div>
-            <span class="font-bold text-slate-900 block tabular-nums">100% Orgánico</span>
-            <span class="text-[11px]">Destilación artesanal</span>
-          </div>
-          <div>
-            <span class="font-bold text-slate-900 block tabular-nums">Sin Químicos</span>
-            <span class="text-[11px]">Libre de parabenos</span>
-          </div>
-          <div>
-            <span class="font-bold text-slate-900 block tabular-nums">Ontario, CA</span>
-            <span class="text-[11px]">Cultivo sustentable</span>
-          </div>
         </div>
       </div>
 

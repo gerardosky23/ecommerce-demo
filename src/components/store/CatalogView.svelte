@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { store, type Product } from '../../lib/store.svelte';
+  import { store, getApiBaseUrl, type Product } from '../../lib/store.svelte';
   import Navbar from './Navbar.svelte';
   import Footer from './Footer.svelte';
   import ProductModal from './ProductModal.svelte';
@@ -67,7 +67,7 @@
     }
 
     try {
-      eventSource = new EventSource('http://localhost:8080/api/events');
+      eventSource = new EventSource(`${getApiBaseUrl()}/events`);
       eventSource.onmessage = (evt) => {
         try {
           const data = JSON.parse(evt.data);
@@ -89,7 +89,7 @@
   });
 </script>
 
-<div class="min-h-screen bg-white text-slate-900 antialiased selection:bg-indigo-500/10">
+<div class="min-h-screen bg-white text-slate-900 antialiased selection:bg-sky-500/10">
   <Navbar />
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -117,7 +117,7 @@
             type="search"
             bind:value={searchQuery}
             placeholder="Buscar por nombre, categoría o descripción..."
-            class="w-full bg-white border border-slate-300 rounded-md pl-9 pr-4 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-indigo-600 shadow-2xs"
+            class="w-full bg-white border border-slate-300 rounded-md pl-9 pr-4 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-sky-600 shadow-2xs"
           />
           <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -130,7 +130,7 @@
           <select
             id="sort"
             bind:value={sortBy}
-            class="bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-800 focus:outline-hidden focus:border-indigo-600 shadow-2xs cursor-pointer"
+            class="bg-white border border-slate-300 rounded-md px-3 py-2 text-xs text-slate-800 focus:outline-hidden focus:border-sky-600 shadow-2xs cursor-pointer"
           >
             <option value="featured">Recomendados</option>
             <option value="price-asc">Precio: Menor a Mayor</option>
@@ -159,7 +159,7 @@
       {#if selectedCategory !== 'Todos' || searchQuery !== ''}
         <button
           onclick={() => { selectedCategory = 'Todos'; searchQuery = ''; }}
-          class="text-indigo-600 hover:underline cursor-pointer"
+          class="text-sky-600 hover:underline cursor-pointer"
         >
           Limpiar filtros
         </button>
@@ -196,12 +196,6 @@
                     Agotado
                   </span>
                 </div>
-              {:else if product.stock < 5}
-                <div class="absolute top-2.5 right-2.5">
-                  <span class="text-[10px] font-mono text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 font-semibold">
-                    Últimas {product.stock} uds
-                  </span>
-                </div>
               {/if}
             </div>
 
@@ -209,7 +203,7 @@
             <div class="p-4 flex flex-col flex-1 justify-between space-y-3">
               <div class="space-y-1">
                 <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">{product.category}</span>
-                <h3 class="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug">
+                <h3 class="text-sm font-semibold text-slate-900 group-hover:text-sky-600 transition-colors leading-snug">
                   {product.title}
                 </h3>
                 <p class="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
@@ -218,14 +212,9 @@
               </div>
 
               <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-                <div class="flex flex-col">
-                  <span class="text-base font-bold text-slate-950 tabular-nums">
-                    ${product.price.toFixed(2)} CAD
-                  </span>
-                  <span class="text-[10px] text-slate-500 font-mono">
-                    Stock: <strong class="text-slate-800">{product.stock} uds</strong>
-                  </span>
-                </div>
+                <span class="text-base font-bold text-slate-950 tabular-nums">
+                  ${product.price.toFixed(2)} CAD
+                </span>
 
                 <button
                   onclick={(e) => handleQuickAdd(e, product)}

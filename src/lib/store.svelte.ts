@@ -140,6 +140,15 @@ const DEFAULT_PRODUCTS: Product[] = [
   },
 ];
 
+export function getApiBaseUrl(): string {
+  if (typeof window === 'undefined') return 'http://localhost:8080/api';
+  const port = window.location.port;
+  if (port === '4321' || port === '3000') {
+    return 'http://localhost:8080/api';
+  }
+  return '/api';
+}
+
 class StoreState {
   products = $state<Product[]>(DEFAULT_PRODUCTS);
   cart = $state<CartItem[]>([]);
@@ -166,7 +175,7 @@ class StoreState {
 
   async fetchProducts() {
     try {
-      const res = await fetch('http://localhost:8080/api/products');
+      const res = await fetch(`${getApiBaseUrl()}/products`);
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -189,7 +198,7 @@ class StoreState {
 
   async fetchOrders() {
     try {
-      const res = await fetch('http://localhost:8080/api/orders');
+      const res = await fetch(`${getApiBaseUrl()}/orders`);
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data)) {
@@ -243,7 +252,7 @@ class StoreState {
     };
 
     try {
-      const res = await fetch('http://localhost:8080/api/checkout', {
+      const res = await fetch(`${getApiBaseUrl()}/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

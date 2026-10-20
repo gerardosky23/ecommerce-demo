@@ -22,7 +22,7 @@
     ></button>
 
     <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
-      <div class="w-screen max-w-md bg-white border-l border-slate-200 shadow-md flex flex-col justify-between text-slate-900">
+      <div class="w-screen max-w-md bg-white border-l border-slate-200 shadow-sm flex flex-col justify-between text-slate-900">
         <!-- Header -->
         <div class="p-6 border-b border-slate-200 flex items-center justify-between">
           <div class="flex items-center space-x-2">
@@ -52,7 +52,7 @@
             </div>
           {:else}
             <div class="text-slate-600">
-              Agrega <strong class="text-indigo-600 tabular-nums">${(65 - store.cartSubtotal).toFixed(2)} CAD</strong> más para obtener envío gratuito
+              Agrega <strong class="text-sky-600 tabular-nums">${(65 - store.cartSubtotal).toFixed(2)} CAD</strong> más para obtener envío gratuito
             </div>
           {/if}
         </div>
@@ -147,7 +147,7 @@
               </div>
               <div class="flex justify-between text-sm font-bold text-slate-950 pt-2 border-t border-slate-200">
                 <span>Total Estimado</span>
-                <span class="tabular-nums text-indigo-600">
+                <span class="tabular-nums text-sky-600">
                   ${(store.cartSubtotal + (store.cartSubtotal >= 65 ? 0 : 9.50)).toFixed(2)} CAD
                 </span>
               </div>

@@ -34,7 +34,7 @@
     ></button>
 
     <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
-      <div class="w-screen max-w-md bg-white border-l border-slate-200 shadow-md flex flex-col justify-between">
+      <div class="w-screen max-w-md bg-white border-l border-slate-200 shadow-sm flex flex-col justify-between">
         <!-- Header -->
         <div class="p-6 border-b border-slate-200 flex items-center justify-between bg-white">
           <div class="flex items-center space-x-2">

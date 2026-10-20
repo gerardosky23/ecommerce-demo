@@ -7,7 +7,7 @@
 <header class="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-2xs">
   <!-- Top announcement bar -->
   <div class="bg-[#f8fafc] text-slate-600 text-[11px] font-medium py-1.5 px-4 text-center tracking-wider uppercase border-b border-slate-200">
-    Envío gratuito en órdenes superiores a $65 CAD • Cosecha Botánica Orgánica
+    Envío gratuito en órdenes superiores a $65 CAD
   </div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -15,21 +15,21 @@
     <nav class="hidden md:flex items-center space-x-8 text-xs font-medium tracking-wider uppercase text-slate-700">
       <a
         href="/"
-        class="hover:text-indigo-600 transition-colors py-2"
+        class="hover:text-sky-600 transition-colors py-2"
       >
         Inicio
       </a>
 
       <a
         href="/tienda"
-        class="hover:text-indigo-600 transition-colors py-2 flex items-center space-x-1"
+        class="hover:text-sky-600 transition-colors py-2 flex items-center space-x-1"
       >
         <span>Tienda & Catálogo</span>
       </a>
 
       <a
         href="/#curated"
-        class="hover:text-indigo-600 transition-colors py-2"
+        class="hover:text-sky-600 transition-colors py-2"
       >
         The Comfort Edit
       </a>
@@ -37,7 +37,7 @@
       <div class="relative group">
         <button
           onclick={() => isMegaMenuOpen = !isMegaMenuOpen}
-          class="hover:text-indigo-600 transition-colors py-2 flex items-center space-x-1 cursor-pointer"
+          class="hover:text-sky-600 transition-colors py-2 flex items-center space-x-1 cursor-pointer"
         >
           <span>Colecciones</span>
           <svg class="w-3 h-3 transition-transform {isMegaMenuOpen ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,22 +46,22 @@
         </button>
 
         {#if isMegaMenuOpen}
-          <div class="absolute left-0 top-full mt-1 w-64 bg-white border border-slate-200 rounded-lg shadow-md p-4 space-y-2 z-50">
+          <div class="absolute left-0 top-full mt-1 w-64 bg-white border border-slate-200 rounded-lg shadow-sm p-4 space-y-2 z-50">
             <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Categorías Botánicas</div>
             <div class="space-y-1 text-xs">
-              <a href="/tienda?cat=Signature Sets" class="block py-1 text-slate-700 hover:text-indigo-600">
+              <a href="/tienda?cat=Signature Sets" class="block py-1 text-slate-700 hover:text-sky-600">
                 Signature Sets & Regalos
               </a>
-              <a href="/tienda?cat=Body & Care" class="block py-1 text-slate-700 hover:text-indigo-600">
+              <a href="/tienda?cat=Body & Care" class="block py-1 text-slate-700 hover:text-sky-600">
                 Cuidado Corporal & Manos
               </a>
-              <a href="/tienda?cat=Wellness" class="block py-1 text-slate-700 hover:text-indigo-600">
+              <a href="/tienda?cat=Wellness" class="block py-1 text-slate-700 hover:text-sky-600">
                 Bienestar & Aromaterapia
               </a>
-              <a href="/tienda?cat=Botanicals" class="block py-1 text-slate-700 hover:text-indigo-600">
+              <a href="/tienda?cat=Botanicals" class="block py-1 text-slate-700 hover:text-sky-600">
                 Flores Secas & Ramilletes
               </a>
-              <a href="/tienda?cat=Culinary" class="block py-1 text-slate-700 hover:text-indigo-600">
+              <a href="/tienda?cat=Culinary" class="block py-1 text-slate-700 hover:text-sky-600">
                 Galletas & Tés Culinarios
               </a>
             </div>
@@ -73,7 +73,7 @@
     <!-- Center Logo -->
     <div class="flex items-center justify-center">
       <a href="/" class="flex flex-col items-center group">
-        <span class="text-xl sm:text-2xl font-serif tracking-widest text-slate-900 uppercase font-bold group-hover:text-indigo-600 transition-colors">
+        <span class="text-xl sm:text-2xl font-serif tracking-widest text-slate-900 uppercase font-bold group-hover:text-sky-600 transition-colors">
           Terre Bleu
         </span>
         <span class="text-[9px] tracking-widest uppercase text-slate-500 -mt-1 font-sans">
@@ -100,7 +100,7 @@
       <!-- Profile Button -->
       <button
         onclick={() => store.isProfileOpen = true}
-        class="flex items-center space-x-1.5 text-xs font-medium text-slate-700 hover:text-indigo-600 transition-colors cursor-pointer"
+        class="flex items-center space-x-1.5 text-xs font-medium text-slate-700 hover:text-sky-600 transition-colors cursor-pointer"
         title="Ver Mi Perfil de Cliente"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,7 +120,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
         <span class="hidden sm:inline">Carrito</span>
-        <span class="w-4 h-4 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold tabular-nums">
+        <span class="w-4 h-4 rounded-full bg-sky-600 text-white flex items-center justify-center text-[10px] font-bold tabular-nums">
           {store.cartTotalItems}
         </span>
       </button>

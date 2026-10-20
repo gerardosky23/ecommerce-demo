@@ -40,7 +40,7 @@
       onclick={closeModal}
     ></button>
 
-    <div class="relative bg-white border border-slate-200 rounded-lg max-w-3xl w-full overflow-hidden shadow-md z-10 grid grid-cols-1 md:grid-cols-2 text-slate-900">
+    <div class="relative bg-white border border-slate-200 rounded-lg max-w-3xl w-full overflow-hidden shadow-sm z-10 grid grid-cols-1 md:grid-cols-2 text-slate-900">
       <!-- Close button -->
       <button
         type="button"
@@ -66,10 +66,10 @@
       <div class="p-6 sm:p-8 flex flex-col justify-between space-y-6">
         <div class="space-y-4">
           <div class="space-y-1">
-            <span class="text-[10px] font-mono uppercase tracking-widest text-indigo-600 font-semibold">{product.category}</span>
             <h2 class="text-2xl font-serif font-bold text-slate-950 tracking-tight leading-snug">
               {product.title}
             </h2>
+            <span class="text-xs text-slate-500 block">{product.category}</span>
           </div>
 
           <div class="flex items-baseline space-x-3">
@@ -86,19 +86,6 @@
           <p class="text-xs text-slate-600 leading-relaxed">
             {product.description}
           </p>
-
-          <div class="bg-slate-50 border border-slate-200 rounded-md p-3 text-xs space-y-1">
-            <div class="flex items-center justify-between">
-              <span class="text-slate-500">Disponibilidad en almacén:</span>
-              <span class="font-bold tabular-nums {product.stock < 5 ? 'text-amber-700' : 'text-slate-900'}">
-                {product.stock} unidades
-              </span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-500">Origen de cosecha:</span>
-              <span class="text-slate-800 font-medium">Ontario, Canadá</span>
-            </div>
-          </div>
         </div>
 
         <!-- Add Actions -->

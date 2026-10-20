@@ -52,9 +52,6 @@
               <span class="text-lg text-slate-400 line-through tabular-nums">
                 ${comfortEdit.compareAt.toFixed(2)} CAD
               </span>
-              <span class="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-medium">
-                Ahorro de $15 CAD
-              </span>
             {/if}
           </div>
 
@@ -69,17 +66,6 @@
               <li>Aromatic Culinary Bud (flores secas comestibles para infusión)</li>
               <li>Floral Water Mist (hidrolato puro destilado al vapor)</li>
             </ul>
-          </div>
-
-          <!-- Stock Status -->
-          <div class="flex items-center space-x-3 text-xs">
-            <span class="flex items-center space-x-1.5">
-              <span class="w-2 h-2 rounded-full {comfortEdit.stock > 0 ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
-              <span class="text-slate-600 font-mono">Disponibilidad en almacén:</span>
-            </span>
-            <span class="font-bold tabular-nums {comfortEdit.stock < 5 ? 'text-amber-600' : 'text-slate-900'}">
-              {comfortEdit.stock} unidades
-            </span>
           </div>
 
           <div class="flex items-center space-x-3 pt-2">

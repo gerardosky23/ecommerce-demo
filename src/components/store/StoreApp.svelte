@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { store } from '../../lib/store.svelte';
+  import { store, getApiBaseUrl } from '../../lib/store.svelte';
   import Navbar from './Navbar.svelte';
   import Hero from './Hero.svelte';
   import CuratedEdit from './CuratedEdit.svelte';
@@ -20,7 +20,7 @@
 
     // SSE connection with Go backend
     try {
-      eventSource = new EventSource('http://localhost:8080/api/events');
+      eventSource = new EventSource(`${getApiBaseUrl()}/events`);
       eventSource.onmessage = (evt) => {
         try {
           const data = JSON.parse(evt.data);
@@ -44,7 +44,7 @@
   });
 </script>
 
-<div class="min-h-screen w-full max-w-[100vw] overflow-x-clip bg-white text-slate-900 antialiased selection:bg-indigo-500/10">
+<div class="min-h-screen w-full max-w-[100vw] overflow-x-clip bg-white text-slate-900 antialiased selection:bg-sky-500/10">
   <Navbar />
   <main>
     <Hero />

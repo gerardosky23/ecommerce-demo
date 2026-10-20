@@ -53,7 +53,10 @@ async function runVerification() {
       'The Terre Bleu Edit',
       'Terre Bleu Club',
       'Granja Botánica Orgánica • Ontario',
-      'Selección Cosechada'
+      'Selección Cosechada',
+      'Ahorro de $15',
+      'Disponibilidad en almacén:',
+      'Últimas '
     ];
     const detectedPhrases = forbiddenPhrases.filter(p => pageText.includes(p));
 
@@ -86,10 +89,10 @@ async function runVerification() {
 
   // Verificar estabilidad de productos (CERO cambios de productos o rotación tras ciclo de polling)
   console.log('🔒 Verificando estabilidad de productos (cero carrusel, cero efecto de cambio)...');
-  const initialTitles = await page.locator('section h3').allInnerTexts();
-  console.log('📌 Títulos iniciales:', initialTitles);
+  const initialTitles = await page.locator('section .group h3').allInnerTexts();
+  console.log('📌 Títulos iniciales de productos:', initialTitles);
   await page.waitForTimeout(4500); // Esperar que se ejecute el intervalo de polling
-  const postPollingTitles = await page.locator('section h3').allInnerTexts();
+  const postPollingTitles = await page.locator('section .group h3').allInnerTexts();
   if (JSON.stringify(initialTitles) !== JSON.stringify(postPollingTitles)) {
     throw new Error(`Efecto de cambio de productos detectado tras polling: iniciales=${JSON.stringify(initialTitles)}, nuevos=${JSON.stringify(postPollingTitles)}`);
   }
