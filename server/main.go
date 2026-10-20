@@ -112,6 +112,85 @@ func handleReset(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+type UpdateStockRequest struct {
+	ProductID string `json:"productId"`
+	Stock     *int   `json:"stock,omitempty"`
+	Action    string `json:"action,omitempty"`
+}
+
+func handleUpdateStock(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost && r.Method != http.MethodPut {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req UpdateStockRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "JSON inválido: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if req.ProductID == "" {
+		http.Error(w, "productId es requerido", http.StatusBadRequest)
+		return
+	}
+
+	var prod *Product
+	var err error
+
+	if req.Action == "toggle" {
+		prod, err = globalStore.ToggleSoldOut(req.ProductID)
+	} else if req.Stock != nil {
+		prod, err = globalStore.UpdateStock(req.ProductID, *req.Stock)
+	} else {
+		http.Error(w, "Debe especificar 'stock' numérico o 'action': 'toggle'", http.StatusBadRequest)
+		return
+	}
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"product": prod,
+		"stats":   globalStore.GetStats(),
+	})
+}
+
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+func handleLogin(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "JSON inválido", http.StatusBadRequest)
+		return
+	}
+
+	if strings.TrimSpace(req.Username) == "demo" && strings.TrimSpace(req.Password) == "demo" {
+		jsonResponse(w, http.StatusOK, map[string]interface{}{
+			"success": true,
+			"token":   "tb-demo-auth-token-valid",
+			"user":    "demo",
+		})
+		return
+	}
+
+	jsonResponse(w, http.StatusUnauthorized, map[string]interface{}{
+		"success": false,
+		"error":   "Credenciales inválidas. Usa demo / demo",
+	})
+}
+
 func handleSSEEvents(w http.ResponseWriter, r *http.Request) {
 	flusher, ok := w.(http.Flusher)
 	if !ok {
@@ -156,6 +235,8 @@ func main() {
 
 	// API Endpoints
 	mux.HandleFunc("/api/products", enableCORS(handleGetProducts))
+	mux.HandleFunc("/api/products/stock", enableCORS(handleUpdateStock))
+	mux.HandleFunc("/api/login", enableCORS(handleLogin))
 	mux.HandleFunc("/api/orders", enableCORS(handleGetOrders))
 	mux.HandleFunc("/api/customers", enableCORS(handleGetCustomers))
 	mux.HandleFunc("/api/stats", enableCORS(handleGetStats))
@@ -174,8 +255,10 @@ func main() {
 		http.Redirect(w, r, "/admin/", http.StatusFound)
 	})
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/" {
-			http.Redirect(w, r, "/admin/", http.StatusFound)
+		if r.URL.Path == "/" || r.URL.Path == "/health" {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{"status":"ok","service":"terre-bleu-api"}`))
 			return
 		}
 		fs.ServeHTTP(w, r)

@@ -141,9 +141,10 @@ const DEFAULT_PRODUCTS: Product[] = [
 ];
 
 export function getApiBaseUrl(): string {
-  if (typeof window === 'undefined') return 'http://localhost:8080/api';
+  if (typeof window === 'undefined') return '/api';
+  const hostname = window.location.hostname;
   const port = window.location.port;
-  if (port === '4321' || port === '3000') {
+  if ((hostname === 'localhost' || hostname === '127.0.0.1') && (port === '4321' || port === '3000')) {
     return 'http://localhost:8080/api';
   }
   return '/api';
@@ -209,6 +210,7 @@ class StoreState {
   }
 
   addToCart(product: Product, quantity = 1) {
+    if (product.stock <= 0) return;
     const existing = this.cart.find(item => item.product.id === product.id);
     if (existing) {
       if (existing.quantity + quantity <= product.stock) {
@@ -241,6 +243,16 @@ class StoreState {
   async submitCheckout(customerName: string): Promise<{ success: boolean; order?: Order; error?: string }> {
     const name = customerName.trim() || 'Cliente Demostración';
     this.activeCustomerName = name;
+
+    // Validate that no item in cart is sold out
+    for (const item of this.cart) {
+      if (item.product.stock <= 0 || item.quantity > item.product.stock) {
+        return {
+          success: false,
+          error: `El producto "${item.product.title}" no cuenta con existencias suficientes.`
+        };
+      }
+    }
 
     const payload = {
       customerName: name,

@@ -141,17 +141,6 @@
             </div>
           {/if}
         </div>
-
-        <!-- Backoffice Shortcut -->
-        <div class="p-4 bg-slate-50 border-t border-slate-200 text-center">
-          <a
-            href="/admin"
-            target="_blank"
-            class="block w-full py-2.5 px-3 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-300 rounded transition-colors"
-          >
-            Ver métricas globales en Backoffice →
-          </a>
-        </div>
       </div>
     </div>
   </div>

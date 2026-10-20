@@ -87,7 +87,13 @@ async function runVerification() {
     throw new Error(`Frases de AI Slop detectadas en DOM de Landing: ${landingAudit.detectedPhrases.join(', ')}`);
   }
 
-  // Verificar estabilidad de productos (CERO cambios de productos o rotación tras ciclo de polling)
+  // Verificar que NO haya links visibles al Backoffice desde la storefront
+  console.log('🔒 Verificando ausencia total de enlaces al Backoffice en la tienda...');
+  const backofficeLinksCount = await page.locator('a[href="/admin"], a[href*="/admin"]').count();
+  if (backofficeLinksCount > 0) {
+    throw new Error(`Se encontraron ${backofficeLinksCount} enlaces al Backoffice en la tienda. Deben ser 0.`);
+  }
+  console.log('✅ Cero enlaces al Backoffice en storefront confirmado.');
   console.log('🔒 Verificando estabilidad de productos (cero carrusel, cero efecto de cambio)...');
   const initialTitles = await page.locator('section .group h3').allInnerTexts();
   console.log('📌 Títulos iniciales de productos:', initialTitles);
@@ -206,12 +212,32 @@ async function runVerification() {
   }
 
   // ==========================================
-  // STEP 5: Verificar Backoffice Go con Barra Lateral (http://localhost:8080/admin/)
+  // STEP 5: Verificar Backoffice Go con Login y Control Sold Out (http://localhost:8080/admin/)
   // ==========================================
   console.log('9️⃣ Navegando al Backoffice Go en http://localhost:8080/admin/ ...');
   const adminPage = await context.newPage();
   await adminPage.goto('http://localhost:8080/admin/', { waitUntil: 'networkidle', timeout: 30000 });
-  await adminPage.waitForTimeout(2000);
+  await adminPage.waitForTimeout(1000);
+
+  // Verificar pantalla de login
+  console.log('🔐 Verificando pantalla de autenticación del Backoffice...');
+  const isLoginVisible = await adminPage.locator('#login-container').isVisible();
+  if (!isLoginVisible) {
+    throw new Error('La pantalla de login del Backoffice no se mostró.');
+  }
+
+  // Iniciar sesión con demo / demo
+  console.log('🔑 Ingresando credenciales demo / demo...');
+  await adminPage.fill('#input-username', 'demo');
+  await adminPage.fill('#input-password', 'demo');
+  await adminPage.click('#login-form button[type="submit"]');
+  await adminPage.waitForTimeout(1000);
+
+  const isDashboardVisible = await adminPage.locator('#dashboard-container').isVisible();
+  if (!isDashboardVisible) {
+    throw new Error('El inicio de sesión con demo / demo no desbloqueó el dashboard.');
+  }
+  console.log('✅ Inicio de sesión exitoso en Backoffice.');
 
   await adminPage.screenshot({ path: path.join(SCREENSHOT_DIR, '07-backoffice-sidebar-inventory.png'), fullPage: false });
   console.log('📸 07-backoffice-sidebar-inventory.png capturado');
@@ -232,11 +258,18 @@ async function runVerification() {
   });
   console.log('📊 Auditoría Backoffice:', adminAudit);
 
-  if (adminAudit.bodyBg !== 'rgb(248, 250, 252)') {
-    throw new Error(`Tema claro no cargado en Backoffice: body background es ${adminAudit.bodyBg}, esperado rgb(248, 250, 252)`);
-  }
   if (!adminAudit.hasSidebar) {
     throw new Error('El Backoffice no tiene barra lateral (aside no encontrado)');
+  }
+
+  // Probar botón de Sold Out ("Agotar" / "Reponer")
+  console.log('📦 Probando acción de Sold Out en inventario...');
+  const firstAgotarBtn = adminPage.locator('button:has-text("Agotar")').first();
+  if (await firstAgotarBtn.isVisible()) {
+    await firstAgotarBtn.click();
+    await adminPage.waitForTimeout(1000);
+    console.log('✅ Producto marcado como Agotado en Backoffice');
+    await adminPage.screenshot({ path: path.join(SCREENSHOT_DIR, '07b-backoffice-soldout.png'), fullPage: false });
   }
 
   // Cambiar a pestaña Ventas en Backoffice

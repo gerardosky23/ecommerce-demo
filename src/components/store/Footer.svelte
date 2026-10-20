@@ -18,7 +18,6 @@
         <ul class="space-y-1.5 text-[11px]">
           <li><a href="/" class="hover:text-slate-900 transition-colors">Inicio</a></li>
           <li><a href="/tienda" class="hover:text-slate-900 transition-colors">Catálogo de Tienda</a></li>
-          <li><a href="/admin" target="_blank" class="text-slate-900 font-semibold hover:underline transition-colors">Panel Backoffice ERP</a></li>
         </ul>
       </div>
 

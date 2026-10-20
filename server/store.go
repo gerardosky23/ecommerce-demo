@@ -296,6 +296,47 @@ func (s *Store) ProcessCheckout(req CheckoutRequest) (*Order, error) {
 	return order, nil
 }
 
+func (s *Store) UpdateStock(productID string, stock int) (*Product, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	prod, ok := s.products[productID]
+	if !ok {
+		return nil, fmt.Errorf("producto %s no encontrado", productID)
+	}
+
+	if stock < 0 {
+		stock = 0
+	}
+	prod.Stock = stock
+
+	go s.broadcastUpdate("stock_updated")
+	return prod, nil
+}
+
+func (s *Store) ToggleSoldOut(productID string) (*Product, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	prod, ok := s.products[productID]
+	if !ok {
+		return nil, fmt.Errorf("producto %s no encontrado", productID)
+	}
+
+	if prod.Stock > 0 {
+		prod.Stock = 0
+	} else {
+		if prod.InitialStock > 0 {
+			prod.Stock = prod.InitialStock
+		} else {
+			prod.Stock = 15
+		}
+	}
+
+	go s.broadcastUpdate("stock_updated")
+	return prod, nil
+}
+
 func (s *Store) ResetDemo() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
