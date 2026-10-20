@@ -8,6 +8,7 @@
     [-18.35, -81.33],
     [-0.03, -68.65],
   ];
+  const CARTO_API_KEY = 'cb1_4pm2_1_200f6c4d689008428bc823c8';
 
   type VehicleType = 'moto' | 'auto' | 'camion';
 
@@ -445,8 +446,8 @@
 
       L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
 
-      // CartoDB Positron Minimalist light layer
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      // CartoDB Positron Minimalist light layer with authorized CARTO API Key
+      L.tileLayer(`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?api_key=${CARTO_API_KEY}`, {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',

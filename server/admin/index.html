@@ -487,6 +487,7 @@
     // ==========================================
     const WAREHOUSE_COORDS = [-12.0969, -77.0354]; // San Isidro
     const PERU_BOUNDS = [[-18.35, -81.33], [-0.03, -68.65]];
+    const CARTO_API_KEY = 'cb1_4pm2_1_200f6c4d689008428bc823c8';
 
     const VEHICLES_CFG = {
       moto: { name: 'Moto Reparto', speed: 45, icon: 'moto', desc: 'ETA ágil para paquetería express' },
@@ -876,7 +877,7 @@
 
       L.control.zoom({ position: 'bottomright' }).addTo(gpsMap);
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      L.tileLayer(`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?api_key=${CARTO_API_KEY}`, {
         attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
         subdomains: 'abcd',
         maxZoom: 19
