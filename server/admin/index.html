@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -241,6 +243,7 @@
                 <th class="py-2.5 px-4">Artículos</th>
                 <th class="py-2.5 px-4 text-right">Total</th>
                 <th class="py-2.5 px-4 text-center">Pago</th>
+                <th class="py-2.5 px-4 text-center">Acciones</th>
               </tr>
             </thead>
             <tbody id="sales-tbody" class="divide-y divide-slate-100"></tbody>
@@ -394,7 +397,7 @@
         const salesBody = document.getElementById('sales-tbody');
         document.getElementById('sales-count').innerText = `${orders.length} pedidos`;
         if (orders.length === 0) {
-          salesBody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-500 text-xs">Sin transacciones registradas</td></tr>';
+          salesBody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-500 text-xs">Sin transacciones registradas</td></tr>';
         } else {
           salesBody.innerHTML = orders.map(o => `
             <tr class="hover:bg-slate-50/60 transition-colors">
@@ -411,6 +414,20 @@
               <td class="py-3 px-4 text-right font-bold text-slate-900 tabular-nums">${fmt.format(o.total)}</td>
               <td class="py-3 px-4 text-center">
                 <span class="text-slate-600 font-mono text-[11px]">•••• ${o.cardLast4}</span>
+              </td>
+              <td class="py-3 px-4 text-center">
+                <button
+                  type="button"
+                  onclick="window.openGpsTracking('${o.id}')"
+                  class="px-2.5 py-1 text-[11px] font-medium text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded transition-colors cursor-pointer inline-flex items-center space-x-1"
+                  title="Ver seguimiento satelital GPS"
+                >
+                  <svg class="w-3 h-3 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>Ver GPS / Ruta</span>
+                </button>
               </td>
             </tr>
           `).join('');
@@ -463,6 +480,719 @@
         }
       };
     } catch(e) {}
+
+    // ==========================================
+    // GPS Satellite Real-Time Tracking (Backoffice)
+    // ==========================================
+    const WAREHOUSE_COORDS = [-12.0969, -77.0354]; // San Isidro
+    const PERU_BOUNDS = [[-18.35, -81.33], [-0.03, -68.65]];
+
+    const VEHICLES_CFG = {
+      moto: { name: 'Moto Reparto', speed: 45, icon: 'moto', desc: 'ETA ágil para paquetería express' },
+      auto: { name: 'Auto Express', speed: 35, icon: 'auto', desc: 'Entrega estándar climatizada' },
+      camion: { name: 'Camión Logístico', speed: 25, icon: 'camion', desc: 'Transporte pesado de almacén' }
+    };
+
+    let gpsMap = null;
+    let gpsPolyline = null;
+    let gpsVehicleMarker = null;
+    let gpsWarehouseMarker = null;
+    let gpsDestMarker = null;
+    let gpsAnimFrame = null;
+    let gpsLastTimestamp = 0;
+    let gpsProgress = 0;
+    let gpsIsPaused = false;
+    let gpsIsDelivered = false;
+    let gpsMultiplier = 1;
+    let gpsSelectedVehicle = 'auto';
+    let gpsRouteCoords = [];
+    let gpsCumulativeDistances = [];
+    let gpsTotalDistM = 0;
+    let currentTrackingOrder = null;
+
+    function haversineM(p1, p2) {
+      const R = 6371000;
+      const dLat = (p2[0] - p1[0]) * Math.PI / 180;
+      const dLng = (p2[1] - p1[1]) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(p1[0] * Math.PI / 180) * Math.cos(p2[0] * Math.PI / 180) *
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function getFallbackCoords(address) {
+      const norm = (address || '').toLowerCase();
+      if (norm.includes('miraflor')) return [-12.121, -77.029];
+      if (norm.includes('borja')) return [-12.086, -77.001];
+      if (norm.includes('surco')) return [-12.138, -76.993];
+      if (norm.includes('jesus') || norm.includes('jesús')) return [-12.072, -77.050];
+      if (norm.includes('begonia') || norm.includes('isidro')) return [-12.092, -77.032];
+
+      const list = [
+        [-12.121, -77.029],
+        [-12.086, -77.001],
+        [-12.138, -76.993],
+        [-12.072, -77.050],
+        [-12.092, -77.032]
+      ];
+      let hash = 0;
+      for (let i = 0; i < (address || '').length; i++) {
+        hash = (hash << 5) - hash + address.charCodeAt(i);
+        hash |= 0;
+      }
+      return list[Math.abs(hash) % list.length];
+    }
+
+    async function geocodeAddr(address, city = 'Lima') {
+      if (!address || !address.trim()) return getFallbackCoords('San Isidro');
+      try {
+        const controller = new AbortController();
+        const tid = setTimeout(() => controller.abort(), 2500);
+        const q = `${address}, ${city}, Peru`;
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&countrycodes=pe&format=json&limit=1`, {
+          signal: controller.signal,
+          headers: { 'Accept': 'application/json' }
+        });
+        clearTimeout(tid);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0 && data[0].lat && data[0].lon) {
+            const lat = parseFloat(data[0].lat);
+            const lng = parseFloat(data[0].lon);
+            if (lat >= PERU_BOUNDS[0][0] && lat <= PERU_BOUNDS[1][0] && lng >= PERU_BOUNDS[0][1] && lng <= PERU_BOUNDS[1][1]) {
+              return [lat, lng];
+            }
+          }
+        }
+      } catch (e) {}
+      return getFallbackCoords(address);
+    }
+
+    function generateFallback(orig, dest) {
+      const dLat = dest[0] - orig[0];
+      const dLng = dest[1] - orig[1];
+      const wp1 = [orig[0] + dLat * 0.1, orig[1] + dLng * 0.45];
+      const wp2 = [orig[0] + dLat * 0.55, orig[1] + dLng * 0.5];
+      const wp3 = [orig[0] + dLat * 0.85, orig[1] + dLng * 0.9];
+      const milestones = [orig, wp1, wp2, wp3, dest];
+      const pts = [];
+      for (let m = 0; m < milestones.length - 1; m++) {
+        const start = milestones[m];
+        const end = milestones[m + 1];
+        for (let s = 0; s < 10; s++) {
+          const t = s / 10;
+          pts.push([start[0] + (end[0] - start[0]) * t, start[1] + (end[1] - start[1]) * t]);
+        }
+      }
+      pts.push(dest);
+      return pts;
+    }
+
+    async function fetchOsrmRoute(orig, dest) {
+      try {
+        const controller = new AbortController();
+        const tid = setTimeout(() => controller.abort(), 3000);
+        const url = `https://router.project-osrm.org/route/v1/driving/${orig[1]},${orig[0]};${dest[1]},${dest[0]}?overview=full&geometries=geojson`;
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(tid);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.routes && data.routes.length > 0) {
+            const rawCoords = data.routes[0].geometry.coordinates;
+            const converted = rawCoords.map(c => [c[1], c[0]]);
+            const distance = data.routes[0].distance || 0;
+            return { coords: converted, distance };
+          }
+        }
+      } catch (e) {}
+
+      const fallbackCoords = generateFallback(orig, dest);
+      let totalD = 0;
+      for (let i = 1; i < fallbackCoords.length; i++) {
+        totalD += haversineM(fallbackCoords[i - 1], fallbackCoords[i]);
+      }
+      return { coords: fallbackCoords, distance: totalD };
+    }
+
+    function createVehicleDivIcon(vType) {
+      let iconSvg = '';
+      let label = 'Vehículo';
+      if (vType === 'moto') {
+        label = 'Moto 45km/h';
+        iconSvg = '<svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="18" r="3" stroke-width="2"/><circle cx="19" cy="18" r="3" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18V8l3-3h3m-6 3h-3l-2 5h7"/></svg>';
+      } else if (vType === 'auto') {
+        label = 'Auto 35km/h';
+        iconSvg = '<svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="7" cy="17" r="2" stroke-width="2"/><circle cx="17" cy="17" r="2" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 17H3v-4l2-5h10l2 5v4h-2m-6 0h4"/></svg>';
+      } else {
+        label = 'Camión 25km/h';
+        iconSvg = '<svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="7" cy="17" r="2" stroke-width="2"/><circle cx="17" cy="17" r="2" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17V5a1 1 0 011-1h10v13H3zm10-8h4l2 3v5h-6V9z"/></svg>';
+      }
+
+      return L.divIcon({
+        className: 'admin-v-marker',
+        html: `
+          <div style="display:flex; flex-direction:column; align-items:center; transform: translate(-50%, -50%);">
+            <div style="background:#0284c7; border:2px solid #ffffff; box-shadow:0 3px 8px rgba(2,132,199,0.4); border-radius:9999px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; color:#ffffff;">
+              ${iconSvg}
+            </div>
+            <div style="background:#0f172a; color:#ffffff; font-size:9px; font-weight:700; padding:1px 6px; border-radius:4px; margin-top:3px; white-space:nowrap; box-shadow:0 1px 4px rgba(0,0,0,0.25);">
+              ${label}
+            </div>
+          </div>
+        `,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
+      });
+    }
+
+    function createWarehouseDivIcon() {
+      return L.divIcon({
+        className: 'admin-wh-marker',
+        html: `
+          <div style="display:flex; flex-direction:column; align-items:center; transform: translate(-50%, -100%);">
+            <div style="background:#0f172a; border:2px solid #ffffff; box-shadow:0 2px 8px rgba(0,0,0,0.3); border-radius:6px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; color:#ffffff;">
+              <svg style="width:16px; height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <div style="background:#0f172a; color:#ffffff; font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; margin-top:2px; white-space:nowrap; box-shadow:0 1px 4px rgba(0,0,0,0.25);">
+              Almacén San Isidro
+            </div>
+          </div>
+        `,
+        iconSize: [32, 50],
+        iconAnchor: [16, 50]
+      });
+    }
+
+    function createDestDivIcon(address) {
+      const clean = address && address.length > 20 ? address.slice(0, 18) + '...' : address || 'Destino';
+      return L.divIcon({
+        className: 'admin-dest-marker',
+        html: `
+          <div style="display:flex; flex-direction:column; align-items:center; transform: translate(-50%, -100%);">
+            <div style="background:#059669; border:2px solid #ffffff; box-shadow:0 2px 8px rgba(5,150,105,0.35); border-radius:6px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; color:#ffffff;">
+              <svg style="width:16px; height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </div>
+            <div style="background:#059669; color:#ffffff; font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; margin-top:2px; white-space:nowrap; box-shadow:0 1px 4px rgba(0,0,0,0.25);">
+              ${clean}
+            </div>
+          </div>
+        `,
+        iconSize: [32, 50],
+        iconAnchor: [16, 50]
+      });
+    }
+
+    function getLatLngAtProg(p) {
+      if (gpsRouteCoords.length === 0) return WAREHOUSE_COORDS;
+      if (p <= 0) return gpsRouteCoords[0];
+      const maxDist = gpsCumulativeDistances[gpsCumulativeDistances.length - 1];
+      if (p >= 1 || maxDist <= 0) return gpsRouteCoords[gpsRouteCoords.length - 1];
+
+      const targetDist = p * maxDist;
+      let i = 0;
+      while (i < gpsCumulativeDistances.length - 1 && gpsCumulativeDistances[i + 1] < targetDist) {
+        i++;
+      }
+      const segStart = gpsCumulativeDistances[i];
+      const segEnd = gpsCumulativeDistances[i + 1];
+      const segLen = segEnd - segStart;
+      if (segLen <= 0) return gpsRouteCoords[i];
+
+      const ratio = (targetDist - segStart) / segLen;
+      const lat = gpsRouteCoords[i][0] + (gpsRouteCoords[i + 1][0] - gpsRouteCoords[i][0]) * ratio;
+      const lng = gpsRouteCoords[i][1] + (gpsRouteCoords[i + 1][1] - gpsRouteCoords[i][1]) * ratio;
+      return [lat, lng];
+    }
+
+    function updateTelemetryUI() {
+      const spd = VEHICLES_CFG[gpsSelectedVehicle].speed;
+      const remMeters = Math.max(0, gpsTotalDistM * (1 - gpsProgress));
+      const remKm = (remMeters / 1000).toFixed(1);
+      const progPct = Math.min(100, Math.round(gpsProgress * 100));
+
+      let etaStr = '0 min 00 s';
+      if (!gpsIsDelivered && remMeters > 0) {
+        const speedMps = (spd * 1000) / 3600;
+        const etaSec = Math.round(remMeters / speedMps);
+        const m = Math.floor(etaSec / 60);
+        const s = etaSec % 60;
+        etaStr = `${m}m ${s.toString().padStart(2, '0')}s`;
+      }
+
+      const distEl = document.getElementById('admin-gps-dist');
+      const etaEl = document.getElementById('admin-gps-eta');
+      const speedEl = document.getElementById('admin-gps-speed');
+      const progEl = document.getElementById('admin-gps-prog');
+      const barEl = document.getElementById('admin-gps-bar');
+      const badgeEl = document.getElementById('admin-gps-status-badge');
+      const stepPathEl = document.getElementById('admin-gps-step-path');
+      const stepDelivEl = document.getElementById('admin-gps-step-deliv');
+      const delivOverlay = document.getElementById('admin-gps-delivered-overlay');
+
+      if (distEl) distEl.innerText = `${remKm} km`;
+      if (etaEl) etaEl.innerText = etaStr;
+      if (speedEl) speedEl.innerText = `${spd} km/h`;
+      if (progEl) progEl.innerText = `${progPct}%`;
+      if (barEl) barEl.style.width = `${progPct}%`;
+
+      if (gpsIsDelivered) {
+        if (badgeEl) {
+          badgeEl.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center space-x-1';
+          badgeEl.innerHTML = '<svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span>¡Pedido Entregado con Éxito!</span>';
+        }
+        if (stepPathEl) stepPathEl.className = 'h-1.5 rounded-full bg-slate-900';
+        if (stepDelivEl) stepDelivEl.className = 'h-1.5 rounded-full bg-emerald-600';
+        if (delivOverlay) delivOverlay.classList.remove('hidden');
+      } else {
+        if (badgeEl) {
+          badgeEl.className = 'px-2.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-800 border border-amber-200';
+          badgeEl.innerText = 'En proceso de despacho';
+        }
+        if (stepPathEl) stepPathEl.className = 'h-1.5 rounded-full bg-sky-600 animate-pulse';
+        if (stepDelivEl) stepDelivEl.className = 'h-1.5 rounded-full bg-slate-200';
+        if (delivOverlay) delivOverlay.classList.add('hidden');
+      }
+    }
+
+    function animLoop(timestamp) {
+      if (!gpsLastTimestamp) gpsLastTimestamp = timestamp;
+      const deltaSec = Math.min((timestamp - gpsLastTimestamp) / 1000, 0.1);
+      gpsLastTimestamp = timestamp;
+
+      if (!gpsIsPaused && !gpsIsDelivered && gpsRouteCoords.length > 0) {
+        const spd = VEHICLES_CFG[gpsSelectedVehicle].speed;
+        const baseDurationSec = 38;
+        const vehicleFactor = spd / 35;
+        const step = (deltaSec / baseDurationSec) * vehicleFactor * gpsMultiplier;
+
+        gpsProgress = Math.min(1, gpsProgress + step);
+
+        if (gpsVehicleMarker && gpsCumulativeDistances.length > 0) {
+          const currentPos = getLatLngAtProg(gpsProgress);
+          gpsVehicleMarker.setLatLng(currentPos);
+        }
+
+        if (gpsProgress >= 1) {
+          gpsProgress = 1;
+          gpsIsDelivered = true;
+        }
+
+        updateTelemetryUI();
+      }
+
+      const modal = document.getElementById('admin-gps-modal');
+      if (modal && !modal.classList.contains('hidden')) {
+        gpsAnimFrame = requestAnimationFrame(animLoop);
+      }
+    }
+
+    window.openGpsTracking = async (orderId) => {
+      // Find order in current list
+      const res = await fetch('/api/orders');
+      if (!res.ok) return;
+      const orders = await res.json();
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+      currentTrackingOrder = order;
+
+      const modal = document.getElementById('admin-gps-modal');
+      modal.classList.remove('hidden');
+
+      document.getElementById('admin-gps-order-id').innerText = `#${order.id}`;
+      document.getElementById('admin-gps-customer').innerText = order.customerName;
+      document.getElementById('admin-gps-created').innerText = new Date(order.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      document.getElementById('admin-gps-address').innerText = order.shippingAddress || 'Dirección de Entrega Registrada';
+      document.getElementById('admin-gps-city').innerText = order.shippingCity || 'Lima';
+
+      // Reset state
+      gpsProgress = 0;
+      gpsIsPaused = false;
+      gpsIsDelivered = false;
+      gpsLastTimestamp = 0;
+      gpsSelectedVehicle = 'auto';
+      gpsMultiplier = 1;
+
+      window.updateVehicleButtons();
+      window.updateSpeedButtons();
+      updateTelemetryUI();
+
+      const loadingEl = document.getElementById('admin-gps-loading');
+      if (loadingEl) loadingEl.classList.remove('hidden');
+
+      // Initialize map
+      const mapContainer = document.getElementById('admin-leaflet-order-map');
+      if (gpsMap) {
+        try { gpsMap.remove(); } catch(e) {}
+        gpsMap = null;
+      }
+
+      gpsMap = L.map(mapContainer, {
+        center: WAREHOUSE_COORDS,
+        zoom: 13,
+        minZoom: 6,
+        maxBounds: PERU_BOUNDS,
+        maxBoundsViscosity: 1.0,
+        zoomControl: false
+      });
+
+      L.control.zoom({ position: 'bottomright' }).addTo(gpsMap);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(gpsMap);
+
+      gpsWarehouseMarker = L.marker(WAREHOUSE_COORDS, { icon: createWarehouseDivIcon() }).addTo(gpsMap);
+      gpsWarehouseMarker.bindPopup('<strong>Almacén Central Terre Bleu</strong><br>San Isidro, Lima, Perú');
+
+      const destCoords = await geocodeAddr(order.shippingAddress, order.shippingCity);
+      gpsDestMarker = L.marker(destCoords, { icon: createDestDivIcon(order.shippingAddress) }).addTo(gpsMap);
+      gpsDestMarker.bindPopup(`<strong>Destino de Entrega</strong><br>${order.shippingAddress || 'Lima'}`);
+
+      const routeResult = await fetchOsrmRoute(WAREHOUSE_COORDS, destCoords);
+      gpsRouteCoords = routeResult.coords;
+      gpsTotalDistM = routeResult.distance;
+
+      gpsCumulativeDistances = [0];
+      for (let i = 1; i < gpsRouteCoords.length; i++) {
+        gpsCumulativeDistances.push(gpsCumulativeDistances[i - 1] + haversineM(gpsRouteCoords[i - 1], gpsRouteCoords[i]));
+      }
+
+      gpsPolyline = L.polyline(gpsRouteCoords, {
+        color: '#0284c7',
+        weight: 4,
+        opacity: 0.9,
+        lineJoin: 'round'
+      }).addTo(gpsMap);
+
+      gpsVehicleMarker = L.marker(WAREHOUSE_COORDS, {
+        icon: createVehicleDivIcon(gpsSelectedVehicle),
+        zIndexOffset: 1000
+      }).addTo(gpsMap);
+
+      if (gpsRouteCoords.length > 0) {
+        gpsMap.fitBounds(gpsPolyline.getBounds(), { padding: [36, 36], maxZoom: 16 });
+      }
+
+      if (loadingEl) loadingEl.classList.add('hidden');
+      setTimeout(() => { if (gpsMap) gpsMap.invalidateSize(); }, 250);
+
+      if (gpsAnimFrame) cancelAnimationFrame(gpsAnimFrame);
+      gpsAnimFrame = requestAnimationFrame(animLoop);
+    };
+
+    window.closeGpsTracking = () => {
+      if (gpsAnimFrame) {
+        cancelAnimationFrame(gpsAnimFrame);
+        gpsAnimFrame = null;
+      }
+      if (gpsMap) {
+        try { gpsMap.remove(); } catch(e) {}
+        gpsMap = null;
+      }
+      document.getElementById('admin-gps-modal').classList.add('hidden');
+    };
+
+    window.selectVehicleGps = (vType) => {
+      gpsSelectedVehicle = vType;
+      window.updateVehicleButtons();
+      if (gpsVehicleMarker) {
+        gpsVehicleMarker.setIcon(createVehicleDivIcon(vType));
+      }
+      updateTelemetryUI();
+    };
+
+    window.updateVehicleButtons = () => {
+      ['moto', 'auto', 'camion'].forEach(v => {
+        const btn = document.getElementById(`btn-v-${v}`);
+        if (btn) {
+          if (v === gpsSelectedVehicle) {
+            btn.className = 'flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-semibold border transition-colors cursor-pointer bg-sky-50 text-sky-900 border-sky-400 ring-1 ring-sky-300';
+          } else {
+            btn.className = 'flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-medium border transition-colors cursor-pointer bg-white text-slate-700 border-slate-200 hover:bg-slate-50';
+          }
+        }
+      });
+      const descEl = document.getElementById('admin-gps-v-desc');
+      if (descEl) descEl.innerText = VEHICLES_CFG[gpsSelectedVehicle].desc;
+    };
+
+    window.togglePauseGps = () => {
+      gpsIsPaused = !gpsIsPaused;
+      const pauseText = document.getElementById('admin-gps-pause-text');
+      if (pauseText) pauseText.innerText = gpsIsPaused ? 'Reanudar' : 'Pausar';
+    };
+
+    window.restartRouteGps = () => {
+      gpsProgress = 0;
+      gpsIsDelivered = false;
+      gpsIsPaused = false;
+      gpsLastTimestamp = 0;
+      if (gpsVehicleMarker && gpsRouteCoords.length > 0) {
+        gpsVehicleMarker.setLatLng(gpsRouteCoords[0]);
+      }
+      const pauseText = document.getElementById('admin-gps-pause-text');
+      if (pauseText) pauseText.innerText = 'Pausar';
+      updateTelemetryUI();
+    };
+
+    window.setMultiplierGps = (m) => {
+      gpsMultiplier = m;
+      window.updateSpeedButtons();
+    };
+
+    window.updateSpeedButtons = () => {
+      [1, 2, 5].forEach(s => {
+        const btn = document.getElementById(`btn-speed-${s}`);
+        if (btn) {
+          if (s === gpsMultiplier) {
+            btn.className = 'px-2.5 py-1 rounded text-xs font-semibold transition-colors cursor-pointer bg-slate-900 text-white';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded text-xs font-semibold transition-colors cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200';
+          }
+        }
+      });
+    };
   </script>
+
+  <!-- GPS SATELLITE TRACKING MODAL (BACKOFFICE) -->
+  <div id="admin-gps-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-2xs">
+    <div class="absolute inset-0 bg-transparent w-full h-full cursor-default" onclick="window.closeGpsTracking()"></div>
+
+    <div class="relative bg-white border border-slate-200 rounded-lg max-w-2xl w-full overflow-hidden shadow-sm z-10 p-5 sm:p-7 space-y-5 text-slate-900 max-h-[94vh] overflow-y-auto">
+      <!-- Header -->
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div>
+          <div class="flex items-center space-x-2">
+            <h3 class="text-lg sm:text-xl font-serif font-bold text-slate-950">Seguimiento de Pedido</h3>
+            <span id="admin-gps-order-id" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-50 text-sky-700 border border-sky-200">#</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">
+            Módulo de Rastreo GPS Satelital — Despacho y telemetría de ruta en tiempo real.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          aria-label="Cerrar ventana"
+          onclick="window.closeGpsTracking()"
+          class="w-7 h-7 rounded-md text-slate-400 hover:text-slate-900 flex items-center justify-center cursor-pointer transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Order Details Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div class="bg-slate-50 border border-slate-200 rounded-md p-3 space-y-1">
+          <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">Destinatario</span>
+          <span id="admin-gps-customer" class="font-bold text-slate-900 block">-</span>
+          <span id="admin-gps-created" class="text-slate-500 text-[11px] block">-</span>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-md p-3 space-y-1">
+          <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">Dirección de Entrega</span>
+          <span id="admin-gps-address" class="font-medium text-slate-900 block truncate">-</span>
+          <span id="admin-gps-city" class="text-slate-500 text-[11px] block">-</span>
+        </div>
+      </div>
+
+      <!-- Shipping Progress Stepper -->
+      <div class="space-y-2 pt-1">
+        <div class="flex justify-between items-center text-[11px] font-medium text-slate-600">
+          <span class="text-slate-900 font-semibold">Estado de la entrega:</span>
+          <span id="admin-gps-status-badge" class="px-2.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-800 border border-amber-200">
+            En proceso de despacho
+          </span>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 text-center text-[10px]">
+          <div class="space-y-1">
+            <div class="h-1.5 rounded-full bg-slate-900"></div>
+            <span class="text-slate-800 font-medium">Recibido</span>
+          </div>
+          <div class="space-y-1">
+            <div class="h-1.5 rounded-full bg-slate-900"></div>
+            <span class="text-slate-800 font-medium">Empaque</span>
+          </div>
+          <div class="space-y-1">
+            <div id="admin-gps-step-path" class="h-1.5 rounded-full bg-sky-600 animate-pulse"></div>
+            <span class="text-sky-700 font-bold">En camino</span>
+          </div>
+          <div class="space-y-1">
+            <div id="admin-gps-step-deliv" class="h-1.5 rounded-full bg-slate-200"></div>
+            <span class="text-slate-400 font-medium">Entregado</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vehicle Selector -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="font-medium text-slate-700">Vehículo de Despacho:</span>
+          <span id="admin-gps-v-desc" class="text-slate-500 text-[10px]">Entrega estándar climatizada</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <!-- Moto -->
+          <button
+            type="button"
+            id="btn-v-moto"
+            onclick="window.selectVehicleGps('moto')"
+            class="flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-medium border transition-colors cursor-pointer bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+          >
+            <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="5" cy="18" r="3" stroke-width="2" />
+              <circle cx="19" cy="18" r="3" stroke-width="2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18V8l3-3h3m-6 3h-3l-2 5h7" />
+            </svg>
+            <div class="text-left leading-tight">
+              <span class="block text-[11px] font-semibold">Moto</span>
+              <span class="block text-[10px] text-slate-500 tabular-nums">45 km/h</span>
+            </div>
+          </button>
+
+          <!-- Auto -->
+          <button
+            type="button"
+            id="btn-v-auto"
+            onclick="window.selectVehicleGps('auto')"
+            class="flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-semibold border transition-colors cursor-pointer bg-sky-50 text-sky-900 border-sky-400 ring-1 ring-sky-300"
+          >
+            <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="7" cy="17" r="2" stroke-width="2" />
+              <circle cx="17" cy="17" r="2" stroke-width="2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 17H3v-4l2-5h10l2 5v4h-2m-6 0h4" />
+            </svg>
+            <div class="text-left leading-tight">
+              <span class="block text-[11px] font-semibold">Auto</span>
+              <span class="block text-[10px] text-slate-500 tabular-nums">35 km/h</span>
+            </div>
+          </button>
+
+          <!-- Camión -->
+          <button
+            type="button"
+            id="btn-v-camion"
+            onclick="window.selectVehicleGps('camion')"
+            class="flex items-center justify-center space-x-2 px-3 py-2 rounded-md text-xs font-medium border transition-colors cursor-pointer bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+          >
+            <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="7" cy="17" r="2" stroke-width="2" />
+              <circle cx="17" cy="17" r="2" stroke-width="2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17V5a1 1 0 011-1h10v13H3zm10-8h4l2 3v5h-6V9z" />
+            </svg>
+            <div class="text-left leading-tight">
+              <span class="block text-[11px] font-semibold">Camión</span>
+              <span class="block text-[10px] text-slate-500 tabular-nums">25 km/h</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Leaflet Interactive Map View (CartoDB Positron) -->
+      <div class="relative w-full h-72 sm:h-80 rounded-lg overflow-hidden border border-slate-200 bg-slate-100">
+        <div id="admin-leaflet-order-map" class="w-full h-full z-0"></div>
+
+        <div id="admin-gps-loading" class="absolute inset-0 bg-white/80 backdrop-blur-2xs flex flex-col items-center justify-center space-y-2 z-10">
+          <div class="w-6 h-6 border-2 border-sky-600 border-t-transparent rounded-full animate-spin"></div>
+          <span class="text-xs font-mono text-slate-600">Calculando ruteo vial por calles reales (OSRM)...</span>
+        </div>
+
+        <!-- Delivered Overlay -->
+        <div id="admin-gps-delivered-overlay" class="hidden absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-emerald-600 text-white px-3.5 py-1.5 rounded-md shadow-sm flex items-center space-x-1.5 text-xs font-semibold">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>¡Pedido Entregado con Éxito!</span>
+        </div>
+      </div>
+
+      <!-- Live Telemetry Bar -->
+      <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2.5">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+          <div class="bg-white border border-slate-200 rounded p-2">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">Dist. Restante</span>
+            <span id="admin-gps-dist" class="text-sm font-bold text-slate-900 tabular-nums block mt-0.5">0.0 km</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded p-2">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">ETA Regresivo</span>
+            <span id="admin-gps-eta" class="text-sm font-bold text-sky-700 tabular-nums block mt-0.5">0m 00s</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded p-2">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">Velocidad</span>
+            <span id="admin-gps-speed" class="text-sm font-bold text-slate-900 tabular-nums block mt-0.5">35 km/h</span>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded p-2">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">Progreso</span>
+            <span id="admin-gps-prog" class="text-sm font-bold text-slate-900 tabular-nums block mt-0.5">0%</span>
+          </div>
+        </div>
+
+        <!-- Progress Track -->
+        <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+          <div id="admin-gps-bar" class="h-full bg-sky-600 transition-all duration-100 rounded-full" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Simulation Playback Controls -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-100">
+        <div class="flex items-center space-x-2">
+          <!-- Play / Pause -->
+          <button
+            type="button"
+            onclick="window.togglePauseGps()"
+            class="px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 hover:bg-slate-100 text-slate-800 transition-colors cursor-pointer flex items-center space-x-1.5"
+          >
+            <svg class="w-3.5 h-3.5 text-slate-600" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+            <span id="admin-gps-pause-text">Pausar</span>
+          </button>
+
+          <!-- Restart Route -->
+          <button
+            type="button"
+            onclick="window.restartRouteGps()"
+            class="px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 hover:bg-slate-100 text-slate-800 transition-colors cursor-pointer flex items-center space-x-1.5"
+          >
+            <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Reiniciar Ruta</span>
+          </button>
+        </div>
+
+        <!-- Simulation Multipliers -->
+        <div class="flex items-center space-x-1 text-xs">
+          <span class="text-[11px] text-slate-500 mr-1">Velocidad:</span>
+          <button type="button" id="btn-speed-1" onclick="window.setMultiplierGps(1)" class="px-2.5 py-1 rounded text-xs font-semibold transition-colors cursor-pointer bg-slate-900 text-white">1x</button>
+          <button type="button" id="btn-speed-2" onclick="window.setMultiplierGps(2)" class="px-2.5 py-1 rounded text-xs font-semibold transition-colors cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200">2x</button>
+          <button type="button" id="btn-speed-5" onclick="window.setMultiplierGps(5)" class="px-2.5 py-1 rounded text-xs font-semibold transition-colors cursor-pointer bg-slate-100 text-slate-700 hover:bg-slate-200">5x</button>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="pt-1">
+        <button
+          onclick="window.closeGpsTracking()"
+          class="w-full py-2.5 px-4 text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-slate-950 bg-slate-100 hover:bg-slate-200 rounded-md border border-slate-300 transition-colors cursor-pointer text-center"
+        >
+          Cerrar Seguimiento
+        </button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

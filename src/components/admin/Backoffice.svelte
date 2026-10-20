@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
+  import { store } from '../../lib/store.svelte';
+  import OrderTrackingModal from '../store/OrderTrackingModal.svelte';
 
   interface Product {
     id: string;
@@ -513,6 +515,7 @@
                     <th class="py-2.5 px-4">Artículos</th>
                     <th class="py-2.5 px-4 text-right">Total</th>
                     <th class="py-2.5 px-4 text-center">Pago</th>
+                    <th class="py-2.5 px-4 text-center">Acciones</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -541,6 +544,20 @@
                       <td class="py-3 px-4 text-right font-bold text-slate-900 tabular-nums">{formatCurrency(o.total)}</td>
                       <td class="py-3 px-4 text-center">
                         <span class="text-slate-600 font-mono text-[11px]">•••• {o.cardLast4}</span>
+                      </td>
+                      <td class="py-3 px-4 text-center">
+                        <button
+                          type="button"
+                          onclick={() => store.openTracking(o)}
+                          class="px-2.5 py-1 text-[11px] font-medium text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded transition-colors cursor-pointer inline-flex items-center space-x-1"
+                          title="Ver seguimiento satelital GPS"
+                        >
+                          <svg class="w-3 h-3 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          <span>Ver GPS / Ruta</span>
+                        </button>
                       </td>
                     </tr>
                   {/each}
@@ -632,5 +649,8 @@
         </div>
       </div>
     {/if}
+
+    <!-- Order Tracking GPS Modal -->
+    <OrderTrackingModal />
   </div>
 {/if}

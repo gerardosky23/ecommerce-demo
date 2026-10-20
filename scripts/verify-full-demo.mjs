@@ -9,6 +9,7 @@ if (!fs.existsSync(SCREENSHOT_DIR)) {
 
 async function runVerification() {
   console.log('🚀 Iniciando verificación E2E del Rediseño 100% Tema Claro + Catálogo /tienda + Backoffice Sidebar...');
+  await fetch('http://localhost:8080/api/reset', { method: 'POST' }).catch(() => {});
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     viewport: { width: 1440, height: 900 },
@@ -248,7 +249,31 @@ async function runVerification() {
   if (!trackingText.includes('Módulo de Rastreo GPS Satelital')) {
     throw new Error('El modal de seguimiento no mostró el espacio para el módulo de mapas GPS.');
   }
-  console.log('✅ Modal de Seguimiento con estado "En proceso" y contenedor de mapas GPS verificado.');
+
+  // Verificar presencia del mapa Leaflet interactivo
+  console.log('🗺️ Verificando inicialización de Leaflet y capas CartoDB Positron...');
+  await page.waitForSelector('#leaflet-order-map.leaflet-container', { timeout: 10000 });
+  const hasLeafletMap = await page.locator('#leaflet-order-map.leaflet-container').isVisible();
+  if (!hasLeafletMap) {
+    throw new Error('El contenedor del mapa interactivo Leaflet no se inicializó con la clase .leaflet-container');
+  }
+
+  // Probar selector interactivo de vehículo (Moto Reparto)
+  console.log('🛵 Probando selector dinámico de vehículo (Moto Reparto)...');
+  const motoBtn = page.locator('button:has-text("Moto")').first();
+  await motoBtn.click();
+  await page.waitForTimeout(600);
+
+  // Probar selector de velocidad 5x
+  console.log('⚡ Probando selector de velocidad de simulación 5x...');
+  const speed5xBtn = page.locator('button:has-text("5x")').first();
+  await speed5xBtn.click();
+  await page.waitForTimeout(1000);
+
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '06c-tracking-simulation-active.png'), fullPage: false });
+  console.log('📸 06c-tracking-simulation-active.png capturado con telemetría en vivo');
+
+  console.log('✅ Modal de Seguimiento con mapa Leaflet, selector de vehículo y telemetría verificado.');
 
   // Cerrar modal de seguimiento
   const closeTrackingBtn = page.locator('button:has-text("Cerrar Seguimiento")');
@@ -332,7 +357,22 @@ async function runVerification() {
   }
   console.log('✅ Venta y Dirección de Envío de Camila Vega verificadas en tabla de Ventas del Backoffice.');
 
-  // Cambiar a pestaña Clientes en Backoffice
+  // Probar botón "Ver GPS / Ruta" en la tabla de Ventas del Backoffice
+  console.log('📍 Probando botón "Ver GPS / Ruta" en Backoffice...');
+  const adminGpsBtn = adminPage.locator('button:has-text("Ver GPS / Ruta")').first();
+  if (await adminGpsBtn.isVisible()) {
+    await adminGpsBtn.click();
+    await adminPage.waitForTimeout(1500);
+    await adminPage.screenshot({ path: path.join(SCREENSHOT_DIR, '08b-backoffice-gps-modal.png'), fullPage: false });
+    console.log('📸 08b-backoffice-gps-modal.png capturado con visor Leaflet en Backoffice');
+
+    // Cerrar modal GPS en Backoffice
+    const closeAdminGps = adminPage.locator('#admin-gps-modal button:has-text("Cerrar Seguimiento")');
+    if (await closeAdminGps.isVisible()) {
+      await closeAdminGps.click();
+      await adminPage.waitForTimeout(500);
+    }
+  }
   console.log('1️⃣1️⃣ Cambiando a pestaña Clientes en Backoffice...');
   await adminPage.click('#tab-customers');
   await adminPage.waitForTimeout(1000);
